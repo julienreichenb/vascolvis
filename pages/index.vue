@@ -2,7 +2,7 @@
   <div>
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
-        <v-flex xs12 sm8 elevation-6>
+        <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="pt-5 blue darken-3">
             <v-toolbar-title class="white--text">
               <h3>Bienvenue sur Vasco</h3>
@@ -40,7 +40,7 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validLog"
-                            color="indigo darken-3"
+                            color="indigo darken-2"
                             @click="attemptLogin()"
                           >
                             Continuer
@@ -91,7 +91,7 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validReg"
-                            color="indigo darken-3"
+                            color="indigo darken-2"
                             @click="createAccount()"
                           >
                             Créer le compte
@@ -161,6 +161,7 @@ export default {
           this.$router.push({ name: 'import' })
         })
         .catch((error) => {
+          // eslint-disable-next-line
           console.log(error)
           this.$router.push({ name: 'index' })
           this.isWrong = true
@@ -178,6 +179,7 @@ export default {
           this.$router.push({ name: 'import' })
         })
         .catch((error) => {
+          // eslint-disable-next-line
           console.log(error)
           this.$router.push({ name: 'index' })
           this.isWrong = true

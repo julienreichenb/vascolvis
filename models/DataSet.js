@@ -13,7 +13,7 @@ module.exports = db.sequelize.define(
       type: Sequelize.STRING
     },
     data: {
-      type: Sequelize.BLOB
+      type: Sequelize.JSON
     },
     id_user: {
       type: Sequelize.INTEGER,

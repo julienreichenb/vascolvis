@@ -11,7 +11,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // DB settings
 const Users = require('../routes/Users')
+const Datasets = require('../routes/DataSets')
 app.use('/users', Users)
+app.use('/datasets', Datasets)
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
