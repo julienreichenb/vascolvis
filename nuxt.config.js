@@ -6,6 +6,17 @@ module.exports = {
    ** Headers of the page
    */
   head: {
+    script: [
+      {
+        src: 'https://cdn.jsdelivr.net/npm/vega@5.7.2'
+      },
+      {
+        src: 'https://cdn.jsdelivr.net/npm/vega-lite@4.0.0-beta.10'
+      },
+      {
+        src: 'https://cdn.jsdelivr.net/npm/vega-embed@5.1.3'
+      }
+    ],
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
     meta: [

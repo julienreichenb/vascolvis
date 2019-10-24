@@ -1,86 +1,94 @@
 <template>
   <div v-if="dataset">
     <v-container fluid fill-height class="loginOverlay">
-      <v-layout flex align-center justify-center>
+      <v-layout flex align-center justify-space-around>
         <v-navigation-drawer
           class="grey darken-2"
           absolute
+          dense
           permanent
           floating
           stateless
         >
-          <v-list class="pa-2">
+          <v-list>
             <v-list-group
-              v-for="item in variablesTypes"
-              :key="item.name"
-              v-model="item.active"
-              :prepend-icon="item.icon"
-              :color="item.color"
+              v-for="variableType in variablesTypes"
+              :key="variableType.name"
+              v-model="variableType.active"
+              :prepend-icon="variableType.icon"
+              :color="variableType.color"
               no-action
             >
               <template v-slot:activator>
                 <v-list-item-content>
-                  <v-list-item-title v-text="item.name"></v-list-item-title>
+                  <v-list-item-title
+                    v-text="variableType.name"
+                  ></v-list-item-title>
                 </v-list-item-content>
               </template>
-
-              <v-list-item v-for="subItem in item.items" :key="subItem">
-                <v-list-item-content>
-                  <v-list-item-title v-text="subItem"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <v-expansion-panels multiple accordion>
+                <v-expansion-panel
+                  v-for="variable in variableType.items"
+                  :key="variable.id"
+                >
+                  <v-expansion-panel-header>
+                    {{ variable.name }}
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-switch
+                      v-model="variable.isUsed"
+                      flat
+                      :label="'Utiliser'"
+                      :color="variableType.color + ' lighten-2'"
+                    ></v-switch>
+                    <v-layout
+                      v-if="variableType.name === 'Quantitatif'"
+                      class="small"
+                      justify-space-around
+                    >
+                      <span
+                        >MAX : <span>{{ variable.max }}</span></span
+                      >
+                      <span
+                        >MIN : <span>{{ variable.min }}</span></span
+                      >
+                      <span
+                        >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
+                      >
+                    </v-layout>
+                    <div v-if="variable" :id="'smallvis-' + variable.id"></div>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
             </v-list-group>
           </v-list>
         </v-navigation-drawer>
         <v-flex xs12 sm10 elevation-6>
-          <h1>{{ dataset.name }}</h1>
-          <h6 v-for="variable in variables" :key="variable">{{ variable }}</h6>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
-            rutrum, tellus id lacinia facilisis, nunc dolor cursus urna, vitae
-            elementum nunc elit id diam. Duis tempor est mi, in porttitor dui
-            maximus non. Suspendisse metus risus, varius sed efficitur et,
-            tempor quis ex. In in dui nisi. Mauris lobortis tristique fringilla.
-            Quisque gravida felis ut mauris pretium, vel hendrerit turpis
-            varius. Ut lectus quam, elementum quis odio ullamcorper, venenatis
-            sodales odio. Mauris vestibulum est sit amet metus interdum
-            venenatis. Proin sed mattis lectus. Morbi ullamcorper rhoncus diam
-            eu iaculis. Nulla sed suscipit est. Sed lacinia tortor a leo pretium
-            maximus. Curabitur pharetra nisl sit amet justo aliquam, id dapibus
-            est congue. Morbi placerat mauris vitae mi placerat posuere.
-            Praesent sed fermentum orci. Vestibulum aliquet egestas mauris.
-            Quisque id mauris nec odio maximus pretium. Fusce tempor pretium
-            ullamcorper. Morbi semper accumsan aliquam. Nunc nec velit
-            scelerisque, interdum metus eget, dictum libero. Suspendisse a
-            ornare dui. Curabitur luctus elit eu nulla facilisis, id molestie
-            nulla eleifend. Aliquam erat volutpat. Cras viverra blandit elit, a
-            porta quam hendrerit in. Etiam malesuada nisi a ante mollis, id
-            iaculis felis lacinia. Curabitur gravida metus turpis, ac faucibus
-            quam varius sit amet. Sed nisi urna, vulputate nec orci ut, pretium
-            commodo ligula. Nam non convallis orci, eget auctor massa. Curabitur
-            urna eros, auctor nec dignissim at, sollicitudin ac sem. Quisque ac
-            nisi at mi ultrices venenatis. Proin a justo interdum, facilisis sem
-            quis, hendrerit elit. Donec tristique, ante id scelerisque euismod,
-            nibh ligula dictum tellus, sed placerat ipsum libero eu nibh. Nulla
-            quam ipsum, rhoncus sed convallis vel, tristique vitae neque. Morbi
-            gravida sodales eros eu eleifend. Nunc dapibus, metus in ultrices
-            imperdiet, ante ante condimentum neque, vel faucibus est nulla a
-            dui. Curabitur non mauris eget sapien mattis iaculis aliquet vel
-            mauris. Sed non dapibus urna. In sed augue nisi. Nam feugiat, massa
-            ac tincidunt pellentesque, est enim varius metus, id sollicitudin
-            magna nisl non dui. Nam tincidunt urna eu mi laoreet, eget suscipit
-            erat congue. Sed volutpat ut lacus in iaculis. Aenean non lacus ac
-            massa faucibus eleifend at eu tellus. Aenean leo mauris, dapibus eu
-            vestibulum tincidunt, commodo eget elit. Ut facilisis finibus
-            sapien, eget molestie nisl posuere sit amet. Aenean hendrerit ligula
-            massa, nec vehicula leo aliquet vitae. Morbi eget pulvinar justo.
-            Curabitur convallis cursus mattis. Ut interdum porta tellus non
-            tincidunt. Aenean volutpat venenatis semper. Etiam accumsan luctus
-            mauris malesuada fermentum. Pellentesque nec placerat purus, et
-            malesuada nulla. Nulla fringilla, mauris vel feugiat vestibulum,
-            dolor nunc facilisis turpis, quis condimentum massa lacus et massa.
-            Maecenas et porttitor augue. Maecenas eget eros dolor.
-          </p>
+          <div id="vis"></div>
+          <v-card class="mx-auto" outlined>
+            <v-card-title
+              ><h2>{{ dataset.name }}</h2></v-card-title
+            >
+            <v-card-subtitle class="pt-1"
+              ><h3>Graphiques générés</h3></v-card-subtitle
+            >
+            <v-container fluid>
+              <v-row dense>
+                <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
+                  <v-card>
+                    <v-card-title v-text="graph.title"></v-card-title>
+                    <div :id="'vis-' + graph.id"></div>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn icon @click="saveGraph(graph)">
+                        <v-icon>mdi-content-save</v-icon>
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -91,6 +99,37 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
+      testgraph: {
+        data: {
+          values: [
+            { a: 'A', b: 28 },
+            { a: 'B', b: 55 },
+            { a: 'C', b: 43 },
+            { a: 'D', b: 91 },
+            { a: 'E', b: 81 },
+            { a: 'F', b: 53 },
+            { a: 'G', b: 19 },
+            { a: 'H', b: 87 },
+            { a: 'I', b: 52 }
+          ]
+        },
+        mark: 'bar',
+        encoding: {
+          x: { field: 'a', type: 'ordinal' },
+          y: { field: 'b', type: 'quantitative' }
+        }
+      },
+      FREQUENT_DATE_LABELS: [
+        'year',
+        'date',
+        'datetime',
+        'period',
+        'periode',
+        'année',
+        'années',
+        'annee',
+        'annees'
+      ],
       dataset: null,
       json: null,
       variables: [],
@@ -103,7 +142,7 @@ export default {
           items: []
         },
         {
-          name: 'Qualitative',
+          name: 'Qualitatif',
           icon: 'mdi-alphabetical',
           color: 'blue',
           desc: 'représentent des catégories sans classement intrinsèque',
@@ -116,7 +155,8 @@ export default {
           desc: 'représentent un temps donné, date ou heure',
           items: []
         }
-      ]
+      ],
+      graphs: []
     }
   },
   created() {
@@ -127,6 +167,9 @@ export default {
     }
     this.getDataSet()
   },
+  mounted() {
+    this.sampleGraph()
+  },
   methods: {
     async getDataSet() {
       await this.$axios
@@ -134,16 +177,200 @@ export default {
         .then((res) => {
           this.dataset = res.data
           this.json = JSON.parse(this.dataset.data)
-          this.variables = Object.keys(this.json[0])
+          const names = Object.keys(this.json[0])
+          for (let i = 0; i < names.length; i++) {
+            const variable = { id: i, name: names[i], isUsed: false }
+            this.variables.push(variable)
+          }
           this.attributeVariablesTypes()
+          this.computeGraphs()
         })
     },
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
-        const random = Math.floor(Math.random() * 3)
-        this.variablesTypes[random].items.push(this.variables[i])
+        const variableToCheck = this.json[0][this.variables[i].name]
+        if (!isNaN(variableToCheck)) {
+          // The value is a number
+          this.setDimension(i, 'quantitative')
+        } else if (this.isDate(i)) {
+          this.setDimension(i, 'temporal')
+        } else {
+          this.setDimension(i, 'nominal')
+        }
       }
+    },
+    setDimension(i, type) {
+      // Set dimension for each variable
+      this.variables[i].type = type
+      switch (type) {
+        case 'quantitative':
+          this.variables[i].max = this.getMaxValue(this.variables[i])
+          this.variables[i].min = this.getMinValue(this.variables[i])
+          this.variables[i].mean = this.getMeanValue(this.variables[i])
+          this.variablesTypes[0].items.push(this.variables[i])
+          break
+        case 'nominal':
+          this.variablesTypes[1].items.push(this.variables[i])
+          break
+        default:
+          this.variablesTypes[2].items.push(this.variables[i])
+          break
+      }
+    },
+    sampleGraph() {
+      const graph = {
+        data: {
+          values: [
+            { a: 'A', b: 28 },
+            { a: 'B', b: 55 },
+            { a: 'C', b: 43 },
+            { a: 'D', b: 91 },
+            { a: 'E', b: 81 },
+            { a: 'F', b: 53 },
+            { a: 'G', b: 19 },
+            { a: 'H', b: 87 },
+            { a: 'I', b: 52 }
+          ]
+        },
+        mark: 'bar',
+        encoding: {
+          x: { field: 'a', type: 'ordinal' },
+          y: { field: 'b', type: 'quantitative' }
+        }
+      }
+      console.log(graph)
+      window.vegaEmbed('#vis', graph)
+    },
+    computeGraphs() {
+      // this.computeSmallGraphs()
+      // Default (no variable selected)
+      // Custom (variable-dependant)
+    },
+    /*
+    computeSmallGraphs() {
+      for (const variable in this.variables) {
+        this.computeSingleSmallGraph(variable)
+      }
+    },
+    computeSingleSmallGraph(variable) {
+      const variableData = [
+        { a: 'C', b: 2 },
+        { a: 'C', b: 7 },
+        { a: 'C', b: 4 },
+        { a: 'D', b: 1 },
+        { a: 'D', b: 2 },
+        { a: 'D', b: 6 },
+        { a: 'E', b: 8 },
+        { a: 'E', b: 4 },
+        { a: 'E', b: 7 }
+      ]
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
+        data: variableData,
+        width: 50,
+        height: 50,
+        config: {
+          axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
+          view: {
+            stroke: 'transparent'
+          }
+        },
+        mark: {
+          type: 'bar'
+        },
+        encoding: {
+          x: {
+            timeUnit: 'year',
+            field: variable.name,
+            type: variable.type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
+        }
+      }
+      const opt = { actions: false }
+      vegaEmbed('#smallvis-' + variable.id, graph, opt)
+    },
+    */
+    getSmallEncoding(variable) {
+      if (variable.type === 'quantitative') {
+        return {
+          bin: true,
+          x: { field: variable.name, type: variable.type },
+          y: { aggregate: 'count', type: 'quantitative' }
+        }
+      } else {
+        return {
+          x: {
+            timeUnit: 'year',
+            field: variable.name,
+            type: variable.type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
+        }
+      }
+    },
+    saveGraph(graph) {
+      // Save the selected graph
+      // Redirect to Annotation page
+    },
+    isDate(i) {
+      // TODO : Optimize the date detection
+      const variableLabel = this.variables[i].name.toLowerCase()
+      const variableValue = this.json[0][this.variables[i].name]
+      // Check recurrent time labels
+      for (const LABEL in this.FREQUENT_DATE_LABELS) {
+        if (variableLabel === LABEL) return true
+      }
+      // Check the value itself
+      // If the string contains usual spliters at least 3 times, it might be a date
+      const partsDash = variableValue.split('-')
+      const partsDot = variableValue.split('.')
+      const partsSlash = variableValue.split('/')
+      return (
+        partsDash.length > 2 || partsDot.length > 2 || partsSlash.length > 2
+      )
+    },
+    getMaxValue(variable) {
+      const col = []
+      for (let i = 0; i < this.json.length; i++) {
+        col.push(Number(this.json[i][variable.name]))
+      }
+      return Math.max(...col)
+    },
+    getMinValue(variable) {
+      const col = []
+      for (let i = 0; i < this.json.length; i++) {
+        col.push(Number(this.json[i][variable.name]))
+      }
+      return Math.min(...col)
+    },
+    getMeanValue(variable) {
+      let sum = 0.0
+      for (let i = 0; i < this.json.length; i++) {
+        sum += Number(this.json[i][variable.name])
+      }
+      return sum / this.json.length
     }
   }
 }
 </script>
+
+<style scoped>
+.small {
+  font-size: smaller;
+  color: lightgray;
+}
+.small > span {
+  color: dodgerblue;
+}
+
+.small > span > span {
+  color: white;
+}
+</style>

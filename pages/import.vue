@@ -231,7 +231,6 @@ export default {
       }
     },
     async saveDataset() {
-      console.log(this.json)
       await this.$axios
         .post('/datasets/save', {
           name: this.file.name,
