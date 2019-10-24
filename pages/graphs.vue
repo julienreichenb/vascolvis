@@ -99,6 +99,7 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
+      // TESTING
       testgraph: {
         data: {
           values: [
@@ -168,6 +169,7 @@ export default {
     this.getDataSet()
   },
   mounted() {
+    // TESTING
     this.sampleGraph()
   },
   methods: {
@@ -241,6 +243,7 @@ export default {
       console.log(graph)
       window.vegaEmbed('#vis', graph)
     },
+    // TESTING
     computeGraphs() {
       // this.computeSmallGraphs()
       // Default (no variable selected)
@@ -253,17 +256,7 @@ export default {
       }
     },
     computeSingleSmallGraph(variable) {
-      const variableData = [
-        { a: 'C', b: 2 },
-        { a: 'C', b: 7 },
-        { a: 'C', b: 4 },
-        { a: 'D', b: 1 },
-        { a: 'D', b: 2 },
-        { a: 'D', b: 6 },
-        { a: 'E', b: 8 },
-        { a: 'E', b: 4 },
-        { a: 'E', b: 7 }
-      ]
+      const variableData = [] // this.json has to be formatted
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
         data: variableData,
