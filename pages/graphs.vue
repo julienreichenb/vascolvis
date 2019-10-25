@@ -40,6 +40,7 @@
                       flat
                       :label="'Utiliser'"
                       :color="variableType.color + ' lighten-2'"
+                      @change="computeBigGraphs"
                     ></v-switch>
                     <v-layout
                       v-if="variableType.name === 'Quantitatif'"
@@ -56,7 +57,6 @@
                         >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
                       >
                     </v-layout>
-                    <div v-if="variable" :id="'smallvis-' + variable.id"></div>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -64,7 +64,6 @@
           </v-list>
         </v-navigation-drawer>
         <v-flex xs12 sm10 elevation-6>
-          <div id="vis"></div>
           <v-card class="mx-auto" outlined>
             <v-card-title
               ><h2>{{ dataset.name }}</h2></v-card-title
@@ -75,12 +74,19 @@
             <v-container fluid>
               <v-row dense>
                 <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
-                  <v-card>
+                  <v-card class="grey darken-2">
                     <v-card-title v-text="graph.title"></v-card-title>
-                    <div :id="'vis-' + graph.id"></div>
+                    <v-layout flex align-center justify-space-around>
+                      <div :id="'vis-' + graph.title"></div>
+                    </v-layout>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn icon @click="saveGraph(graph)">
+                      <v-btn
+                        color="blue lighten-2"
+                        icon
+                        large
+                        @click="saveGraph(graph)"
+                      >
                         <v-icon>mdi-content-save</v-icon>
                       </v-btn>
                     </v-card-actions>
@@ -99,27 +105,6 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
-      // TESTING
-      testgraph: {
-        data: {
-          values: [
-            { a: 'A', b: 28 },
-            { a: 'B', b: 55 },
-            { a: 'C', b: 43 },
-            { a: 'D', b: 91 },
-            { a: 'E', b: 81 },
-            { a: 'F', b: 53 },
-            { a: 'G', b: 19 },
-            { a: 'H', b: 87 },
-            { a: 'I', b: 52 }
-          ]
-        },
-        mark: 'bar',
-        encoding: {
-          x: { field: 'a', type: 'ordinal' },
-          y: { field: 'b', type: 'quantitative' }
-        }
-      },
       FREQUENT_DATE_LABELS: [
         'year',
         'date',
@@ -157,7 +142,45 @@ export default {
           items: []
         }
       ],
-      graphs: []
+      graphs: [],
+      // TESTING
+      testdata: {
+        values: [
+          { a: 'A', b: 28 },
+          { a: 'B', b: 55 },
+          { a: 'C', b: 43 },
+          { a: 'D', b: 91 },
+          { a: 'E', b: 81 },
+          { a: 'F', b: 53 },
+          { a: 'G', b: 19 },
+          { a: 'H', b: 87 },
+          { a: 'I', b: 52 }
+        ]
+      },
+      testgraph: {
+        $schema: 'https://vega.github.io/schema/vega-lite/v2.0.json',
+        description: 'A simple bar chart with embedded data.',
+        data: {
+          values: [
+            { a: 'A', b: 28 },
+            { a: 'B', b: 55 },
+            { a: 'C', b: 43 },
+            { a: 'D', b: 91 },
+            { a: 'E', b: 81 },
+            { a: 'F', b: 53 },
+            { a: 'G', b: 19 },
+            { a: 'H', b: 87 },
+            { a: 'I', b: 52 }
+          ]
+        },
+        width: 140,
+        height: 60,
+        mark: 'bar',
+        encoding: {
+          x: { field: 'a', type: 'ordinal' },
+          y: { field: 'b', type: 'quantitative' }
+        }
+      }
     }
   },
   created() {
@@ -167,10 +190,6 @@ export default {
       this.$router.push({ name: 'index' })
     }
     this.getDataSet()
-  },
-  mounted() {
-    // TESTING
-    this.sampleGraph()
   },
   methods: {
     async getDataSet() {
@@ -185,9 +204,9 @@ export default {
             this.variables.push(variable)
           }
           this.attributeVariablesTypes()
-          this.computeGraphs()
         })
     },
+    // INIT
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
         const variableToCheck = this.json[0][this.variables[i].name]
@@ -219,98 +238,40 @@ export default {
           break
       }
     },
-    sampleGraph() {
-      const graph = {
-        data: {
-          values: [
-            { a: 'A', b: 28 },
-            { a: 'B', b: 55 },
-            { a: 'C', b: 43 },
-            { a: 'D', b: 91 },
-            { a: 'E', b: 81 },
-            { a: 'F', b: 53 },
-            { a: 'G', b: 19 },
-            { a: 'H', b: 87 },
-            { a: 'I', b: 52 }
-          ]
-        },
-        mark: 'bar',
-        encoding: {
-          x: { field: 'a', type: 'ordinal' },
-          y: { field: 'b', type: 'quantitative' }
-        }
-      }
-      console.log(graph)
-      window.vegaEmbed('#vis', graph)
-    },
-    // TESTING
-    computeGraphs() {
-      // this.computeSmallGraphs()
-      // Default (no variable selected)
-      // Custom (variable-dependant)
-    },
-    /*
-    computeSmallGraphs() {
-      for (const variable in this.variables) {
-        this.computeSingleSmallGraph(variable)
+    // GRAPH GENERATION
+    computeBigGraphs() {
+      const variables = this.fetchUsedVariables()
+      for (let i = 0; i < variables.length; i++) {
+        this.computeSingleBigGraph(variables[i])
       }
     },
-    computeSingleSmallGraph(variable) {
-      const variableData = [] // this.json has to be formatted
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
-        data: variableData,
-        width: 50,
-        height: 50,
-        config: {
-          axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
-          view: {
-            stroke: 'transparent'
-          }
-        },
-        mark: {
-          type: 'bar'
-        },
-        encoding: {
-          x: {
-            timeUnit: 'year',
-            field: variable.name,
-            type: variable.type
-          },
-          y: {
-            aggregate: 'count',
-            type: 'quantitative'
-          }
-        }
-      }
-      const opt = { actions: false }
-      vegaEmbed('#smallvis-' + variable.id, graph, opt)
+    computeSingleBigGraph(id) {
+      // TODO : LOOP AROUND THE CURRENT USED VARIABLE TO CREATE THE GRAPHS
+      console.log('HELLO VARIABLE')
+      console.log(this.variables[id])
+      // TODO : COMPUTE THE CORRECT OBJECTS
+      // const data = this.getBigGraphData(id)
+      // const encoding = this.getBigGraphEncoding(id)
+      const title = this.generateGraphTitle()
+      const graph = this.testgraph
+      this.graphs.push({ title, graph })
+      // TODO : NEED TO CREATE DIV BEFORE COMPUTING GRAPHS
+      window.vegaEmbed('#vis-' + title, graph)
     },
-    */
-    getSmallEncoding(variable) {
-      if (variable.type === 'quantitative') {
-        return {
-          bin: true,
-          x: { field: variable.name, type: variable.type },
-          y: { aggregate: 'count', type: 'quantitative' }
-        }
-      } else {
-        return {
-          x: {
-            timeUnit: 'year',
-            field: variable.name,
-            type: variable.type
-          },
-          y: {
-            aggregate: 'count',
-            type: 'quantitative'
-          }
-        }
-      }
+    // UTILS
+    generateGraphTitle() {
+      return 'test'
     },
     saveGraph(graph) {
       // Save the selected graph
       // Redirect to Annotation page
+    },
+    fetchUsedVariables() {
+      const usedVariables = []
+      for (let i = 0; i < this.variables.length; i++) {
+        if (this.variables[i].isUsed) usedVariables.push(this.variables[i].id)
+      }
+      return usedVariables
     },
     isDate(i) {
       // TODO : Optimize the date detection
@@ -350,6 +311,78 @@ export default {
       }
       return sum / this.json.length
     }
+  },
+  // NOT USED / TESTING METHODS
+  sampleGraph() {
+    // eslint-disable-next-line
+    console.log(this.testgraph)
+    window.vegaEmbed('#vis', this.testgraph)
+  },
+  computeSmallGraphs() {
+    for (const v in this.variables) {
+      this.computeSingleSmallGraph(v)
+    }
+  },
+  computeSingleSmallGraph(variable) {
+    // const data = this.getSmallData(variable)
+    const data = this.getSmallData(variable)
+    const encoding = this.getSmallEncoding(variable)
+    const graph = {
+      $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
+      data,
+      width: 60,
+      height: 50,
+      config: {
+        axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
+        view: {
+          stroke: 'transparent'
+        }
+      },
+      mark: {
+        type: 'bar'
+      },
+      encoding
+    }
+    const opt = { actions: false }
+    window.vegaEmbed('#smallvis-' + variable.id, graph, opt)
+  },
+  getSmallData(variable) {
+    const data = []
+    for (let i = 0; i < this.json.length; i++) {
+      data.push(this.json[i][variable.name])
+    }
+    return data
+  },
+  getSmallEncoding(variable) {
+    let singleSpec
+    if (variable.type === 'quantitative')
+      singleSpec = {
+        encoding: {
+          x: {
+            field: variable.name,
+            type: variable.type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
+        }
+      }
+    else if (variable.type === 'temporal')
+      singleSpec = {
+        encoding: {
+          x: {
+            timeUnit: 'year',
+            field: variable.name,
+            type: variable.type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
+        }
+      }
+    return singleSpec
   }
 }
 </script>

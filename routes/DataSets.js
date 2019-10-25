@@ -1,10 +1,6 @@
-const fs = require('fs')
 const express = require('express')
-const multer = require('multer')
 const cors = require('cors')
-const csv = require('fast-csv')
 const datasets = express.Router()
-const upload = multer({ dest: 'tmp/csv/' })
 
 const DataSet = require('../models/DataSet')
 datasets.use(cors())
@@ -58,6 +54,24 @@ datasets.get('/single', (req, res) => {
   })
     .then((dataset) => {
       res.status(200).json(dataset)
+    })
+    .catch((error) => {
+      res.status(400).json({ error: 'Something wrong happened...' })
+    })
+})
+
+/*
+ ** GET ALL DATASETS FROM A USER
+ */
+datasets.get('/user', (req, res) => {
+  const user = req.query.id_user
+  DataSet.findAll({
+    where: {
+      id_user: user
+    }
+  })
+    .then((datasets) => {
+      res.status(200).json(datasets)
     })
     .catch((error) => {
       res.status(400).json({ error: 'Something wrong happened...' })
