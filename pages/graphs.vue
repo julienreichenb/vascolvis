@@ -9,60 +9,62 @@
           permanent
           clipped
         >
-          <v-list>
-            <v-list-group
-              v-for="variableType in variablesTypes"
-              :key="variableType.name"
-              v-model="variableType.active"
-              :prepend-icon="variableType.icon"
-              :color="variableType.color"
-              no-action
-            >
-              <template v-slot:activator>
-                <v-list-item-content>
-                  <v-list-item-title
-                    v-text="variableType.name"
-                  ></v-list-item-title>
-                </v-list-item-content>
-              </template>
-              <v-expansion-panels multiple accordion>
-                <v-expansion-panel
-                  v-for="variable in variableType.items"
-                  :key="variable.id"
+          <v-expansion-panels
+            multiple
+            accordion
+            focusable
+            @click="displaySparkles()"
+          >
+            <v-expansion-panel v-for="variable in variables" :key="variable.id">
+              <v-expansion-panel-header
+                :expand-icon="variable.icon"
+                :class="variable.color + ' darken-2'"
+              >
+                {{ variable.name }}
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-layout justify-space-around align-center>
+                  <v-checkbox
+                    v-model="variable.isUsed"
+                    flat
+                    :label="'Utiliser'"
+                    :color="variable.color + ' lighten-2'"
+                    @change="computeBigGraphs"
+                  ></v-checkbox>
+                </v-layout>
+                <v-layout justify-space-around align-center>
+                  <div :id="'sparkle-' + variable.id"></div>
+                </v-layout>
+                <v-layout
+                  v-if="variable.type === 'quantitative'"
+                  class="small"
+                  justify-space-around
                 >
-                  <v-expansion-panel-header>
-                    {{ variable.name }}
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
-                    <v-layout justify-space-around align-center>
-                      <v-checkbox
-                        v-model="variable.isUsed"
-                        flat
-                        :label="'Utiliser'"
-                        :color="variableType.color + ' lighten-2'"
-                        @change="computeBigGraphs"
-                      ></v-checkbox>
-                    </v-layout>
-                    <v-layout
-                      v-if="variableType.name === 'Quantitatif'"
-                      class="small"
-                      justify-space-around
-                    >
-                      <span
-                        >MAX : <span>{{ variable.max }}</span></span
-                      >
-                      <span
-                        >MIN : <span>{{ variable.min }}</span></span
-                      >
-                      <span
-                        >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
-                      >
-                    </v-layout>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </v-list-group>
-          </v-list>
+                  <span
+                    >MAX : <span>{{ variable.max }}</span></span
+                  >
+                  <span
+                    >MIN : <span>{{ variable.min }}</span></span
+                  >
+                  <span
+                    >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
+                  >
+                </v-layout>
+                <v-layout
+                  v-if="variable.type === 'nominal' && variable.mode"
+                  class="small"
+                  justify-space-around
+                >
+                  <span
+                    >MODE :
+                    <span>{{
+                      variable.mode.value + ' - ' + variable.mode.number
+                    }}</span></span
+                  >
+                </v-layout>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-navigation-drawer>
         <v-flex xs12 sm10 elevation-6>
           <v-card class="mx-auto" outlined>
@@ -256,20 +258,26 @@ export default {
     setDimension(i, type) {
       // Set dimension for each variable
       this.variables[i].type = type
+      this.variables[i].isUsed = false
       switch (type) {
         case 'quantitative':
+          this.variables[i].color = 'red'
+          this.variables[i].icon = 'mdi-numeric'
           this.variables[i].max = this.getMaxValue(this.variables[i])
           this.variables[i].min = this.getMinValue(this.variables[i])
           this.variables[i].mean = this.getMeanValue(this.variables[i])
-          this.variablesTypes[0].items.push(this.variables[i])
           break
         case 'nominal':
-          this.variablesTypes[1].items.push(this.variables[i])
+          this.variables[i].color = 'blue'
+          this.variables[i].icon = 'mdi-alphabetical'
+          this.variables[i].mode = this.getMode(this.variables[i])
           break
         default:
-          this.variablesTypes[2].items.push(this.variables[i])
+          this.variables[i].color = 'yellow'
+          this.variables[i].icon = 'mdi-timer'
           break
       }
+      this.computeSparkles()
     },
     // GRAPH GENERATION
     computeBigGraphs() {
@@ -282,11 +290,44 @@ export default {
         window.vegaEmbed('#vis-' + this.graphs[i].title, this.graphs[i].data)
       }
     },
+    displaySparkles() {
+      for (let i = 0; i < this.graphs.length; i++) {
+        window.vegaEmbed(
+          '#sparkle-' + this.variables[i].id,
+          this.variables[i].data
+        )
+      }
+    },
+    computeSparkles() {
+      for (let i = 0; i < this.variables.length; i++) {
+        this.computeSparkle(i)
+      }
+    },
+    computeSparkle(id) {
+      const data = this.getSparkleData(id)
+      const encoding = this.getSparkleEncoding(id)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
+        data,
+        width: 60,
+        height: 50,
+        config: {
+          axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
+          view: {
+            stroke: 'transparent'
+          }
+        },
+        mark: {
+          type: 'bar'
+        },
+        encoding
+      }
+      this.variables[id].data = graph
+    },
     resetVariableSelection() {
       this.graphs = []
-      for (let i = 0; i < this.variablesTypes.length; i++) {
-        for (let j = 0; j < this.variablesTypes[i].items.length; j++)
-          this.variablesTypes[i].items[j].isUsed = false
+      for (let i = 0; i < this.variables.length; i++) {
+        this.variables[i].isUsed = false
       }
     },
     // UTILS
@@ -313,6 +354,44 @@ export default {
       } else {
         // TODO : Manage multiple variable selection
       }
+    },
+    getSparkleData(id) {
+      /*
+      const data = []
+      for (let i = 0; i < this.json.length; i++) {
+        data.push(this.json[i][variable.name])
+      }
+      */
+      return this.testdata
+    },
+    getSparkleEncoding(id) {
+      if (this.variables[id].type === 'quantitative')
+        return {
+          encoding: {
+            x: {
+              field: this.variables[id].name,
+              type: this.variables[id].type
+            },
+            y: {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+          }
+        }
+      else if (this.variables[id].type === 'temporal')
+        return {
+          encoding: {
+            x: {
+              timeUnit: 'year',
+              field: this.variables[id].name,
+              type: this.variables[id].type
+            },
+            y: {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+          }
+        }
     },
     getTitle(selectedVar, combinationVar) {
       return (
@@ -409,6 +488,40 @@ export default {
       string = string.replace(/\s/g, '')
       return string
     },
+    getMode(variable) {
+      const values = []
+      const counters = []
+      values[0] = this.json[0][variable.name]
+      counters[0] = 1
+      for (let i = 1; i < this.json.length; i++) {
+        if (values.length > 5) {
+          return
+        }
+        const value = this.json[i][variable.name]
+        let isInArray = false
+        for (let j = 0; j < values.length; j++) {
+          if (value === values[j]) {
+            counters[j]++
+            isInArray = true
+          }
+        }
+        if (!isInArray) {
+          values.push(value)
+          counters.push(1)
+        }
+      }
+      const mode = {
+        value: values[0],
+        number: counters[0]
+      }
+      for (let k = 0; k < values.length; k++) {
+        if (values[k] > mode.value) {
+          mode.value = values[k]
+          mode.number = counters[k]
+        }
+      }
+      return mode
+    },
     getMaxValue(variable) {
       const col = []
       for (let i = 0; i < this.json.length; i++) {
@@ -430,77 +543,6 @@ export default {
       }
       return sum / this.json.length
     }
-  },
-  // NOT USED / TESTING METHODS
-  sampleGraph() {
-    // eslint-disable-next-line
-    window.vegaEmbed('#vis', this.testgraph)
-  },
-  computeSmallGraphs() {
-    for (const v in this.variables) {
-      this.computeSingleSmallGraph(v)
-    }
-  },
-  computeSingleSmallGraph(variable) {
-    // const data = this.getSmallData(variable)
-    const data = this.getSmallData(variable)
-    const encoding = this.getSmallEncoding(variable)
-    const graph = {
-      $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
-      data,
-      width: 60,
-      height: 50,
-      config: {
-        axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
-        view: {
-          stroke: 'transparent'
-        }
-      },
-      mark: {
-        type: 'bar'
-      },
-      encoding
-    }
-    const opt = { actions: false }
-    window.vegaEmbed('#smallvis-' + variable.id, graph, opt)
-  },
-  getSmallData(variable) {
-    const data = []
-    for (let i = 0; i < this.json.length; i++) {
-      data.push(this.json[i][variable.name])
-    }
-    return data
-  },
-  getSmallEncoding(variable) {
-    let singleSpec
-    if (variable.type === 'quantitative')
-      singleSpec = {
-        encoding: {
-          x: {
-            field: variable.name,
-            type: variable.type
-          },
-          y: {
-            aggregate: 'count',
-            type: 'quantitative'
-          }
-        }
-      }
-    else if (variable.type === 'temporal')
-      singleSpec = {
-        encoding: {
-          x: {
-            timeUnit: 'year',
-            field: variable.name,
-            type: variable.type
-          },
-          y: {
-            aggregate: 'count',
-            type: 'quantitative'
-          }
-        }
-      }
-    return singleSpec
   }
 }
 </script>

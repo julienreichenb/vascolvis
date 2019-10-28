@@ -1,5 +1,3 @@
-import * as Op from 'sequelize'
-
 const express = require('express')
 const cors = require('cors')
 const comments = express.Router()
@@ -53,7 +51,7 @@ comments.get('/user', (req, res) => {
   const user = req.query.user
   Comment.findAll({
     where: {
-      [Op.or]: [{ username: user }, { id_user: user }]
+      $or: [{ username: user }, { id_user: user }]
     }
   })
     .then((comments) => {
