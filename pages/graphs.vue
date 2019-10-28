@@ -7,8 +7,7 @@
           absolute
           dense
           permanent
-          floating
-          stateless
+          clipped
         >
           <v-list>
             <v-list-group
@@ -35,13 +34,15 @@
                     {{ variable.name }}
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
-                    <v-switch
-                      v-model="variable.isUsed"
-                      flat
-                      :label="'Utiliser'"
-                      :color="variableType.color + ' lighten-2'"
-                      @change="computeBigGraphs"
-                    ></v-switch>
+                    <v-layout justify-space-around align-center>
+                      <v-checkbox
+                        v-model="variable.isUsed"
+                        flat
+                        :label="'Utiliser'"
+                        :color="variableType.color + ' lighten-2'"
+                        @change="computeBigGraphs"
+                      ></v-checkbox>
+                    </v-layout>
                     <v-layout
                       v-if="variableType.name === 'Quantitatif'"
                       class="small"
@@ -71,23 +72,49 @@
             <v-card-subtitle class="pt-1"
               ><h3>Graphiques générés</h3></v-card-subtitle
             >
+            <v-card-text>
+              <div class="help">
+                <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
+                La sélection d'<strong>une seule</strong> variable générera
+                toutes les combinaisons possibles avec les autres.
+              </div>
+              <div class="help">
+                <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
+                Vous pouvez cliquer sur le titre des graphiques pour les
+                modifier.
+              </div>
+              <div v-if="graphs.length > 0" class="mt-3">
+                <v-btn color="indigo darken-2" @click="displayGraphs"
+                  ><v-icon>mdi-eye</v-icon></v-btn
+                >
+                <v-btn color="red darken-1" @click="resetVariableSelection"
+                  ><v-icon>mdi-delete-sweep</v-icon></v-btn
+                >
+              </div>
+              <div v-else class="mt-3">
+                Sélectionnez une ou plusieurs variables dans le panel à gauche.
+              </div>
+            </v-card-text>
             <v-container fluid>
               <v-row dense>
                 <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
-                  <v-card class="grey darken-2">
+                  <v-card v-show="display" class="grey darken-2">
                     <v-card-title v-text="graph.title"></v-card-title>
                     <v-layout flex align-center justify-space-around>
-                      <div :id="'vis-' + graph.title"></div>
+                      <div
+                        :id="'vis-' + graph.title"
+                        class="resize-graph"
+                      ></div>
                     </v-layout>
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn
                         color="blue lighten-2"
-                        icon
                         large
                         @click="saveGraph(graph)"
                       >
                         <v-icon>mdi-content-save</v-icon>
+                        Enregistrer
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -105,17 +132,6 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
-      FREQUENT_DATE_LABELS: [
-        'year',
-        'date',
-        'datetime',
-        'period',
-        'periode',
-        'année',
-        'années',
-        'annee',
-        'annees'
-      ],
       dataset: null,
       json: null,
       variables: [],
@@ -143,6 +159,19 @@ export default {
         }
       ],
       graphs: [],
+      display: false,
+      // DATE FILTER
+      FREQUENT_DATE_LABELS: [
+        'year',
+        'date',
+        'datetime',
+        'period',
+        'periode',
+        'année',
+        'années',
+        'annee',
+        'annees'
+      ],
       // TESTING
       testdata: {
         values: [
@@ -200,7 +229,11 @@ export default {
           this.json = JSON.parse(this.dataset.data)
           const names = Object.keys(this.json[0])
           for (let i = 0; i < names.length; i++) {
-            const variable = { id: i, name: names[i], isUsed: false }
+            const variable = {
+              id: i,
+              name: names[i],
+              isUsed: false
+            }
             this.variables.push(variable)
           }
           this.attributeVariablesTypes()
@@ -241,35 +274,116 @@ export default {
     // GRAPH GENERATION
     computeBigGraphs() {
       const variables = this.fetchUsedVariables()
-      for (let i = 0; i < variables.length; i++) {
-        this.computeSingleBigGraph(variables[i])
+      this.fillGraphsArray(variables)
+    },
+    displayGraphs() {
+      this.display = true
+      for (let i = 0; i < this.graphs.length; i++) {
+        window.vegaEmbed('#vis-' + this.graphs[i].title, this.graphs[i].data)
       }
     },
-    computeSingleBigGraph(id) {
-      // TODO : LOOP AROUND THE CURRENT USED VARIABLE TO CREATE THE GRAPHS
-      console.log('HELLO VARIABLE')
-      console.log(this.variables[id])
-      // TODO : COMPUTE THE CORRECT OBJECTS
-      // const data = this.getBigGraphData(id)
-      // const encoding = this.getBigGraphEncoding(id)
-      const title = this.generateGraphTitle()
-      const graph = this.testgraph
-      this.graphs.push({ title, graph })
-      // TODO : NEED TO CREATE DIV BEFORE COMPUTING GRAPHS
-      window.vegaEmbed('#vis-' + title, graph)
+    resetVariableSelection() {
+      this.graphs = []
+      for (let i = 0; i < this.variablesTypes.length; i++) {
+        for (let j = 0; j < this.variablesTypes[i].items.length; j++)
+          this.variablesTypes[i].items[j].isUsed = false
+      }
     },
     // UTILS
-    generateGraphTitle() {
-      return 'test'
+    fillGraphsArray(variables) {
+      // Reset graphs
+      this.graphs = []
+      this.display = false
+      const length = variables.length
+      if (length > 0) {
+        this.getGraphs(variables)
+      }
     },
-    saveGraph(graph) {
-      // Save the selected graph
-      // Redirect to Annotation page
+    getGraphs(variables) {
+      const length = variables.length
+      if (length === 1) {
+        const onlyVar = variables[0]
+        const combinationVariables = this.getCombinations(onlyVar)
+        for (let i = 0; i < combinationVariables.length; i++) {
+          const tempGraph = {}
+          tempGraph.title = this.getTitle(onlyVar, combinationVariables[i])
+          tempGraph.data = this.getGraph(onlyVar, combinationVariables[i])
+          this.graphs.push(tempGraph)
+        }
+      } else {
+        // TODO : Manage multiple variable selection
+      }
+    },
+    getTitle(selectedVar, combinationVar) {
+      return (
+        this.cleanTitle(selectedVar.name) +
+        '-' +
+        this.cleanTitle(combinationVar.name)
+      )
+    },
+    getData(selectedVar, combinationVar) {
+      const data = []
+      for (let i = 0; i < this.json.length; i++) {
+        const entry = {}
+        entry[selectedVar.name] = this.json[i][selectedVar.name]
+        entry[combinationVar.name] = this.json[i][combinationVar.name]
+        data.push(entry)
+      }
+      return data
+    },
+    getGraph(selectedVar, combinationVar) {
+      const data = this.getData(selectedVar, combinationVar)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        description: 'A simple bar chart with embedded data.',
+        data: {
+          values: data
+        },
+        width: {
+          step: 20
+        },
+        mark: 'point',
+        encoding: {
+          x: { field: selectedVar.name, type: selectedVar.type },
+          y: { field: combinationVar.name, type: combinationVar.type }
+        }
+      }
+      return graph
+    },
+    getCombinations(variable) {
+      const unusedVariables = []
+      for (let i = 0; i < this.variables.length; i++) {
+        if (this.variables[i] !== variable)
+          unusedVariables.push(this.variables[i])
+      }
+      return unusedVariables
+    },
+    async saveGraph(graph) {
+      await this.$axios
+        .post('/charts/save', {
+          name: graph.title,
+          data: graph.data,
+          id_dataset: this.dataset.id,
+          id_user: this.user.id
+        })
+        .then((res) => {
+          this.chart = res.data
+          this.$router.push({
+            name: 'analyze',
+            params: { idgraph: res.data.id }
+          })
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error)
+          this.hasError = true
+          this.error = error.response.data.error
+        })
     },
     fetchUsedVariables() {
       const usedVariables = []
       for (let i = 0; i < this.variables.length; i++) {
-        if (this.variables[i].isUsed) usedVariables.push(this.variables[i].id)
+        if (this.variables[i].isUsed) usedVariables.push(this.variables[i])
       }
       return usedVariables
     },
@@ -289,6 +403,11 @@ export default {
       return (
         partsDash.length > 2 || partsDot.length > 2 || partsSlash.length > 2
       )
+    },
+    cleanTitle(string) {
+      string = string.replace('"', '')
+      string = string.replace(/\s/g, '')
+      return string
     },
     getMaxValue(variable) {
       const col = []
@@ -315,7 +434,6 @@ export default {
   // NOT USED / TESTING METHODS
   sampleGraph() {
     // eslint-disable-next-line
-    console.log(this.testgraph)
     window.vegaEmbed('#vis', this.testgraph)
   },
   computeSmallGraphs() {
@@ -398,5 +516,16 @@ export default {
 
 .small > span > span {
   color: white;
+}
+
+.help {
+  font-size: smaller;
+  color: lightgray;
+}
+
+.resize-graph {
+  overflow: auto;
+  height: 300px;
+  text-align: center;
 }
 </style>

@@ -68,7 +68,7 @@ users.post('/login', (req, res) => {
       }
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 

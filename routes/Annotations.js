@@ -21,7 +21,7 @@ annotations.post('/save', (req, res) => {
       res.status(200).json(annotation)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -39,7 +39,7 @@ annotations.get('/id', (req, res) => {
       res.status(200).json(annotation)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -57,7 +57,7 @@ annotations.get('/user', (req, res) => {
       res.status(200).json(annotations)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -75,7 +75,7 @@ annotations.get('/chart', (req, res) => {
       res.status(200).json(annotations)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 

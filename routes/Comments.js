@@ -24,7 +24,7 @@ comments.post('/save', (req, res) => {
       res.status(200).json(comment)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -42,7 +42,7 @@ comments.get('/id', (req, res) => {
       res.status(200).json(comment)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -60,7 +60,7 @@ comments.get('/user', (req, res) => {
       res.status(200).json(comments)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -78,7 +78,7 @@ comments.get('/annotation', (req, res) => {
       res.status(200).json(comments)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 

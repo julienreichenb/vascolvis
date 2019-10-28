@@ -21,7 +21,7 @@ datasets.post('/save', (req, res) => {
       res.status(200).json(dataset)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -38,7 +38,7 @@ datasets.get('/sample', (req, res) => {
       res.status(200).json(dataset)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -56,7 +56,7 @@ datasets.get('/single', (req, res) => {
       res.status(200).json(dataset)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -74,7 +74,7 @@ datasets.get('/user', (req, res) => {
       res.status(200).json(datasets)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 

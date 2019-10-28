@@ -27,11 +27,12 @@
                         href="https://www.aconvert.com/document/xls-to-csv/"
                         target="_blank"
                         >cliquez ici</a
-                      >
+                      >.
                     </div>
                     <div class="help">
                       <v-icon color="red" small>mdi-alert-outline</v-icon>
-                      Votre fichier doit contenir des entêtes
+                      Votre fichier doit contenir des entêtes et ne pas dépasser
+                      1MB.
                     </div>
                     <div class="form-group">
                       <div class="col-sm-9">
@@ -39,6 +40,7 @@
                           v-model="file"
                           type="file"
                           accept=".csv"
+                          :rules="rules"
                           show-size
                           outlined
                           color="blue"
@@ -58,7 +60,7 @@
                             graphiques
                           </v-btn>
                           <v-switch
-                            v-if="file"
+                            v-if="file && file.size <= 1000000"
                             v-model="preview"
                             label="Voir l'aperçu"
                             color="blue"
@@ -150,6 +152,12 @@ export default {
   },
   data() {
     return {
+      rules: [
+        (value) =>
+          !value ||
+          value.size < 1000000 ||
+          'Le jeu de données ne doit pas excéder 1MB !'
+      ],
       sampleDataSet: null,
       showSampleTable: false,
       file: null,
@@ -206,7 +214,7 @@ export default {
     },
     loadCSV() {
       this.hasError = false
-      if (this.file) {
+      if (this.file && this.file.size <= 1000000) {
         const self = this
         if (window.FileReader) {
           const reader = new FileReader()

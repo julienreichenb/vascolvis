@@ -15,14 +15,15 @@ charts.post('/save', (req, res) => {
     name: req.body.name,
     data: req.body.data,
     id_dataset: req.body.id_dataset,
-    url: req.body.url
+    id_user: req.body.id_user,
+    url: generateUrl(15)
   }
   Chart.create(chartData)
     .then((chart) => {
       res.status(200).json(chart)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error: error })
     })
 })
 
@@ -79,5 +80,17 @@ charts.get('/user', (req, res) => {
       res.status(400).json({ error: 'Something wrong happened...' })
     })
 })
+
+/*
+ ** GENERATE A RANDOM URL OF 15 CHARS
+ */
+function generateUrl(length) {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  for (let i = 0; i <= length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+  return result
+}
 
 module.exports = charts

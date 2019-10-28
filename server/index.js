@@ -5,15 +5,25 @@ const bodyParser = require('body-parser')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '100mb' }))
+app.use(
+  bodyParser.urlencoded({
+    limit: '100mb',
+    extended: true,
+    parameterLimit: 100000
+  })
+)
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }))
 
 // DB settings
 const Users = require('../routes/Users')
 const Datasets = require('../routes/DataSets')
+const Charts = require('../routes/Charts')
+const Annotations = require('../routes/Annotations')
 app.use('/users', Users)
 app.use('/datasets', Datasets)
+app.use('/charts', Charts)
+app.use('/annotations', Annotations)
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
