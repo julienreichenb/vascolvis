@@ -117,14 +117,20 @@
                 la fois au maximum.
               </div>
               <div v-else class="mt-3">
-                Sélectionnez une ou deux variables dans le panel, à gauche.
+                Sélectionnez <span class="emphaze">une</span> ou
+                <span class="emphaze">deux</span> variables dans le panel, à
+                gauche.
               </div>
             </v-card-text>
             <v-container fluid>
               <v-row dense>
                 <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
                   <v-card v-show="display" class="grey darken-2">
-                    <v-card-title v-text="graph.title"></v-card-title>
+                    <v-card-title
+                      :id="'title-' + graph.title"
+                      contenteditable
+                      v-text="graph.title"
+                    ></v-card-title>
                     <v-layout flex align-center justify-space-around>
                       <div
                         :id="'vis-' + graph.title"
@@ -155,6 +161,7 @@
 </template>
 <script>
 import jwtDecode from 'jwt-decode'
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -220,35 +227,34 @@ export default {
       return count
     }
   },
+  asyncData({ params }) {
+    return axios.get(`/datasets/single/?id=${params.idset}`).then((res) => {
+      return { dataset: res.data, json: JSON.parse(res.data.data) }
+    })
+  },
   created() {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
     } catch {
       this.$router.push({ name: 'index' })
     }
-    this.getDataSet()
-    this.displaySparkles()
+    this.init()
   },
   methods: {
-    async getDataSet() {
-      await this.$axios
-        .get('/datasets/single/?id=' + this.$route.params.idset)
-        .then((res) => {
-          this.dataset = res.data
-          this.json = JSON.parse(this.dataset.data)
-          const names = Object.keys(this.json[0])
-          for (let i = 0; i < names.length; i++) {
-            const variable = {
-              id: i,
-              name: names[i],
-              isUsed: false
-            }
-            this.variables.push(variable)
-          }
-          this.attributeVariablesTypes()
-        })
-    },
     // INIT
+    init() {
+      const names = Object.keys(this.json[0])
+      for (let i = 0; i < names.length; i++) {
+        const variable = {
+          id: i,
+          name: names[i],
+          isUsed: false
+        }
+        this.variables.push(variable)
+      }
+      this.attributeVariablesTypes()
+      this.displaySparkles()
+    },
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
         const variableToCheck = this.json[0][this.variables[i].name]
@@ -551,7 +557,7 @@ export default {
     async saveGraph(graph) {
       await this.$axios
         .post('/charts/save', {
-          name: graph.title,
+          name: document.getElementById('title-' + graph.title).innerHTML,
           data: graph.data,
           id_dataset: this.dataset.id,
           id_user: this.user.id
@@ -684,6 +690,11 @@ export default {
 .help {
   font-size: smaller;
   color: lightgray;
+}
+
+.emphaze {
+  font-weight: bold;
+  color: dodgerblue;
 }
 
 .resize-graph {

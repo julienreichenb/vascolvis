@@ -10,24 +10,19 @@
         "*.json",
         "*.js"
     ],
-    "types": "types/index.d.ts",
     "scripts": {
-        "build-lib": "vue-cli-service build --target lib --name colvis-client ./src/lib.ts",
+        "build": "vue-cli-service build --target lib --name colvis-client ./src/lib.js",
         "lint": "vue-cli-service lint",
         "test:e2e": "vue-cli-service test:e2e",
         "test:unit": "vue-cli-service test:unit"
     },
     "dependencies": {
-        "core-js": "^2.6.5",
-        "vue-class-component": "^7.0.2",
-        "vue-property-decorator": "^8.1.0",
-        "vuetify": "^2.0.5"
+        "core-js": "^2.6.5"
     },
     "devDependencies": {
         "@types/chai": "^4.1.0",
         "@types/mocha": "^5.2.4",
         "@vue/cli-plugin-babel": "^3.9.0",
-        "@vue/cli-plugin-typescript": "^3.9.0",
         "@vue/cli-plugin-unit-mocha": "^3.9.0",
         "@vue/cli-service": "^3.9.0",
         "@vue/test-utils": "1.0.0-beta.29",

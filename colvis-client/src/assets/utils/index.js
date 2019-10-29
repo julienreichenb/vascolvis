@@ -1,22 +1,9 @@
-import { DataInput } from '@/models';
-import { GetDataFromContainerOptions, SelectionCoordinates } from 'types';
-
-/**
- * Add the __data__ property to the Element interface.
- * So that TypeScript stops freaking out because of Vega and D3.
- */
-declare global {
-    interface Element {
-        __data__?: any;
-    }
-}
-
 /**
  * Stringify an object, ignoring all circular references.
  * @param obj object to stringify
  */
-function strfy(obj: any): string {
-    const cache: any[] = [];
+function strfy(obj) {
+    const cache = [];
     return JSON.stringify(obj, (key, value) => {
         if (typeof value === 'object' && value !== null) {
             if (cache.indexOf(value) !== -1) return;
@@ -30,7 +17,7 @@ function strfy(obj: any): string {
  * Check if a given element has a parent with the same __data__ property.
  * @param el
  */
-function hasSelectableParent(el: Element, method: string = 'vega'): boolean {
+function hasSelectableParent(el, method = 'vega') {
     if (!el.parentElement || !el.parentElement.__data__) return false;
     if (method === 'vega') return strfy(el.parentElement.__data__.datum) === strfy(el.__data__.datum);
     else return strfy(el.parentElement.__data__) === strfy(el.__data__);
@@ -38,16 +25,16 @@ function hasSelectableParent(el: Element, method: string = 'vega'): boolean {
 
 /**
  * Return an array of DataInput to be used by the AnnotationBox.
- * If using Vega, containerSelector should be a query selector where Vega creates the SVG.
- * If using D3, containerSelector should be the actual query selector of the SVG.
- * @param {string} containerSelector the query selector used to identify where to look for data
+ * If using Vega, containerSelector should be a selector for the element where Vega 
+ * creates the SVG. If using D3, containerSelector should be the actual selector of the SVG.
+ * @param {string} containerSelector the selector used to identify where to look for data. Example: '.svgContainer'
  * @param {GetDataFromContainerOptions} options misc options
  */
-export function getDataFromContainer(containerSelector: string, options: GetDataFromContainerOptions): DataInput[] {
-    const method: string = options.method || 'vega';
-    const filter: string | null = options.filter || null;
-    const allResults: boolean = options.allResults || false;
-    const data: DataInput[] = [];
+export function getDataFromContainer(containerSelector, options) {
+    const method = options.method || 'vega';
+    const filter = options.filter || null;
+    const allResults = options.allResults || false;
+    const data = [];
 
     if (method === 'vega') {
         const d = Array.from(document.querySelectorAll(`${containerSelector} svg *`))
@@ -79,7 +66,7 @@ export function getDataFromContainer(containerSelector: string, options: GetData
  * @param {SelectionCoordinates} coordinates the coordinates of the selection
  * @returns {Boolean} whether the rectangle is selected or not
  */
-export function checkIfSelected(elBoundingRect: ClientRect, coordinates: SelectionCoordinates) {
+export function checkIfSelected(elBoundingRect, coordinates) {
     let match = true;
 
     // X-axis

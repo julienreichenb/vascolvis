@@ -3,11 +3,15 @@
     <h1>Hello world</h1>
     <h2>{{ chart.name }}</h2>
     <h3>Now we need ColVis plugin...</h3>
-    <v-btn @click="displayGraph">Annotate</v-btn>
+    <v-btn
+      color="white indigo--text"
+      depressed
+      @click="annotating = !annotating"
+      >Annotate</v-btn
+    >
     <v-layout flex align-center justify-space-around>
       <div id="vis" class="resize-graph"></div>
     </v-layout>
-    <!--
     <ColInputMain
       vis="#vis"
       :elements="elements"
@@ -17,21 +21,27 @@
       @close="annotating = false"
       @submittingAnnotation="alertAnnotation"
     />
-    -->
   </div>
 </template>
 
 <script>
 import jwtDecode from 'jwt-decode'
+import axios from 'axios'
 export default {
   data() {
     return {
-      loaded: false,
+      init: false,
       json: null,
       chart: null,
       annotations: [],
-      annotating: false
+      annotating: false,
+      elements: []
     }
+  },
+  asyncData({ params }) {
+    return axios.get(`/charts/id/?id=${params.idgraph}`).then((res) => {
+      return { chart: res.data, json: JSON.parse(res.data.data) }
+    })
   },
   created() {
     try {
@@ -39,18 +49,13 @@ export default {
     } catch {
       this.$router.push({ name: 'index' })
     }
-    this.getChart()
+    this.displayGraph()
+    this.init = true
+  },
+  mounted() {
+    this.element = this.$getDataFromContainer
   },
   methods: {
-    async getChart() {
-      await this.$axios
-        .get('/charts/id/?id=' + this.$route.params.idgraph)
-        .then((res) => {
-          this.chart = res.data
-          this.json = JSON.parse(this.chart.data)
-          this.loaded = true
-        })
-    },
     displayGraph() {
       window.vegaEmbed('#vis', this.json)
     },

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar class="pt-5 blue darken-3">
-      <v-toolbar-title class="white--text">
+      <v-toolbar-title class="mb-4 white--text">
         <h3>Le projet Vasco</h3>
       </v-toolbar-title>
     </v-toolbar>
@@ -51,7 +51,7 @@
             tempor interdum turpis nec, dignissim rhoncus eros.
           </p>
         </div>
-        <v-btn color="indigo darken-2" @click="back()">
+        <v-btn color="white indigo--text" depressed @click="back()">
           <v-icon>mdi-keyboard-backspace</v-icon> | Retour
         </v-btn>
       </v-card-text>
