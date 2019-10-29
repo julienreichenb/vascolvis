@@ -111,6 +111,7 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <ColInputMain></ColInputMain>
   </div>
 </template>
 <script>
