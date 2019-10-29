@@ -209,15 +209,6 @@ export default {
       }
     }
   },
-  created() {
-    try {
-      this.user = jwtDecode(localStorage.getItem('usertoken'))
-    } catch {
-      this.$router.push({ name: 'index' })
-    }
-    this.getDataSet()
-    this.displaySparkles()
-  },
   computed: {
     countVariables() {
       let count = 0
@@ -228,6 +219,15 @@ export default {
       }
       return count
     }
+  },
+  created() {
+    try {
+      this.user = jwtDecode(localStorage.getItem('usertoken'))
+    } catch {
+      this.$router.push({ name: 'index' })
+    }
+    this.getDataSet()
+    this.displaySparkles()
   },
   methods: {
     async getDataSet() {
@@ -557,7 +557,6 @@ export default {
           id_user: this.user.id
         })
         .then((res) => {
-          this.chart = res.data
           this.$router.push({
             name: 'analyze',
             params: { idgraph: res.data.id }

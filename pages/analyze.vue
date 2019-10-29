@@ -3,6 +3,21 @@
     <h1>Hello world</h1>
     <h2>{{ chart.name }}</h2>
     <h3>Now we need ColVis plugin...</h3>
+    <v-btn @click="displayGraph">Annotate</v-btn>
+    <v-layout flex align-center justify-space-around>
+      <div id="vis" class="resize-graph"></div>
+    </v-layout>
+    <!--
+    <ColInputMain
+      vis="#vis"
+      :elements="elements"
+      :annotating="annotating"
+      :init="init"
+      :offset-top="-64"
+      @close="annotating = false"
+      @submittingAnnotation="alertAnnotation"
+    />
+    -->
   </div>
 </template>
 
@@ -11,8 +26,11 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
-      json: '',
-      chart: null
+      loaded: false,
+      json: null,
+      chart: null,
+      annotations: [],
+      annotating: false
     }
   },
   created() {
@@ -29,8 +47,24 @@ export default {
         .get('/charts/id/?id=' + this.$route.params.idgraph)
         .then((res) => {
           this.chart = res.data
+          this.json = JSON.parse(this.chart.data)
+          this.loaded = true
         })
+    },
+    displayGraph() {
+      window.vegaEmbed('#vis', this.json)
+    },
+    alertAnnotation(annotation) {
+      this.annotations.push(annotation)
     }
   }
 }
 </script>
+
+<style>
+.resize-graph {
+  overflow: auto;
+  height: 300px;
+  text-align: center;
+}
+</style>
