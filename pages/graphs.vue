@@ -11,13 +11,21 @@
         >
           <v-layout align-center justify-space-around>
             <v-btn v-if="panelClosed" text icon color="white" @click="all()">
-              <v-icon>mdi-eye</v-icon>
+              <v-icon>mdi-eye</v-icon><v-icon>mdi-arrow-down</v-icon>
             </v-btn>
             <v-btn v-else text icon color="red" @click="none()">
-              <v-icon>mdi-eye-off</v-icon>
+              <v-icon>mdi-eye-off</v-icon><v-icon>mdi-arrow-up</v-icon>
             </v-btn>
+            <v-btn
+              :disabled="countVariables < 1"
+              icon
+              x-large
+              color="red lighten-1"
+              @click="resetVariableSelection"
+              ><v-icon>mdi-delete-sweep</v-icon></v-btn
+            >
           </v-layout>
-          <v-expansion-panels multiple accordion focusable v-model="panel">
+          <v-expansion-panels v-model="panel" multiple accordion focusable>
             <v-expansion-panel
               v-for="variable in variables"
               :key="variable.id"
@@ -97,15 +105,19 @@
                 modifier.
               </div>
               <div v-if="graphs.length > 0" class="mt-3">
-                <v-btn color="indigo darken-2" @click="displayGraphs"
-                  ><v-icon>mdi-chart-bubble</v-icon></v-btn
-                >
-                <v-btn color="red darken-1" @click="resetVariableSelection"
-                  ><v-icon>mdi-delete-sweep</v-icon></v-btn
+                <v-btn
+                  depressed
+                  color="white indigo--text"
+                  @click="displayGraphs"
+                  >Voir les graphiques</v-btn
                 >
               </div>
+              <div v-else-if="countVariables > 2" class="mt-3">
+                <v-icon color="red">mdi-alert-outline</v-icon> Deux variables à
+                la fois au maximum.
+              </div>
               <div v-else class="mt-3">
-                Sélectionnez une ou plusieurs variables dans le panel à gauche.
+                Sélectionnez une ou deux variables dans le panel, à gauche.
               </div>
             </v-card-text>
             <v-container fluid>
@@ -122,8 +134,9 @@
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn
-                        color="blue lighten-2"
+                        color="green"
                         large
+                        depressed
                         @click="saveGraph(graph)"
                       >
                         <v-icon>mdi-content-save</v-icon>
@@ -145,8 +158,6 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
-      panel: [],
-      panelClosed: true,
       dataset: null,
       json: null,
       variables: [],
@@ -164,6 +175,9 @@ export default {
         'annee',
         'annees'
       ],
+      // PANEL MANAGEMENT
+      panel: [],
+      panelClosed: true,
       // TESTING
       testdata: {
         values: [
@@ -204,17 +218,18 @@ export default {
     this.getDataSet()
     this.displaySparkles()
   },
+  computed: {
+    countVariables() {
+      let count = 0
+      for (let i = 0; i < this.variables.length; i++) {
+        if (this.variables[i].isUsed) {
+          count++
+        }
+      }
+      return count
+    }
+  },
   methods: {
-    // Panel controls
-    all() {
-      this.panelClosed = false
-      this.panel = [...Array(this.variables.length).keys()].map((k, i) => i)
-      this.displaySparkles()
-    },
-    none() {
-      this.panelClosed = true
-      this.panel = []
-    },
     async getDataSet() {
       await this.$axios
         .get('/datasets/single/?id=' + this.$route.params.idset)
@@ -287,7 +302,8 @@ export default {
         if (this.variables[i].data !== null) {
           window.vegaEmbed(
             '#sparkle-' + this.variables[i].id,
-            this.variables[i].data
+            this.variables[i].data,
+            { actions: false }
           )
         }
       }
@@ -341,18 +357,58 @@ export default {
     },
     getGraphs(variables) {
       const length = variables.length
+      // ONLY ONE VARIABLE SELECTED
       if (length === 1) {
         const onlyVar = variables[0]
+        if (onlyVar.type === 'quantitative' || onlyVar.type === 'temporal') {
+          const soloGraph = {}
+          soloGraph.title = onlyVar.name
+          soloGraph.data = this.getSoloGraph(onlyVar)
+          this.graphs.push(soloGraph)
+        }
         const combinationVariables = this.getCombinations(onlyVar)
         for (let i = 0; i < combinationVariables.length; i++) {
           const tempGraph = {}
-          tempGraph.title = this.getTitle(onlyVar, combinationVariables[i])
-          tempGraph.data = this.getGraph(onlyVar, combinationVariables[i])
+          tempGraph.title = this.getSingleTitle(
+            onlyVar,
+            combinationVariables[i]
+          )
+          tempGraph.data = this.getSingleGraph(onlyVar, combinationVariables[i])
           this.graphs.push(tempGraph)
         }
+        // TWO VARIABLES SELECTED
+      } else if (length === 2) {
+        const duoGraph = {}
+        duoGraph.title = this.getSingleTitle(variables[0], variables[1])
+        duoGraph.data = this.getSingleGraph(variables[0], variables[1])
+        this.graphs.push(duoGraph)
+        const combinationVariables = this.getCombinations(variables)
+        for (let i = 0; i < combinationVariables.length; i++) {
+          if (combinationVariables[i].type === 'quantitative') {
+            const tempGraph = {}
+            tempGraph.title = this.getMultipleTitle(
+              variables,
+              combinationVariables[i]
+            )
+            tempGraph.data = this.getMultipleGraph(
+              variables,
+              combinationVariables[i]
+            )
+            this.graphs.push(tempGraph)
+          }
+        }
+        // MORE THAN TWO VARIABLES SELECTED
       } else {
-        // TODO : Manage multiple variable selection
       }
+    },
+    getCombinations() {
+      const unusedVariables = []
+      for (let i = 0; i < this.variables.length; i++) {
+        if (!this.variables[i].isUsed) {
+          unusedVariables.push(this.variables[i])
+        }
+      }
+      return unusedVariables
     },
     getSparkleData(id) {
       const data = []
@@ -394,14 +450,22 @@ export default {
         return null
       }
     },
-    getTitle(selectedVar, combinationVar) {
+    getSingleTitle(selectedVar, combinationVar) {
       return (
         this.cleanTitle(selectedVar.name) +
         '-' +
         this.cleanTitle(combinationVar.name)
       )
     },
-    getData(selectedVar, combinationVar) {
+    getMultipleTitle(selectedVars, combinationVar) {
+      let title = this.cleanTitle(selectedVars[0].name)
+      for (let i = 1; i < selectedVars.length; i++) {
+        title = title + '-' + this.cleanTitle(selectedVars[i].name)
+      }
+      title = title + '-' + this.cleanTitle(combinationVar.name)
+      return title
+    },
+    getSingleData(selectedVar, combinationVar) {
       const data = []
       for (let i = 0; i < this.json.length; i++) {
         const entry = {}
@@ -411,31 +475,78 @@ export default {
       }
       return data
     },
-    getGraph(selectedVar, combinationVar) {
-      const data = this.getData(selectedVar, combinationVar)
+    getMultipleData(selectedVars, combinationVar) {
+      const data = []
+      for (let i = 0; i < this.json.length; i++) {
+        const entry = {}
+        entry[selectedVars[0].name] = this.json[i][selectedVars[0].name]
+        entry[selectedVars[1].name] = this.json[i][selectedVars[1].name]
+        entry[combinationVar.name] = this.json[i][combinationVar.name]
+        data.push(entry)
+      }
+      return data
+    },
+    getSoloGraph(selectedVar) {
+      const data = this.getSparkleData(selectedVar.id)
+      const encoding = this.getSparkleEncoding(selectedVar.id)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
+        data: {
+          values: data
+        },
+        mark: {
+          type: 'bar'
+        },
+        encoding
+      }
+      return graph
+    },
+    getSingleGraph(selectedVar, combinationVar) {
+      const data = this.getSingleData(selectedVar, combinationVar)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
         data: {
           values: data
         },
-        width: {
-          step: 20
-        },
-        mark: 'point',
-        encoding: {
-          x: { field: selectedVar.name, type: selectedVar.type },
-          y: { field: combinationVar.name, type: combinationVar.type }
-        }
+        layer: [
+          {
+            mark: 'point',
+            encoding: {
+              x: { field: selectedVar.name, type: selectedVar.type },
+              y: { field: combinationVar.name, type: combinationVar.type }
+            }
+          },
+          {
+            mark: 'rule',
+            encoding: {
+              y: {
+                field: combinationVar.name,
+                type: combinationVar.type,
+                aggregate: 'mean'
+              },
+              color: { value: combinationVar.color }
+            }
+          }
+        ]
       }
       return graph
     },
-    getCombinations(variable) {
-      const unusedVariables = []
-      for (let i = 0; i < this.variables.length; i++) {
-        if (this.variables[i] !== variable)
-          unusedVariables.push(this.variables[i])
+    getMultipleGraph(selectedVars, combinationVar) {
+      const data = this.getMultipleData(selectedVars, combinationVar)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        mark: 'point',
+        encoding: {
+          x: { field: selectedVars[0].name, type: selectedVars[0].type },
+          y: { field: selectedVars[1].name, type: selectedVars[1].type },
+          size: { field: combinationVar.name, type: combinationVar.type }
+        }
       }
-      return unusedVariables
+      console.log(graph)
+      return graph
     },
     async saveGraph(graph) {
       await this.$axios
@@ -542,6 +653,17 @@ export default {
         sum += Number(this.json[i][variable.name])
       }
       return sum / this.json.length
+    },
+    // Panel controls
+    all() {
+      this.panelClosed = false
+      this.panel = [...Array(this.variables.length).keys()].map((k, i) => i)
+      this.displaySparkles()
+    },
+    none() {
+      this.panelClosed = true
+      this.panel = []
+      this.displaySparkles()
     }
   }
 }

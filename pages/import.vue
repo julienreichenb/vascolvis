@@ -53,11 +53,10 @@
                           <v-btn
                             v-if="json"
                             large
-                            color="indigo darken-2"
+                            color="white indigo--text"
                             @click="saveDataset()"
                           >
-                            <v-icon>mdi-chart-bar</v-icon> Générer les
-                            graphiques
+                            Générer les graphiques
                           </v-btn>
                           <v-switch
                             v-if="file && file.size <= 1000000"
@@ -126,10 +125,10 @@
                     <v-layout justify-space-between>
                       <v-btn
                         large
-                        color="indigo darken-2"
+                        color="white indigo--text"
                         @click="generateSampleGraph()"
                       >
-                        <v-icon>mdi-chart-bar</v-icon> Générer les graphiques
+                        Générer les graphiques d'exemple
                       </v-btn>
                     </v-layout>
                   </v-card-text>
