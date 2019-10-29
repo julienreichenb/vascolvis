@@ -54,6 +54,7 @@
                             v-if="json"
                             large
                             color="white indigo--text"
+                            depressed
                             @click="saveDataset()"
                           >
                             Générer les graphiques
@@ -126,6 +127,7 @@
                       <v-btn
                         large
                         color="white indigo--text"
+                        depressed
                         @click="generateSampleGraph()"
                       >
                         Générer les graphiques d'exemple

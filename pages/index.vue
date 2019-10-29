@@ -40,7 +40,8 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validLog"
-                            color="indigo darken-2"
+                            color="white indigo--text"
+                            depressed
                             @click="attemptLogin()"
                           >
                             Continuer
@@ -91,7 +92,8 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validReg"
-                            color="indigo darken-2"
+                            color="white indigo--text"
+                            depressed
                             @click="createAccount()"
                           >
                             Créer le compte

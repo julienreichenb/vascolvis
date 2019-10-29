@@ -12,7 +12,14 @@
       <v-btn icon @click.stop="logout()">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
+      <v-spacer />
+      <v-btn icon :color="menu ? 'dodgerblue' : ''" @click.stop="menu = !menu">
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
     </v-app-bar>
+    <v-navigation-drawer v-if="menu" right>
+      <h1>Hello</h1>
+    </v-navigation-drawer>
     <v-content>
       <v-container>
         <nuxt />
@@ -30,7 +37,8 @@ export default {
     return {
       clipped: false,
       fixed: false,
-      title: 'Vasco'
+      title: 'Vasco',
+      menu: false
     }
   },
   methods: {
