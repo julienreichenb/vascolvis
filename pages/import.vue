@@ -86,7 +86,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="csv in parse_csv" :key="csv">
+                        <tr v-for="csv in parse_csv.slice(0, 6)" :key="csv">
                           <td v-for="key in parse_header" :key="key">
                             {{ csv[key] }}
                           </td>
@@ -159,7 +159,6 @@ export default {
           'Le jeu de données ne doit pas excéder 1MB !'
       ],
       sampleDataSet: null,
-      showSampleTable: false,
       file: null,
       json: null,
       dataset: null,

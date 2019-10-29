@@ -9,16 +9,27 @@
           permanent
           clipped
         >
-          <v-expansion-panels
-            multiple
-            accordion
-            focusable
-            @click="displaySparkles()"
-          >
-            <v-expansion-panel v-for="variable in variables" :key="variable.id">
+          <v-layout align-center justify-space-around>
+            <v-btn v-if="panelClosed" text icon color="white" @click="all()">
+              <v-icon>mdi-eye</v-icon>
+            </v-btn>
+            <v-btn v-else text icon color="red" @click="none()">
+              <v-icon>mdi-eye-off</v-icon>
+            </v-btn>
+          </v-layout>
+          <v-expansion-panels multiple accordion focusable v-model="panel">
+            <v-expansion-panel
+              v-for="variable in variables"
+              :key="variable.id"
+              @click="
+                displaySparkles()
+                panelClosed = false
+              "
+            >
               <v-expansion-panel-header
                 :expand-icon="variable.icon"
                 :class="variable.color + ' darken-2'"
+                disable-icon-rotate
               >
                 {{ variable.name }}
               </v-expansion-panel-header>
@@ -87,7 +98,7 @@
               </div>
               <div v-if="graphs.length > 0" class="mt-3">
                 <v-btn color="indigo darken-2" @click="displayGraphs"
-                  ><v-icon>mdi-eye</v-icon></v-btn
+                  ><v-icon>mdi-chart-bubble</v-icon></v-btn
                 >
                 <v-btn color="red darken-1" @click="resetVariableSelection"
                   ><v-icon>mdi-delete-sweep</v-icon></v-btn
@@ -134,32 +145,11 @@ import jwtDecode from 'jwt-decode'
 export default {
   data() {
     return {
+      panel: [],
+      panelClosed: true,
       dataset: null,
       json: null,
       variables: [],
-      variablesTypes: [
-        {
-          name: 'Quantitatif',
-          icon: 'mdi-numeric',
-          color: 'red',
-          desc: 'fournissent des données comparables sur « qui » et «combien »',
-          items: []
-        },
-        {
-          name: 'Qualitatif',
-          icon: 'mdi-alphabetical',
-          color: 'blue',
-          desc: 'représentent des catégories sans classement intrinsèque',
-          items: []
-        },
-        {
-          name: 'Temporel',
-          icon: 'mdi-timer',
-          color: 'yellow',
-          desc: 'représentent un temps donné, date ou heure',
-          items: []
-        }
-      ],
       graphs: [],
       display: false,
       // DATE FILTER
@@ -189,27 +179,18 @@ export default {
         ]
       },
       testgraph: {
-        $schema: 'https://vega.github.io/schema/vega-lite/v2.0.json',
-        description: 'A simple bar chart with embedded data.',
-        data: {
-          values: [
-            { a: 'A', b: 28 },
-            { a: 'B', b: 55 },
-            { a: 'C', b: 43 },
-            { a: 'D', b: 91 },
-            { a: 'E', b: 81 },
-            { a: 'F', b: 53 },
-            { a: 'G', b: 19 },
-            { a: 'H', b: 87 },
-            { a: 'I', b: 52 }
-          ]
-        },
-        width: 140,
-        height: 60,
-        mark: 'bar',
+        data: { url: 'data/movies.json' },
+        mark: { type: 'bar', binSpacing: 0 },
         encoding: {
-          x: { field: 'a', type: 'ordinal' },
-          y: { field: 'b', type: 'quantitative' }
+          x: {
+            bin: { maxbins: 10 },
+            field: 'IMDB_Rating',
+            type: 'quantitative'
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
         }
       }
     }
@@ -221,8 +202,19 @@ export default {
       this.$router.push({ name: 'index' })
     }
     this.getDataSet()
+    this.displaySparkles()
   },
   methods: {
+    // Panel controls
+    all() {
+      this.panelClosed = false
+      this.panel = [...Array(this.variables.length).keys()].map((k, i) => i)
+      this.displaySparkles()
+    },
+    none() {
+      this.panelClosed = true
+      this.panel = []
+    },
     async getDataSet() {
       await this.$axios
         .get('/datasets/single/?id=' + this.$route.params.idset)
@@ -291,11 +283,13 @@ export default {
       }
     },
     displaySparkles() {
-      for (let i = 0; i < this.graphs.length; i++) {
-        window.vegaEmbed(
-          '#sparkle-' + this.variables[i].id,
-          this.variables[i].data
-        )
+      for (let i = 0; i < this.variables.length; i++) {
+        if (this.variables[i].data !== null) {
+          window.vegaEmbed(
+            '#sparkle-' + this.variables[i].id,
+            this.variables[i].data
+          )
+        }
       }
     },
     computeSparkles() {
@@ -304,25 +298,30 @@ export default {
       }
     },
     computeSparkle(id) {
-      const data = this.getSparkleData(id)
       const encoding = this.getSparkleEncoding(id)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
-        data,
-        width: 60,
-        height: 50,
-        config: {
-          axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
-          view: {
-            stroke: 'transparent'
-          }
-        },
-        mark: {
-          type: 'bar'
-        },
-        encoding
+      if (encoding !== null) {
+        const data = this.getSparkleData(id)
+        const graph = {
+          $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
+          data: {
+            values: data
+          },
+          width: 60,
+          height: 60,
+          config: {
+            axis: { labels: 0, grid: 0, ticks: 0, title: 0, domain: 0 },
+            view: {
+              stroke: 'transparent'
+            },
+            background: 'transparent'
+          },
+          mark: {
+            type: 'bar'
+          },
+          encoding
+        }
+        this.variables[id].data = graph
       }
-      this.variables[id].data = graph
     },
     resetVariableSelection() {
       this.graphs = []
@@ -356,42 +355,44 @@ export default {
       }
     },
     getSparkleData(id) {
-      /*
       const data = []
       for (let i = 0; i < this.json.length; i++) {
-        data.push(this.json[i][variable.name])
+        const entry = {}
+        entry[this.variables[id].name] = this.json[i][this.variables[id].name]
+        data.push(entry)
       }
-      */
-      return this.testdata
+      return data
     },
     getSparkleEncoding(id) {
-      if (this.variables[id].type === 'quantitative')
+      const type = this.variables[id].type
+      if (type === 'quantitative') {
         return {
-          encoding: {
-            x: {
-              field: this.variables[id].name,
-              type: this.variables[id].type
-            },
-            y: {
-              aggregate: 'count',
-              type: 'quantitative'
-            }
-          }
+          x: {
+            field: this.variables[id].name,
+            type: this.variables[id].type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          },
+          color: { value: this.variables[id].color }
         }
-      else if (this.variables[id].type === 'temporal')
+      } else if (type === 'temporal') {
         return {
-          encoding: {
-            x: {
-              timeUnit: 'year',
-              field: this.variables[id].name,
-              type: this.variables[id].type
-            },
-            y: {
-              aggregate: 'count',
-              type: 'quantitative'
-            }
-          }
+          x: {
+            timeUnit: 'year',
+            field: this.variables[id].name,
+            type: this.variables[id].type
+          },
+          y: {
+            aggregate: 'count',
+            type: 'quantitative'
+          },
+          color: { value: this.variables[id].color }
         }
+      } else {
+        return null
+      }
     },
     getTitle(selectedVar, combinationVar) {
       return (
@@ -414,7 +415,6 @@ export default {
       const data = this.getData(selectedVar, combinationVar)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        description: 'A simple bar chart with embedded data.',
         data: {
           values: data
         },
