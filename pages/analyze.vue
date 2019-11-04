@@ -1,15 +1,13 @@
 <template>
   <div v-if="chart">
-    <h1>Hello world</h1>
     <h2>{{ chart.name }}</h2>
-    <h3>Now we need ColVis plugin...</h3>
     <v-btn
       color="white indigo--text"
       depressed
       @click="annotating = !annotating"
       >Annotate</v-btn
     >
-    <v-layout flex align-center justify-space-around>
+    <v-layout flex align-center>
       <div id="vis" class="resize-graph"></div>
     </v-layout>
     <ColInputMain
@@ -49,10 +47,11 @@ export default {
     } catch {
       this.$router.push({ name: 'index' })
     }
-    this.displayGraph()
     this.init = true
   },
   mounted() {
+    this.displayGraph()
+
     this.element = this.$getDataFromContainer
   },
   methods: {

@@ -6,20 +6,17 @@
       </v-btn>
       <v-toolbar-title @click.stop="goHome()" v-text="title" />
       <v-spacer />
+      <v-btn icon @click.stop="goToPanel()">
+        <v-icon>mdi-solar-panel</v-icon>
+      </v-btn>
+      <v-spacer />
       <v-btn icon @click.stop="goToAbout()">
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
       <v-btn icon @click.stop="logout()">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
-      <v-spacer />
-      <v-btn icon :color="menu ? 'dodgerblue' : ''" @click.stop="menu = !menu">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
     </v-app-bar>
-    <v-navigation-drawer v-if="menu" right>
-      <h1>Hello</h1>
-    </v-navigation-drawer>
     <v-content>
       <v-container>
         <nuxt />
@@ -37,8 +34,7 @@ export default {
     return {
       clipped: false,
       fixed: false,
-      title: 'Vasco',
-      menu: false
+      title: 'Vasco'
     }
   },
   methods: {
@@ -59,6 +55,9 @@ export default {
       } catch {
         this.$router.push({ name: 'index' })
       }
+    },
+    goToPanel() {
+      this.$router.push({ name: 'panel' })
     }
   }
 }

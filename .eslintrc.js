@@ -5,7 +5,11 @@ module.exports = {
     node: true
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
+    ecmaFeatures: {
+      jsx: true,
+      modules: true
+    }
   },
   extends: [
     '@nuxtjs',
@@ -20,5 +24,5 @@ module.exports = {
   // add your custom rules here
   rules: {
     'nuxt/no-cjs-in-config': 'off'
-  }
+  },
 }

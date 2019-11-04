@@ -49,7 +49,7 @@ datasets.get('/single', (req, res) => {
   const id = req.query.id
   DataSet.findOne({
     where: {
-      id: id
+      id
     }
   })
     .then((dataset) => {
@@ -75,6 +75,40 @@ datasets.get('/user', (req, res) => {
     })
     .catch((error) => {
       res.status(400).json({ error })
+    })
+})
+
+/*
+ ** DELETE A DATASET WITH ID
+ */
+datasets.delete('/', (req, res) => {
+  DataSet.destroy({
+    where: {
+      id: req.query.id
+    }
+  }).then(
+    function(rowDeleted) {
+      // rowDeleted will return number of rows deleted
+      if (rowDeleted === 1) {
+        res.send('Success')
+      }
+    },
+    function(err) {
+      res.send(err)
+    }
+  )
+})
+
+/*
+ ** UPDATE A DATASET WITH ID
+ */
+datasets.put('/', (req, res) => {
+  DataSet.update({ name: req.query.name }, { where: { id: req.query.id } })
+    .then((res) => {
+      res.send('Success')
+    })
+    .catch((err) => {
+      res.send(err)
     })
 })
 

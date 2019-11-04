@@ -23,7 +23,7 @@ charts.post('/save', (req, res) => {
       res.status(200).json(chart)
     })
     .catch((error) => {
-      res.status(400).json({ error: error })
+      res.status(400).json({ error })
     })
 })
 
@@ -34,7 +34,7 @@ charts.get('/id', (req, res) => {
   const id = req.query.id
   Chart.findOne({
     where: {
-      id: id
+      id
     }
   })
     .then((chart) => {
@@ -52,11 +52,24 @@ charts.get('/url', (req, res) => {
   const url = req.query.url
   Chart.findOne({
     where: {
-      url: url
+      url
     }
   })
     .then((chart) => {
       res.status(200).json(chart)
+    })
+    .catch((error) => {
+      res.status(400).json({ error: 'Something wrong happened...' })
+    })
+})
+
+/*
+ ** GET ALL CHARTS
+ */
+charts.get('/', (req, res) => {
+  Chart.findAll()
+    .then((charts) => {
+      res.status(200).json(charts)
     })
     .catch((error) => {
       res.status(400).json({ error: 'Something wrong happened...' })
@@ -78,6 +91,40 @@ charts.get('/user', (req, res) => {
     })
     .catch((error) => {
       res.status(400).json({ error: 'Something wrong happened...' })
+    })
+})
+
+/*
+ ** DELETE A CHART WITH ID
+ */
+charts.delete('/', (req, res) => {
+  Chart.destroy({
+    where: {
+      id: req.query.id
+    }
+  }).then(
+    function(rowDeleted) {
+      // rowDeleted will return number of rows deleted
+      if (rowDeleted === 1) {
+        res.send('Success')
+      }
+    },
+    function(err) {
+      res.send(err)
+    }
+  )
+})
+
+/*
+ ** UPDATE AN ANNOTATION WITH ID
+ */
+charts.put('/', (req, res) => {
+  Chart.update({ name: req.query.name }, { where: { id: req.query.id } })
+    .then((res) => {
+      res.send('Success')
+    })
+    .catch((err) => {
+      res.send(err)
     })
 })
 

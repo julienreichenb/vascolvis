@@ -80,4 +80,25 @@ comments.get('/annotation', (req, res) => {
     })
 })
 
+/*
+ ** DELETE A COMMENT WITH ID
+ */
+comments.delete('/', (req, res) => {
+  Comment.destroy({
+    where: {
+      id: req.query.id
+    }
+  }).then(
+    function(rowDeleted) {
+      // rowDeleted will return number of rows deleted
+      if (rowDeleted === 1) {
+        res.send('Success')
+      }
+    },
+    function(err) {
+      res.send(err)
+    }
+  )
+})
+
 module.exports = comments

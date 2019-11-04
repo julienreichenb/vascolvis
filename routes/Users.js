@@ -72,4 +72,21 @@ users.post('/login', (req, res) => {
     })
 })
 
+/*
+ ** GET USER BY ID
+ */
+users.get('/', (req, res) => {
+  User.findOne({
+    where: {
+      id: req.query.id
+    }
+  })
+    .then((user) => {
+      res.status(200).json(user)
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
+})
+
 module.exports = users

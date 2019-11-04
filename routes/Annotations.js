@@ -79,4 +79,25 @@ annotations.get('/chart', (req, res) => {
     })
 })
 
+/*
+ ** DELETE A ANNOTATION WITH ID
+ */
+annotations.delete('/', (req, res) => {
+  Annotation.destroy({
+    where: {
+      id: req.query.id
+    }
+  }).then(
+    function(rowDeleted) {
+      // rowDeleted will return number of rows deleted
+      if (rowDeleted === 1) {
+        res.send('Success')
+      }
+    },
+    function(err) {
+      res.send(err)
+    }
+  )
+})
+
 module.exports = annotations
