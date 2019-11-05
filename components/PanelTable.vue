@@ -16,6 +16,19 @@
           color="blue lighten-2"
         ></v-checkbox>
       </v-card-title>
+      <v-card-subtitle
+        v-if="type === 'charts' || type === 'datasets'"
+        class="mt-1"
+      >
+        <div class="help">
+          <v-icon small color="blue">mdi-help-circle-outline</v-icon> Vous
+          pouvez éditer le nom de vos
+          <strong>{{
+            type === 'charts' ? 'graphiques' : 'jeux de données'
+          }}</strong>
+          en cliquant sur le champ, puis en sauvegardant.
+        </div>
+      </v-card-subtitle>
       <v-data-table
         :headers="headers"
         :items="filterGraphs"
@@ -32,7 +45,6 @@
             <template v-slot:input>
               <v-text-field
                 v-model="props.item.name"
-                label="Edit"
                 single-line
                 :rules="[max40chars]"
                 counter
@@ -42,6 +54,9 @@
         </template>
         <template v-slot:item.id_user="{ item }">
           <span>{{ getUsername(item) }}</span>
+        </template>
+        <template v-slot:item.url="{ item }">
+          <a @click="goToItem(item)">{{ item.url }}</a>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon @click="goToItem(item)">

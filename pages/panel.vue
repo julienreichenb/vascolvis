@@ -84,6 +84,7 @@ export default {
           headers: [
             { text: 'Nom', value: 'name', sortable: false },
             { text: 'Utilisateur', value: 'id_user' },
+            { text: 'URL', value: 'url', sortable: false },
             { text: 'Actions', value: 'actions', sortable: false }
           ],
           data: []
@@ -133,7 +134,7 @@ export default {
       })
     },
     async getCharts() {
-      await axios.get(`/charts`).then((res) => {
+      await axios.get(`/charts/all`).then((res) => {
         this.menus[1].data = res.data
       })
     },

@@ -48,7 +48,7 @@ charts.get('/id', (req, res) => {
 /*
  ** GET SINGLE CHART BY URL
  */
-charts.get('/url', (req, res) => {
+charts.get('/', (req, res) => {
   const url = req.query.url
   Chart.findOne({
     where: {
@@ -66,7 +66,7 @@ charts.get('/url', (req, res) => {
 /*
  ** GET ALL CHARTS
  */
-charts.get('/', (req, res) => {
+charts.get('/all', (req, res) => {
   Chart.findAll()
     .then((charts) => {
       res.status(200).json(charts)
