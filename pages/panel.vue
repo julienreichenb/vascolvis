@@ -25,6 +25,15 @@
                 </v-container>
               </v-tab>
               <v-tab-item v-for="menu in menus" :key="menu.id">
+                <v-card-text v-if="menu.id === 'datasets'">
+                  <v-btn
+                    color="white indigo--text"
+                    depressed
+                    @click="goToImport()"
+                  >
+                    Importer un jeu de données
+                  </v-btn>
+                </v-card-text>
                 <PanelTable
                   v-if="menu.data.length > 0"
                   :user="user"
@@ -32,18 +41,10 @@
                   :headers="menu.headers"
                   :data="menu.data"
                   @refresh="refresh(menu.id)"
-                ></PanelTable>
+                >
+                </PanelTable>
                 <v-card v-else>
                   <v-card-title>Aucune donnée disponible.</v-card-title>
-                  <v-card-text v-if="menu.id === 'datasets'">
-                    <v-btn
-                      color="white indigo--text"
-                      depressed
-                      @click="goToImport()"
-                    >
-                      Importer un jeu de données
-                    </v-btn>
-                  </v-card-text>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -73,6 +74,7 @@ export default {
           icon: 'mdi-database',
           headers: [
             { text: 'Nom', value: 'name', sortable: false },
+            { text: 'Taille(kb)', value: 'size' },
             { text: 'Actions', value: 'actions', sortable: false }
           ],
           data: []

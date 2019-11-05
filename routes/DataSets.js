@@ -14,6 +14,7 @@ datasets.post('/save', (req, res) => {
   const datasetData = {
     name: req.body.name,
     data: req.body.data,
+    size: req.body.size,
     id_user: req.body.id_user
   }
   DataSet.create(datasetData)

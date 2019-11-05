@@ -72,13 +72,37 @@
           <v-icon
             v-if="user.id === item.id_user"
             color="red"
-            @click="deleteItem(item)"
+            @click="toggleDeleteDialog(item)"
           >
             mdi-trash-can-outline
           </v-icon>
         </template>
       </v-data-table>
     </v-card>
+    <v-dialog v-model="deleteDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline"
+          >Voulez-vous vraiment supprimer {{ selected.name }} ?</v-card-title
+        >
+
+        <v-card-text>
+          Cette action est irreversible et entraine la suppression de tout autre
+          élément qui en dépend.
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="grey lighten-3" text @click="deleteDialog = false">
+            Annuler
+          </v-btn>
+
+          <v-btn color="red darken-2" text @click="deleteItem()">
+            Supprimer
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -106,6 +130,8 @@ export default {
     return {
       max40chars: (v) => v.length <= 40 || 'Nom trop long',
       onlyMine: false,
+      deleteDialog: false,
+      selected: { name: '' },
       usernames: [],
       search: ''
     }
@@ -167,9 +193,15 @@ export default {
           this.$toast.success(item.name + ' a été renommé avec succès.')
         })
     },
-    async deleteItem(item) {
+    toggleDeleteDialog(item) {
+      this.deleteDialog = true
+      this.selected = item
+    },
+    async deleteItem() {
+      const item = this.selected
+      this.deleteDialog = false
       await axios.delete(`/${this.type}?id=${item.id}`).then((res) => {
-        this.$toast.success(item.name + ' supprimé avec succès.')
+        this.$toast.success(item.name + ' a été supprimé avec succès.')
         this.$emit('refresh')
       })
     }

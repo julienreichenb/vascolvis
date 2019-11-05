@@ -243,6 +243,7 @@ export default {
         .post('/datasets/save', {
           name: this.file.name,
           data: this.json,
+          size: this.file.size.toFixed(2),
           id_user: this.user.id
         })
         .then((res) => {
