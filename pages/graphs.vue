@@ -26,160 +26,179 @@
             >
           </v-layout>
           <v-expansion-panels v-model="panel" multiple accordion focusable>
-            <v-expansion-panel
-              v-for="variable in variables"
-              :key="variable.id"
-              :draggable="variable"
-              @click="
-                displaySparkles()
-                panelClosed = false
-              "
+            <draggable
+              v-model="variables"
+              :group="{ name: 'vars', pull: 'clone', put: false }"
+              :sort="false"
+              style="width: 100%"
+              @start="isMoving = true"
+              @end="isMoving = false"
             >
-              <v-expansion-panel-header
-                :expand-icon="variable.icon"
-                :class="variable.color + ' darken-2'"
-                disable-icon-rotate
+              <v-expansion-panel
+                v-for="variable in variables"
+                :key="variable.id"
+                @click="
+                  displaySparkles()
+                  panelClosed = false
+                "
               >
-                {{ variable.name }}
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-layout justify-space-around align-center>
-                  <v-checkbox
-                    v-model="variable.isUsed"
-                    flat
-                    :label="'Utiliser'"
-                    :color="variable.color + ' lighten-2'"
-                    @change="computeBigGraphs"
-                  ></v-checkbox>
-                </v-layout>
-                <v-layout justify-space-around align-center>
-                  <div :id="'sparkle-' + variable.id"></div>
-                </v-layout>
-                <v-layout
-                  v-if="variable.type === 'quantitative'"
-                  class="small"
-                  justify-space-around
+                <v-expansion-panel-header
+                  :expand-icon="variable.icon"
+                  :class="variable.color + ' darken-2'"
+                  disable-icon-rotate
                 >
-                  <span
-                    >MAX : <span>{{ variable.max }}</span></span
+                  {{ variable.name }}
+                </v-expansion-panel-header>
+                <v-expansion-panel-content class="mt-4">
+                  <!-- // NOT USED ANYMORE WITH DRAG&DROP FEATURE
+                 <v-layout justify-space-around align-center>
+
+                   <v-checkbox
+                     v-model="variable.isUsed"
+                     flat
+                     :label="'Utiliser'"
+                     :color="variable.color + ' lighten-2'"
+                     @change="computeBigGraphs"
+                   ></v-checkbox>
+                  </v-layout>
+                  -->
+                  <v-layout justify-space-around align-center>
+                    <div :id="'sparkle-' + variable.id"></div>
+                  </v-layout>
+                  <v-layout
+                    v-if="variable.type === 'quantitative'"
+                    class="small"
+                    justify-space-around
                   >
-                  <span
-                    >MIN : <span>{{ variable.min }}</span></span
+                    <span
+                      >MAX : <span>{{ variable.max }}</span></span
+                    >
+                    <span
+                      >MIN : <span>{{ variable.min }}</span></span
+                    >
+                    <span
+                      >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
+                    >
+                  </v-layout>
+                  <v-layout
+                    v-if="variable.type === 'nominal'"
+                    class="small"
+                    justify-space-around
                   >
-                  <span
-                    >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
-                  >
-                </v-layout>
-                <v-layout
-                  v-if="variable.type === 'nominal' && variable.mode"
-                  class="small"
-                  justify-space-around
-                >
-                  <span
-                    >MODE :
-                    <span>{{
-                      variable.mode.value + ' - ' + variable.mode.number
-                    }}</span></span
-                  >
-                </v-layout>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
+                    <span
+                      >MODE :
+                      <span v-if="variable.mode">{{
+                        variable.mode.value + ' - ' + variable.mode.number
+                      }}</span>
+                      <span v-else>Non-pertinent</span></span
+                    >
+                  </v-layout>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </draggable>
           </v-expansion-panels>
         </v-navigation-drawer>
         <v-flex xs12 sm10 elevation-6>
-          <v-card class="mx-auto" outlined>
-            <v-card-title
-              ><h2>{{ dataset.name }}</h2></v-card-title
-            >
-            <v-card-text>
-              <div class="help">
-                <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
-                La sélection d'<strong>une seule</strong> variable générera
-                toutes les combinaisons possibles avec les autres.
-              </div>
-              <div class="help">
-                <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
-                Vous pouvez cliquer sur le titre des graphiques pour les
-                modifier.
-              </div>
-              <div v-if="graphs.length > 0" class="mt-3">
-                <v-btn
-                  depressed
-                  color="white indigo--text"
-                  @click="displayGraphs"
-                  >Voir les graphiques</v-btn
-                >
-              </div>
-              <div v-else-if="countVariables > 2" class="mt-3">
-                <v-icon color="red">mdi-alert-outline</v-icon> Deux variables à
-                la fois au maximum.
-              </div>
-              <div v-else class="mt-3">
-                Sélectionnez <span class="emphaze">une</span> ou
-                <span class="emphaze">deux</span> variables dans le panel, à
-                gauche.
-              </div>
-            </v-card-text>
-            <v-card-title class="pt-1">
-              <div
-                v-for="variable in variables"
-                :key="variable.id"
-                class="text-center"
+          <draggable
+            v-model="droppedVars"
+            draggable="false"
+            :options="{ group: 'vars' }"
+            @change="resolveDraggedVariable"
+          >
+            <v-card class="mx-auto" :class="isMoving ? 'highlight' : ''">
+              <v-card-title
+                ><h2>{{ dataset.name }}</h2></v-card-title
               >
-                <v-chip
-                  v-if="variable.isUsed"
-                  :color="
-                    variable.type === 'temporal'
-                      ? variable.color + ' darken-2'
-                      : variable.color
-                  "
-                >
-                  <v-icon left :color="'white'">{{ variable.icon }}</v-icon>
-                  {{ variable.name
-                  }}<v-icon
-                    right
-                    :color="'white'"
-                    @click="
-                      variable.isUsed = false
-                      computeBigGraphs()
-                    "
-                    >mdi-close-circle-outline</v-icon
+              <v-card-text>
+                <div class="help">
+                  <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
+                  La sélection d'<strong>une seule</strong> variable générera
+                  toutes les combinaisons possibles avec les autres.
+                </div>
+                <div class="help">
+                  <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
+                  Vous pouvez cliquer sur le titre des graphiques pour les
+                  modifier.
+                </div>
+                <div v-if="graphs.length > 0" class="mt-3">
+                  <v-btn
+                    depressed
+                    color="white indigo--text"
+                    @click="displayGraphs"
+                    >Voir les graphiques</v-btn
                   >
-                </v-chip>
-              </div></v-card-title
-            >
-            <v-container fluid>
-              <v-row dense>
-                <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
-                  <v-card v-show="display" class="grey darken-2">
-                    <v-card-title
-                      :id="'title-' + graph.title"
-                      contenteditable
-                      v-text="graph.title"
-                    ></v-card-title>
-                    <v-layout flex align-center justify-space-around>
-                      <div
-                        :id="'vis-' + graph.title"
-                        class="resize-graph"
-                      ></div>
-                    </v-layout>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="green"
-                        large
-                        depressed
-                        @click="saveGraph(graph)"
-                      >
-                        <v-icon>mdi-content-save</v-icon>
-                        Enregistrer
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
+                </div>
+                <div v-else-if="countVariables > 2" class="mt-3">
+                  <v-icon color="red">mdi-alert-outline</v-icon> Deux variables
+                  à la fois au maximum.
+                </div>
+                <div v-else class="mt-3">
+                  Sélectionnez <span class="emphaze">une</span> ou
+                  <span class="emphaze">deux</span> variables dans le panel, à
+                  gauche.
+                </div>
+              </v-card-text>
+              <v-card-title class="pt-1">
+                <div
+                  v-for="variable in variables"
+                  :key="variable.id"
+                  class="text-center"
+                >
+                  <v-chip
+                    v-if="variable.isUsed"
+                    :color="
+                      variable.type === 'temporal'
+                        ? variable.color + ' darken-2'
+                        : variable.color
+                    "
+                  >
+                    <v-icon left :color="'white'">{{ variable.icon }}</v-icon>
+                    {{ variable.name
+                    }}<v-icon
+                      right
+                      :color="'white'"
+                      @click="
+                        variable.isUsed = false
+                        computeBigGraphs()
+                      "
+                      >mdi-close-circle-outline</v-icon
+                    >
+                  </v-chip>
+                </div></v-card-title
+              >
+              <v-container fluid>
+                <v-row dense>
+                  <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
+                    <v-card v-show="display" class="grey darken-2">
+                      <v-card-title
+                        :id="'title-' + graph.title"
+                        contenteditable
+                        v-text="graph.title"
+                      ></v-card-title>
+                      <v-layout flex align-center justify-space-around>
+                        <div
+                          :id="'vis-' + graph.title"
+                          class="resize-graph"
+                        ></div>
+                      </v-layout>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green"
+                          large
+                          depressed
+                          @click="saveGraph(graph)"
+                        >
+                          <v-icon>mdi-content-save</v-icon>
+                          Enregistrer
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </draggable>
         </v-flex>
       </v-layout>
     </v-container>
@@ -187,16 +206,22 @@
 </template>
 <script>
 import jwtDecode from 'jwt-decode'
+import draggable from 'vuedraggable'
 import axios from 'axios'
 export default {
+  components: {
+    draggable
+  },
   data() {
     return {
-      droplist: [],
       dataset: null,
       json: null,
       variables: [],
+      droppedVars: [],
       graphs: [],
       display: false,
+      isMoving: false,
+      draggedId: null,
       // DATE FILTER
       FREQUENT_DATE_LABELS: [
         'year',
@@ -268,6 +293,12 @@ export default {
     this.init()
   },
   methods: {
+    resolveDraggedVariable() {
+      const id = this.droppedVars[0].id
+      this.variables[id].isUsed = true
+      this.droppedVars = []
+      this.computeBigGraphs()
+    },
     // INIT
     init() {
       const names = Object.keys(this.json[0])
@@ -578,7 +609,6 @@ export default {
           size: { field: combinationVar.name, type: combinationVar.type }
         }
       }
-      console.log(graph)
       return graph
     },
     async saveGraph(graph) {
@@ -722,6 +752,14 @@ export default {
 .emphaze {
   font-weight: bold;
   color: dodgerblue;
+}
+
+.highlight {
+  border: 3px dashed dodgerblue;
+}
+
+.ghost {
+  opacity: 0;
 }
 
 .resize-graph {
