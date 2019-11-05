@@ -29,6 +29,7 @@
             <v-expansion-panel
               v-for="variable in variables"
               :key="variable.id"
+              :draggable="variable"
               @click="
                 displaySparkles()
                 panelClosed = false
@@ -90,9 +91,6 @@
             <v-card-title
               ><h2>{{ dataset.name }}</h2></v-card-title
             >
-            <v-card-subtitle class="pt-1"
-              ><h3>Graphiques générés</h3></v-card-subtitle
-            >
             <v-card-text>
               <div class="help">
                 <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
@@ -122,6 +120,34 @@
                 gauche.
               </div>
             </v-card-text>
+            <v-card-title class="pt-1">
+              <div
+                v-for="variable in variables"
+                :key="variable.id"
+                class="text-center"
+              >
+                <v-chip
+                  v-if="variable.isUsed"
+                  :color="
+                    variable.type === 'temporal'
+                      ? variable.color + ' darken-2'
+                      : variable.color
+                  "
+                >
+                  <v-icon left :color="'white'">{{ variable.icon }}</v-icon>
+                  {{ variable.name
+                  }}<v-icon
+                    right
+                    :color="'white'"
+                    @click="
+                      variable.isUsed = false
+                      computeBigGraphs()
+                    "
+                    >mdi-close-circle-outline</v-icon
+                  >
+                </v-chip>
+              </div></v-card-title
+            >
             <v-container fluid>
               <v-row dense>
                 <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
@@ -165,6 +191,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      droplist: [],
       dataset: null,
       json: null,
       variables: [],
@@ -701,5 +728,10 @@ export default {
   overflow: auto;
   height: 300px;
   text-align: center;
+}
+
+.v-chip {
+  margin: 4px;
+  float: left;
 }
 </style>
