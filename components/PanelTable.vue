@@ -20,14 +20,6 @@
         v-if="type === 'charts' || type === 'datasets'"
         class="mt-1"
       >
-        <div class="help">
-          <v-icon small color="blue">mdi-help-circle-outline</v-icon> Vous
-          pouvez éditer le nom de vos
-          <strong>{{
-            type === 'charts' ? 'graphiques' : 'jeux de données'
-          }}</strong>
-          en cliquant sur le champ, puis en sauvegardant.
-        </div>
       </v-card-subtitle>
       <v-data-table
         :headers="headers"
@@ -39,19 +31,6 @@
         }"
         items-per-page="5"
       >
-        <template v-slot:item.name="props">
-          <v-edit-dialog :return-value.sync="props.item.name">
-            {{ props.item.name }}
-            <template v-slot:input>
-              <v-text-field
-                v-model="props.item.name"
-                :rules="[max40chars]"
-                single-line
-                counter
-              ></v-text-field>
-            </template>
-          </v-edit-dialog>
-        </template>
         <template v-slot:item.id_user="{ item }">
           <span>{{ getUsername(item) }}</span>
         </template>
@@ -70,14 +49,7 @@
             mdi-eye-outline
           </v-icon>
           <v-icon
-            v-if="user.id === item.id_user"
-            color="green lighten-1"
-            @click="editItem(item)"
-          >
-            mdi-content-save-outline
-          </v-icon>
-          <v-icon
-            v-if="user.id === item.id_user"
+            v-if="isOwner(item)"
             color="red"
             @click="toggleDeleteDialog(item)"
           >
@@ -91,19 +63,15 @@
         <v-card-title class="headline"
           >Voulez-vous vraiment supprimer {{ selected.name }} ?</v-card-title
         >
-
         <v-card-text>
           Cette action est irreversible et entraine la suppression de tout autre
           élément qui en dépend.
         </v-card-text>
-
         <v-card-actions>
           <v-spacer></v-spacer>
-
           <v-btn color="grey lighten-3" text @click="deleteDialog = false">
             Annuler
           </v-btn>
-
           <v-btn color="red darken-2" text @click="deleteItem()">
             Supprimer
           </v-btn>
@@ -135,7 +103,7 @@ export default {
   },
   data() {
     return {
-      max40chars: (v) => v.length <= 40 || 'Nom trop long',
+      max100chars: (v) => v.length <= 100 || 'Nom trop long',
       onlyMine: false,
       deleteDialog: false,
       selected: { name: '' },
@@ -206,6 +174,12 @@ export default {
         .then((res) => {
           this.$toast.success(item.name + ' a été renommé avec succès.')
         })
+    },
+    cancel() {
+      this.$toast.success("Le nom n'a pas été modifié.")
+    },
+    isOwner(item) {
+      return item.id_user === this.user.id
     },
     toggleDeleteDialog(item) {
       this.deleteDialog = true

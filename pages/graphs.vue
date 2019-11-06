@@ -216,7 +216,7 @@
 <script>
 import jwtDecode from 'jwt-decode'
 import draggable from 'vuedraggable'
-import axios from 'axios'
+import axios from '~/plugins/axios'
 export default {
   components: {
     draggable
@@ -621,7 +621,7 @@ export default {
       return graph
     },
     async saveGraph(graph) {
-      await this.$axios
+      await axios
         .post('/charts/save', {
           name: document.getElementById('title-' + graph.title).innerHTML,
           data: graph.data,
@@ -629,10 +629,8 @@ export default {
           id_user: this.user.id
         })
         .then((res) => {
-          this.$router.push({
-            name: 'graph-url',
-            params: { url: res.data.url }
-          })
+          // Trick to wait the new chart creation, otherwise the 'graph/url' cannot fetch it (null object)
+          this.getNewChart(res.data.id)
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -640,6 +638,14 @@ export default {
           this.hasError = true
           this.error = error.response.data.error
         })
+    },
+    async getNewChart(id) {
+      await axios.get(`/charts/id?id=${id}`).then((res) => {
+        this.$router.push({
+          name: 'graph-url',
+          params: { url: res.data.url }
+        })
+      })
     },
     fetchUsedVariables() {
       const usedVariables = []

@@ -146,7 +146,7 @@ export default {
   background-color: white;
   border: 2px lightgreen solid;
   border-radius: 15px;
-  width: 80px;
+  width: 55px;
   text-align: center;
 }
 
@@ -156,7 +156,7 @@ export default {
   background-color: white;
   border: 2px lightcoral solid;
   border-radius: 15px;
-  width: 80px;
+  width: 55px;
   text-align: center;
 }
 

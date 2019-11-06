@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @keydown.enter="attemptLogin">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>

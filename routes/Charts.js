@@ -11,12 +11,13 @@ process.env.SECRET_KEY = 'secret'
  ** SAVE CHART
  */
 charts.post('/save', (req, res) => {
+  const url = generateUrl(15)
   const chartData = {
     name: req.body.name,
     data: req.body.data,
     id_dataset: req.body.id_dataset,
     id_user: req.body.id_user,
-    url: generateUrl(15)
+    url
   }
   Chart.create(chartData)
     .then((chart) => {
