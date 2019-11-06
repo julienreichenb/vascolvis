@@ -176,8 +176,8 @@ export default {
           break
         case 'charts':
           this.$router.push({
-            name: 'analyze',
-            params: { idgraph: item.id }
+            name: 'graph-url',
+            params: { url: item.url }
           })
           break
         case 'annotations':

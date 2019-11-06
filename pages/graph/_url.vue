@@ -24,7 +24,7 @@
 
 <script>
 import jwtDecode from 'jwt-decode'
-import axios from 'axios'
+import axios from '~/plugins/axios'
 export default {
   data() {
     return {
@@ -37,7 +37,7 @@ export default {
     }
   },
   asyncData({ params }) {
-    return axios.get(`/charts/id/?id=${params.idgraph}`).then((res) => {
+    return axios.get(`/charts/?url=${params.url}`).then((res) => {
       return { chart: res.data, json: JSON.parse(res.data.data) }
     })
   },

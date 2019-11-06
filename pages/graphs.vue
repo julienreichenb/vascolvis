@@ -630,8 +630,8 @@ export default {
         })
         .then((res) => {
           this.$router.push({
-            name: 'analyze',
-            params: { idgraph: res.data.id }
+            name: 'graph-url',
+            params: { url: res.data.url }
           })
         })
         .catch((error) => {
