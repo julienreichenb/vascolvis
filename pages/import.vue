@@ -130,7 +130,7 @@
                         depressed
                         @click="generateSampleGraph()"
                       >
-                        Générer les graphiques d'exemple
+                        Voir l'exemple
                       </v-btn>
                     </v-layout>
                   </v-card-text>

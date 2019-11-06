@@ -19,6 +19,9 @@ module.exports = db.sequelize.define(
     data: {
       type: Sequelize.JSON
     },
+    public: {
+      type: Sequelize.TINYINT
+    },
     id_user: {
       type: Sequelize.INTEGER,
       references: 'users', // <<< Note, its table's name, not object name

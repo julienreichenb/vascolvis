@@ -116,12 +116,21 @@ charts.delete('/', (req, res) => {
 })
 
 /*
- ** UPDATE AN ANNOTATION WITH ID
+ ** UPDATE A CHART WITH ID
  */
 charts.put('/', (req, res) => {
-  Chart.update({ name: req.query.name }, { where: { id: req.query.id } })
-    .then((res) => {
-      res.send('Success')
+  Chart.update(
+    { name: req.query.name, public: req.query.public },
+    { where: { id: req.query.id } }
+  )
+    .then(() => {
+      Chart.findOne({
+        where: {
+          id: req.query.id
+        }
+      }).then((chart) => {
+        res.status(200).json(chart)
+      })
     })
     .catch((err) => {
       res.send(err)

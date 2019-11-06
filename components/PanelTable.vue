@@ -55,6 +55,13 @@
         <template v-slot:item.id_user="{ item }">
           <span>{{ getUsername(item) }}</span>
         </template>
+        <template v-slot:item.public="{ item }">
+          <v-icon
+            small
+            :color="item.public === 1 ? 'green lighten-1' : 'red lighten-1'"
+            >{{ setVisibilityIcon(item) }}</v-icon
+          >
+        </template>
         <template v-slot:item.url="{ item }">
           <a @click="goToItem(item)">{{ item.url }}</a>
         </template>
@@ -141,7 +148,9 @@ export default {
       if (this.onlyMine) {
         return this.data.filter((entry) => entry.id_user === this.user.id)
       } else {
-        return this.data
+        return this.data.filter(
+          (entry) => entry.public === 1 || entry.id_user === this.user.id
+        )
       }
     }
   },
@@ -162,6 +171,11 @@ export default {
           return this.usernames[i].username
         }
       }
+    },
+    setVisibilityIcon(item) {
+      return item.public === 1
+        ? 'mdi-lock-open-variant-outline'
+        : 'mdi-lock-outline'
     },
     /*
      ** Buttons methods
@@ -209,6 +223,9 @@ export default {
 }
 </script>
 <style>
+a:hover {
+  color: lightblue;
+}
 .help {
   font-size: smaller;
   color: lightgray;

@@ -73,7 +73,7 @@ export default {
           label: 'Sets de données',
           icon: 'mdi-database',
           headers: [
-            { text: 'Nom', value: 'name', sortable: false },
+            { text: 'Nom', value: 'name' },
             { text: 'Taille(kb)', value: 'size' },
             { text: 'Actions', value: 'actions', sortable: false }
           ],
@@ -84,9 +84,10 @@ export default {
           label: 'Graphiques',
           icon: 'mdi-chart-pie',
           headers: [
-            { text: 'Nom', value: 'name', sortable: false },
-            { text: 'Utilisateur', value: 'id_user' },
+            { text: '', value: 'public' },
+            { text: 'Nom', value: 'name' },
             { text: 'URL', value: 'url', sortable: false },
+            { text: 'Utilisateur', value: 'id_user' },
             { text: 'Actions', value: 'actions', sortable: false }
           ],
           data: []
