@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-toolbar class="pt-5 blue darken-3">
+    <v-toolbar class="indigo darken-3">
       <v-toolbar-title class="mb-4 white--text">
         <h3>Le projet Vasco</h3>
       </v-toolbar-title>

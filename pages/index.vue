@@ -3,7 +3,7 @@
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
-          <v-toolbar class="pt-5 blue darken-3">
+          <v-toolbar class="indigo darken-3">
             <v-toolbar-title class="white--text">
               <h3>Bienvenue sur Vasco</h3>
             </v-toolbar-title>

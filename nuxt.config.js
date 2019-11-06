@@ -41,7 +41,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/colvis'],
+  plugins: ['~/plugins/colvis', '~/plugins/vue-clipboard2'],
   /*
    ** Nuxt.js dev-modules
    */
