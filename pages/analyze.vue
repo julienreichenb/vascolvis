@@ -45,13 +45,12 @@ export default {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
     } catch {
-      this.$router.push({ name: 'index' })
+      this.user = null
     }
     this.init = true
   },
   mounted() {
     this.displayGraph()
-
     this.element = this.$getDataFromContainer
   },
   methods: {

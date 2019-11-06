@@ -133,9 +133,18 @@
                   à la fois au maximum.
                 </div>
                 <div v-else class="mt-3">
-                  Sélectionnez <span class="emphaze">une</span> ou
-                  <span class="emphaze">deux</span> variables dans le panel, à
-                  gauche.
+                  <h3>
+                    Sélectionnez <span class="emphaze">une</span> ou
+                    <span class="emphaze">deux</span> variables dans le panel, à
+                    gauche.
+                  </h3>
+                  <img
+                    class="mt-3"
+                    src="../static/demo.gif"
+                    alt=""
+                    width="100%"
+                    style="border: 2px solid white"
+                  />
                 </div>
               </v-card-text>
               <v-card-title class="pt-1">

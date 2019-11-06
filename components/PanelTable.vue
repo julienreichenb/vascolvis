@@ -45,8 +45,8 @@
             <template v-slot:input>
               <v-text-field
                 v-model="props.item.name"
-                single-line
                 :rules="[max40chars]"
+                single-line
                 counter
               ></v-text-field>
             </template>
