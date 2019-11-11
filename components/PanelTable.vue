@@ -24,10 +24,10 @@
       <v-data-table
         :headers="headers"
         :items="filterGraphs"
-        item-key="name"
+        item-key="id"
         :search="search"
         :footer-props="{
-          'items-per-page-options': [5]
+          'items-per-page-options': [parseInt('5', 10)]
         }"
         items-per-page="5"
       >
@@ -103,7 +103,6 @@ export default {
   },
   data() {
     return {
-      max100chars: (v) => v.length <= 100 || 'Nom trop long',
       onlyMine: false,
       deleteDialog: false,
       selected: { name: '' },

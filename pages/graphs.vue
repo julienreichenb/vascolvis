@@ -42,11 +42,10 @@
                   panelClosed = false
                 "
               >
-                <v-expansion-panel-header
-                  :expand-icon="variable.icon"
-                  :class="variable.color + ' darken-2'"
-                  disable-icon-rotate
-                >
+                <v-expansion-panel-header disable-icon-rotate>
+                  <v-icon slot="actions" :color="variable.color">{{
+                    variable.icon
+                  }}</v-icon>
                   {{ variable.name }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content class="mt-4">
@@ -143,7 +142,7 @@
                     src="../static/demo.gif"
                     alt=""
                     width="100%"
-                    style="border: 2px solid white"
+                    style="border: 1px solid white"
                   />
                 </div>
               </v-card-text>
@@ -153,14 +152,7 @@
                   :key="variable.id"
                   class="text-center"
                 >
-                  <v-chip
-                    v-if="variable.isUsed"
-                    :color="
-                      variable.type === 'temporal'
-                        ? variable.color + ' darken-2'
-                        : variable.color
-                    "
-                  >
+                  <v-chip v-if="variable.isUsed" :color="variable.color">
                     <v-icon left :color="'white'">{{ variable.icon }}</v-icon>
                     {{ variable.name
                     }}<v-icon
@@ -179,20 +171,14 @@
                 <v-row dense>
                   <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
                     <v-card v-show="display" class="grey darken-2">
-                      <v-card-title
-                        :id="'title-' + graph.title"
-                        contenteditable
-                        v-text="graph.title"
-                      ></v-card-title>
-                      <v-layout flex align-center justify-space-around>
-                        <div
-                          :id="'vis-' + graph.title"
-                          class="resize-graph"
-                        ></div>
-                      </v-layout>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
+                      <v-layout justify-space-between>
+                        <v-card-title
+                          :id="'title-' + graph.title"
+                          contenteditable
+                          v-text="graph.title"
+                        ></v-card-title>
                         <v-btn
+                          style="margin: 1em 1em 0 0"
                           color="green"
                           large
                           depressed
@@ -201,7 +187,20 @@
                           <v-icon>mdi-content-save</v-icon>
                           Enregistrer
                         </v-btn>
-                      </v-card-actions>
+                      </v-layout>
+                      <v-card-text>
+                        <v-layout
+                          flex
+                          align-center
+                          justify-space-around
+                          class="graph-wrapper"
+                        >
+                          <div
+                            :id="'vis-' + graph.title"
+                            class="resize-graph"
+                          ></div>
+                        </v-layout>
+                      </v-card-text>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -262,7 +261,7 @@ export default {
       },
       testgraph: {
         data: { url: 'data/movies.json' },
-        mark: { type: 'bar', binSpacing: 0 },
+        mark: { type: 'bar', tooltip: true, binSpacing: 0 },
         encoding: {
           x: {
             bin: { maxbins: 10 },
@@ -341,19 +340,19 @@ export default {
       this.variables[i].isUsed = false
       switch (type) {
         case 'quantitative':
-          this.variables[i].color = 'red'
+          this.variables[i].color = '#e41a1c'
           this.variables[i].icon = 'mdi-numeric'
           this.variables[i].max = this.getMaxValue(this.variables[i])
           this.variables[i].min = this.getMinValue(this.variables[i])
           this.variables[i].mean = this.getMeanValue(this.variables[i])
           break
         case 'nominal':
-          this.variables[i].color = 'blue'
+          this.variables[i].color = '#377eb8'
           this.variables[i].icon = 'mdi-alphabetical'
           this.variables[i].mode = this.getMode(this.variables[i])
           break
         default:
-          this.variables[i].color = 'yellow'
+          this.variables[i].color = '#4daf4a'
           this.variables[i].icon = 'mdi-timer'
           break
       }
@@ -567,8 +566,10 @@ export default {
         data: {
           values: data
         },
+        width: 'container',
         mark: {
-          type: 'bar'
+          type: 'bar',
+          tooltip: true
         },
         encoding
       }
@@ -581,16 +582,17 @@ export default {
         data: {
           values: data
         },
+        width: 'container',
         layer: [
           {
-            mark: 'point',
+            mark: { type: 'point', tooltip: true },
             encoding: {
               x: { field: selectedVar.name, type: selectedVar.type },
               y: { field: combinationVar.name, type: combinationVar.type }
             }
           },
           {
-            mark: 'rule',
+            mark: { type: 'rule', tooltip: true },
             encoding: {
               y: {
                 field: combinationVar.name,
@@ -611,7 +613,8 @@ export default {
         data: {
           values: data
         },
-        mark: 'point',
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
         encoding: {
           x: { field: selectedVars[0].name, type: selectedVars[0].type },
           y: { field: selectedVars[1].name, type: selectedVars[1].type },
@@ -682,9 +685,11 @@ export default {
       values[0] = this.json[0][variable.name]
       counters[0] = 1
       for (let i = 1; i < this.json.length; i++) {
+        /*
         if (values.length > 5) {
           return
         }
+        */
         const value = this.json[i][variable.name]
         let isInArray = false
         for (let j = 0; j < values.length; j++) {
@@ -777,10 +782,14 @@ export default {
   opacity: 0;
 }
 
-.resize-graph {
+.graph-wrapper {
+  width: 100%;
+  height: 350px;
   overflow: auto;
-  height: 300px;
-  text-align: center;
+}
+
+.resize-graph {
+  width: 100%;
 }
 
 .v-chip {

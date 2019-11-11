@@ -33,6 +33,7 @@
                   </v-btn>
                   <span v-else>Privé</span>
                 </div>
+                <div />
                 <div class="url pr-2 pl-2 pt-2 pb-2">
                   {{ chart.url }}
                   <v-btn
@@ -54,9 +55,9 @@
               >
             </v-card-subtitle>
             <v-card-text>
-              <v-layout flex justify-center>
+              <div style="width: 100%">
                 <div id="vis" class="resize-graph"></div>
-              </v-layout>
+              </div>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -85,12 +86,8 @@ export default {
       chart: null,
       annotations: [],
       annotating: false,
+      isMyChart: true,
       elements: []
-    }
-  },
-  computed: {
-    isMyChart() {
-      return this.chart.id_user === this.user.id
     }
   },
   asyncData({ params }) {
@@ -101,6 +98,10 @@ export default {
   created() {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
+      this.isMyChart = this.chart.id_user === this.user.id
+      if (!this.isMyChart && !this.chart.public) {
+        this.$router.push({ name: 'import' })
+      }
     } catch {
       this.$router.push({ name: 'index' })
     }
@@ -112,6 +113,7 @@ export default {
   },
   methods: {
     displayGraph() {
+      this.json.height = '300'
       window.vegaEmbed('#vis', this.json)
     },
     alertAnnotation(annotation) {
@@ -133,7 +135,7 @@ export default {
       return 'localhost:3000/graph/' + this.chart.url
     },
     showCopySuccess() {
-      this.$toast.success('Copié !')
+      this.$toast.show('Copié !')
     }
   }
 }
@@ -145,7 +147,7 @@ export default {
   color: darkgreen;
   background-color: white;
   border: 2px lightgreen solid;
-  border-radius: 15px;
+  border-radius: 5px;
   width: 55px;
   text-align: center;
 }
@@ -155,7 +157,7 @@ export default {
   color: darkred;
   background-color: white;
   border: 2px lightcoral solid;
-  border-radius: 15px;
+  border-radius: 5px;
   width: 55px;
   text-align: center;
 }
@@ -166,9 +168,9 @@ export default {
   border: 1px black solid;
   border-radius: 10px;
 }
+
 .resize-graph {
+  width: 100%;
   overflow: auto;
-  height: 300px;
-  text-align: center;
 }
 </style>

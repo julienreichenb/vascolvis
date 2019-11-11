@@ -22,8 +22,17 @@
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer :fixed="fixed" app>
-      <span>VASCO &copy; 2019</span>
+    <v-footer :fixed="fixed" app class="footer-margin">
+      <v-layout justify-space-between align-center>
+        <a href="https://hes-so.ch" target="_blank">
+          <img
+            src="../static/hessologo.png"
+            alt=""
+            style="height: 50px; width: auto;"
+          />
+        </a>
+        <span>VASCO &copy; 2019</span>
+      </v-layout>
     </v-footer>
   </v-app>
 </template>
@@ -34,7 +43,7 @@ export default {
     return {
       clipped: false,
       fixed: false,
-      title: 'Vasco'
+      title: 'VASCO'
     }
   },
   methods: {
@@ -62,3 +71,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.footer-margin {
+  padding: 1em 3em 0.5em 3em;
+}
+</style>
