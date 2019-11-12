@@ -34,14 +34,39 @@
                   <span v-else>Privé</span>
                 </div>
                 <div />
-                <div class="url pr-2 pl-2 pt-2 pb-2">
-                  {{ chart.url }}
+                <div>
                   <v-btn
                     v-clipboard:copy="getFullUrl()"
                     v-clipboard:success="showCopySuccess"
-                    x-small
-                    class="ml-2 indigo text--black"
-                    >Copier</v-btn
+                    small
+                    icon
+                    depressed
+                    class="share ml-2 white indigo--text"
+                    ><v-icon color="black">mdi-link-variant</v-icon></v-btn
+                  >
+                  <v-btn
+                    small
+                    icon
+                    depressed
+                    class="share ml-2 white indigo--text"
+                    @click="shareByMail()"
+                    ><v-icon>mdi-email-outline</v-icon></v-btn
+                  >
+                  <v-btn
+                    small
+                    icon
+                    depressed
+                    class="share ml-2 white indigo--text"
+                    @click="shareOnFacebook()"
+                    ><v-icon color="#4267B2">mdi-facebook</v-icon></v-btn
+                  >
+                  <v-btn
+                    small
+                    icon
+                    depressed
+                    class="share ml-2 white indigo--text"
+                    @click="shareOnTwitter()"
+                    ><v-icon color="#55ACEE">mdi-twitter</v-icon></v-btn
                   >
                 </div>
               </v-layout>
@@ -132,10 +157,40 @@ export default {
         })
     },
     getFullUrl() {
-      return 'localhost:3000/graph/' + this.chart.url
+      return 'http://localhost:3000/graph/' + this.chart.url
+    },
+    shareByMail() {
+      window.open(
+        `mailto:test@example.com?subject=${'Analyse collaborative de graphique - ' +
+          this.chart
+            .name}&body=${'Je voudrais ton avis sur le graphique disponible ici : ' +
+          this.getFullUrl()}`
+      )
+    },
+    shareOnFacebook() {
+      const facebookWindow = window.open(
+        'https://www.facebook.com/sharer/sharer.php?u=' + this.getFullUrl(),
+        'facebook-popup',
+        'height=350,width=600'
+      )
+      if (facebookWindow.focus) {
+        facebookWindow.focus()
+      }
+      return false
+    },
+    shareOnTwitter() {
+      const twitterWindow = window.open(
+        'https://twitter.com/share?url=' + this.getFullUrl(),
+        'twitter-popup',
+        'height=350,width=600'
+      )
+      if (twitterWindow.focus) {
+        twitterWindow.focus()
+      }
+      return false
     },
     showCopySuccess() {
-      this.$toast.show('Copié !')
+      this.$toast.info('Copié !', { position: 'top-right' })
     }
   }
 }
@@ -162,15 +217,12 @@ export default {
   text-align: center;
 }
 
-.url {
-  color: royalblue;
-  background-color: white;
-  border: 1px black solid;
-  border-radius: 10px;
-}
-
 .resize-graph {
   width: 100%;
   overflow: auto;
+}
+
+.share:hover {
+  top: -1px;
 }
 </style>

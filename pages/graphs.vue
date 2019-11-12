@@ -49,18 +49,6 @@
                   {{ variable.name }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content class="mt-4">
-                  <!-- // NOT USED ANYMORE WITH DRAG&DROP FEATURE
-                 <v-layout justify-space-around align-center>
-
-                   <v-checkbox
-                     v-model="variable.isUsed"
-                     flat
-                     :label="'Utiliser'"
-                     :color="variable.color + ' lighten-2'"
-                     @change="computeBigGraphs"
-                   ></v-checkbox>
-                  </v-layout>
-                  -->
                   <v-layout justify-space-around align-center>
                     <div :id="'sparkle-' + variable.id"></div>
                   </v-layout>
@@ -685,11 +673,6 @@ export default {
       values[0] = this.json[0][variable.name]
       counters[0] = 1
       for (let i = 1; i < this.json.length; i++) {
-        /*
-        if (values.length > 5) {
-          return
-        }
-        */
         const value = this.json[i][variable.name]
         let isInArray = false
         for (let j = 0; j < values.length; j++) {
