@@ -220,7 +220,7 @@ export default {
       ],
       // PANEL MANAGEMENT
       panel: [],
-      panelClosed: true,
+      panelClosed: false,
       // TESTING
       testdata: {
         values: [
@@ -264,7 +264,7 @@ export default {
     }
   },
   watch: {
-    graphs(newValue, oldValue) {
+    graphs(newValue) {
       if (newValue.length > 0) {
         this.renderGraphs()
       }
@@ -282,17 +282,13 @@ export default {
       this.$router.push({ name: 'index' })
     }
     this.init()
-    this.$nextTick(() => {
-      this.renderSparklines()
-    })
+    this.all()
+    this.renderSparklines()
+  },
+  mounted() {
+    this.none()
   },
   methods: {
-    resolveDraggedVariable() {
-      const id = this.droppedVars[0].id
-      this.variables[id].isUsed = true
-      this.droppedVars = []
-      this.computeBigGraphs()
-    },
     // INIT
     init() {
       const names = Object.keys(this.json[0])
@@ -343,6 +339,12 @@ export default {
       }
       this.computeSparkles()
     },
+    resolveDraggedVariable() {
+      const id = this.droppedVars[0].id
+      this.variables[id].isUsed = true
+      this.droppedVars = []
+      this.computeBigGraphs()
+    },
     // GRAPH GENERATION
     renderGraphs() {
       this.$nextTick(() => {
@@ -352,13 +354,15 @@ export default {
       })
     },
     renderSparklines() {
-      for (let i = 0; i < this.variables.length; i++) {
-        window.vegaEmbed(
-          '#sparkle-' + this.variables[i].id,
-          this.variables[i].data,
-          { actions: false }
-        )
-      }
+      this.$nextTick(() => {
+        for (let i = 0; i < this.variables.length; i++) {
+          window.vegaEmbed(
+            '#sparkle-' + this.variables[i].id,
+            this.variables[i].data,
+            { actions: false }
+          )
+        }
+      })
     },
     computeBigGraphs() {
       const variables = this.fetchUsedVariables()
