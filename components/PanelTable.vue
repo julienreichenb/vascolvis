@@ -4,7 +4,7 @@
       <v-card-title>
         <v-text-field
           v-model="search"
-          label="Rechercher..."
+          :label="this.$t('panel.table.search')"
           single-line
           hide-details
         ></v-text-field>
@@ -12,7 +12,7 @@
           v-if="type === 'charts'"
           v-model="onlyMine"
           flat
-          label="Mes graphs uniquement"
+          :label="this.$t('panel.table.mine_only')"
           color="blue lighten-2"
         ></v-checkbox>
       </v-card-title>
@@ -29,7 +29,7 @@
         :footer-props="{
           'items-per-page-options': [parseInt('5', 10)]
         }"
-        items-per-page="5"
+        :items-per-page="parseInt('5', 10)"
       >
         <template v-slot:item.id_user="{ item }">
           <span>{{ getUsername(item) }}</span>
@@ -61,19 +61,18 @@
     <v-dialog v-model="deleteDialog" max-width="500">
       <v-card>
         <v-card-title class="headline"
-          >Voulez-vous vraiment supprimer {{ selected.name }} ?</v-card-title
+          >{{ $t('panel.table.delete') }} {{ selected.name }} ?</v-card-title
         >
         <v-card-text>
-          Cette action est irreversible et entraine la suppression de tout autre
-          élément qui en dépend.
+          {{ $t('panel.table.delete_disclaimer') }}
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey lighten-3" text @click="deleteDialog = false">
-            Annuler
+            {{ $t('panel.table.delete_cancel') }}
           </v-btn>
           <v-btn color="red darken-2" text @click="deleteItem()">
-            Supprimer
+            {{ $t('panel.table.delete_ok') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -150,32 +149,26 @@ export default {
     goToItem(item) {
       switch (this.type) {
         case 'datasets':
-          this.$router.push({
-            name: 'graphs',
-            params: { idset: item.id }
-          })
+          this.$router.push(
+            this.localePath({
+              name: 'graphs',
+              params: { idset: item.id }
+            })
+          )
           break
         case 'charts':
-          this.$router.push({
-            name: 'graph-url',
-            params: { url: item.url }
-          })
+          this.$router.push(
+            this.localePath({
+              name: 'graph-url',
+              params: { url: item.url }
+            })
+          )
           break
         case 'annotations':
           break
         default:
           break
       }
-    },
-    async editItem(item) {
-      await axios
-        .put(`/${this.type}?id=${item.id}&name=${item.name}`)
-        .then((res) => {
-          this.$toast.success(item.name + ' a été renommé avec succès.')
-        })
-    },
-    cancel() {
-      this.$toast.success("Le nom n'a pas été modifié.")
     },
     isOwner(item) {
       return item.id_user === this.user.id
@@ -188,7 +181,7 @@ export default {
       const item = this.selected
       this.deleteDialog = false
       await axios.delete(`/${this.type}?id=${item.id}`).then((res) => {
-        this.$toast.success(item.name + ' a été supprimé avec succès.')
+        this.$toast.success(item.name + this.$t('panel.table.toast_deleted'))
         this.$emit('refresh')
       })
     }

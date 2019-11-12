@@ -20,7 +20,7 @@
                   >
                     <v-icon>mdi-lock-open-variant</v-icon>
                   </v-btn>
-                  <span v-else>Public</span>
+                  <span v-else>{{ $t('url.public') }}</span>
                 </div>
                 <div v-else class="private">
                   <v-btn
@@ -31,7 +31,7 @@
                   >
                     <v-icon>mdi-lock</v-icon>
                   </v-btn>
-                  <span v-else>Privé</span>
+                  <span v-else>{{ $t('url.private') }}</span>
                 </div>
                 <div />
                 <div>
@@ -76,7 +76,7 @@
                 color="white indigo--text"
                 depressed
                 @click="annotating = !annotating"
-                >Ajouter une annotation</v-btn
+                >{{ $t('url.add_annot') }}</v-btn
               >
             </v-card-subtitle>
             <v-card-text>
@@ -125,10 +125,10 @@ export default {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
       this.isMyChart = this.chart.id_user === this.user.id
       if (!this.isMyChart && !this.chart.public) {
-        this.$router.push({ name: 'import' })
+        this.$router.push(this.localePath({ name: 'import' }))
       }
     } catch {
-      this.$router.push({ name: 'index' })
+      this.$router.push(this.localePath({ name: 'index' }))
     }
     this.init = true
   },
@@ -151,8 +151,8 @@ export default {
           this.chart = res.data
           let msg = ''
           bool === 1
-            ? (msg = 'Le graphique est maintenant public.')
-            : (msg = 'Le graphique est maintenant privé.')
+            ? (msg = this.$t('url.msg_public'))
+            : (msg = this.$t('url.msg_private'))
           this.$toast.success(msg)
         })
     },
@@ -161,10 +161,8 @@ export default {
     },
     shareByMail() {
       window.open(
-        `mailto:test@example.com?subject=${'Analyse collaborative de graphique - ' +
-          this.chart
-            .name}&body=${'Je voudrais ton avis sur le graphique disponible ici : ' +
-          this.getFullUrl()}`
+        `mailto:test@example.com?subject=${this.$t('url.mail_subject') +
+          this.chart.name}&body=${this.$t('url.mail_body') + this.getFullUrl()}`
       )
     },
     shareOnFacebook() {
@@ -190,7 +188,7 @@ export default {
       return false
     },
     showCopySuccess() {
-      this.$toast.info('Copié !', { position: 'top-right' })
+      this.$toast.info(this.$t('url.copied'), { position: 'top-right' })
     }
   }
 }

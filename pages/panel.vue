@@ -5,7 +5,7 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title class="white--text">
-              <h3>Bienvenue sur votre panel, {{ user.username }}</h3>
+              <h3>{{ $t('panel.header') }} {{ user.username }}</h3>
             </v-toolbar-title>
             <v-tabs
               slot="extension"
@@ -18,7 +18,7 @@
                 <v-container fill-height>
                   <v-layout align-center justify-space-around>
                     <span>
-                      {{ menu.label }}
+                      {{ $t('panel.tabs.' + menu.id) }}
                     </span>
                     <v-icon color="blue lighten-2">{{ menu.icon }}</v-icon>
                   </v-layout>
@@ -31,7 +31,7 @@
                     depressed
                     @click="goToImport()"
                   >
-                    Importer un jeu de données
+                    {{ $t('panel.dataset_button') }}
                   </v-btn>
                 </v-card-text>
                 <PanelTable
@@ -44,7 +44,7 @@
                 >
                 </PanelTable>
                 <v-card v-else>
-                  <v-card-title>Aucune donnée disponible.</v-card-title>
+                  <v-card-title>{{ $t('panel.no_data') }}</v-card-title>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -70,38 +70,42 @@ export default {
       menus: [
         {
           id: 'datasets',
-          label: 'Sets de données',
           icon: 'mdi-database',
           headers: [
-            { text: 'Nom', value: 'name' },
-            { text: 'Taille(kb)', value: 'size' },
-            { text: 'Actions', value: 'actions', sortable: false }
+            { text: this.$t('panel.table.name'), value: 'name' },
+            { text: this.$t('panel.table.size'), value: 'size' },
+            {
+              text: this.$t('panel.table.actions'),
+              value: 'actions',
+              sortable: false
+            }
           ],
           data: []
         },
         {
           id: 'charts',
-          label: 'Graphiques',
           icon: 'mdi-chart-pie',
           headers: [
             { text: '', value: 'public' },
-            { text: 'Nom', value: 'name' },
-            { text: 'URL', value: 'url', sortable: false },
-            { text: 'Utilisateur', value: 'id_user' },
-            { text: 'Actions', value: 'actions', sortable: false }
+            { text: this.$t('panel.table.name'), value: 'name' },
+            { text: this.$t('panel.table.url'), value: 'url', sortable: false },
+            { text: this.$t('panel.table.user'), value: 'id_user' },
+            {
+              text: this.$t('panel.table.actions'),
+              value: 'actions',
+              sortable: false
+            }
           ],
           data: []
         },
         {
           id: 'annotations',
-          label: 'Annotations',
           icon: 'mdi-note-text-outline',
           headers: [],
           data: []
         },
         {
           id: 'comments',
-          label: 'Commentaires',
           icon: 'mdi-comment-processing-outline',
           headers: [],
           data: []
@@ -116,13 +120,13 @@ export default {
       this.fetchAllData()
       this.init = true
     } catch {
-      this.$router.push({ name: 'index' })
+      this.$router.push(this.localePath({ name: 'index' }))
     }
   },
 
   methods: {
     goToImport() {
-      this.$router.push({ name: 'import' })
+      this.$router.push(this.localePath({ name: 'import' }))
     },
     // Fetch data for the current user
     fetchAllData() {

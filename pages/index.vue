@@ -5,7 +5,7 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title class="white--text">
-              <h3>Bienvenue sur Vasco</h3>
+              <h3>{{ $t('index.welcome') }}</h3>
             </v-toolbar-title>
             <v-tabs
               slot="extension"
@@ -14,27 +14,29 @@
               slider-color="white"
               color="white"
             >
-              <v-tab> Se connecter </v-tab>
+              <v-tab> {{ $t('index.login.header') }} </v-tab>
               <v-tab-item>
                 <v-card>
-                  <v-card-title v-text="`Saisissez vos informations.`">
+                  <v-card-title v-text="this.$t('index.login.label')">
                   </v-card-title>
                   <v-card-text class="pt-4">
                     <div>
                       <v-form ref="form" v-model="validLog">
                         <v-text-field
                           v-model="username"
-                          label="Entrez votre nom d'utilisateur"
+                          :label="this.$t('index.username')"
                           :rules="usernameRules"
                           required
+                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="password"
-                          label="Entrez votre mot de passe"
+                          :label="this.$t('index.password')"
                           :rules="passwordRules"
                           required
                           type="password"
+                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-layout justify-space-between>
@@ -44,7 +46,7 @@
                             depressed
                             @click="attemptLogin()"
                           >
-                            Continuer
+                            {{ $t('index.login.button') }}
                           </v-btn>
                         </v-layout>
                         <div v-if="isWrong">
@@ -56,37 +58,38 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab> S'enregistrer </v-tab>
+              <v-tab> {{ $t('index.register.header') }} </v-tab>
               <v-tab-item>
                 <v-card>
-                  <v-card-title
-                    v-text="`Choisissez un identifiant et un mot de passe.`"
-                  >
+                  <v-card-title v-text="this.$t('index.register.label')">
                   </v-card-title>
                   <v-card-text class="pt-4">
                     <div>
                       <v-form ref="form" v-model="validReg">
                         <v-text-field
                           v-model="username"
-                          label="Entrez votre nom d'utilisateur"
+                          :label="this.$t('index.username')"
                           :rules="usernameRules"
                           required
+                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="password"
-                          label="Entrez votre mot de passe"
+                          :label="this.$t('index.password')"
                           :rules="passwordRules"
                           required
                           type="password"
+                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="checkPassword"
-                          label="Confirmez votre mot de passe"
+                          :label="this.$t('index.register.repeat')"
                           :rules="checkPasswordRules"
                           required
                           type="password"
+                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-layout justify-space-between>
@@ -96,7 +99,7 @@
                             depressed
                             @click="createAccount()"
                           >
-                            Créer le compte
+                            {{ $t('index.register.button') }}
                           </v-btn>
                         </v-layout>
                         <div v-if="isWrong">
@@ -120,21 +123,21 @@ export default {
   data() {
     return {
       usernameRules: [
-        (v) => !!v || `Nom d'utilisateur requis`,
+        (v) => !!v || this.$t('index.error.username_required'),
         (v) =>
           /^[a-zA-Z0-9]{4,20}$/.test(v) ||
-          `Le nom d'utilisateur est trop court ou contient des caractères interdits`
+          this.$t('index.error.username_invalid')
       ],
       passwordRules: [
-        (v) => !!v || 'Mot de passe requis',
+        (v) => !!v || this.$t('index.error.password_required'),
         (v) =>
           /^[a-zA-Z0-9]{4,20}$/.test(v) ||
-          `Le mot de passe est trop court ou contient des caractères interdits`
+          this.$t('index.error.password_invalid')
       ],
       checkPasswordRules: [
         (v) =>
           (this.password === this.checkPassword && !!v) ||
-          'Les mots de passe ne correspondent pas'
+          this.$t('index.error.not_corresponding')
       ],
       validLog: false,
       validReg: false,
@@ -148,7 +151,7 @@ export default {
   },
   mounted() {
     if (localStorage.getItem('usertoken') !== null) {
-      this.$router.push({ name: 'import' })
+      this.$router.push(this.localePath({ name: 'import' }))
     }
   },
   methods: {
@@ -160,12 +163,11 @@ export default {
         })
         .then((res) => {
           localStorage.setItem('usertoken', res.data)
-          this.$router.push({ name: 'import' })
+          this.$router.push(this.localePath({ name: 'import' }))
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.log(error)
-          this.$router.push({ name: 'index' })
           this.isWrong = true
           this.errorReg = error.response.data.error
         })
@@ -178,12 +180,11 @@ export default {
         })
         .then((res) => {
           localStorage.setItem('usertoken', res.data)
-          this.$router.push({ name: 'import' })
+          this.$router.push(this.localePath({ name: 'import' }))
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.log(error)
-          this.$router.push({ name: 'index' })
           this.isWrong = true
           this.errorLog = error.response.data.error
         })

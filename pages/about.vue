@@ -51,9 +51,6 @@
             tempor interdum turpis nec, dignissim rhoncus eros.
           </p>
         </div>
-        <v-btn color="white indigo--text" depressed @click="back()">
-          <v-icon>mdi-keyboard-backspace</v-icon> | Retour
-        </v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -67,12 +64,12 @@ export default {
     back() {
       try {
         if (localStorage.getItem('usertoken') !== null) {
-          this.$router.push({ name: 'import' })
+          this.$router.push(this.localePath({ name: 'import' }))
         } else {
-          this.$router.push({ name: 'index' })
+          this.$router.push(this.localePath({ name: 'index' }))
         }
       } catch {
-        this.$router.push({ name: 'index' })
+        this.$router.push(this.localePath({ name: 'index' }))
       }
     }
   }

@@ -5,7 +5,7 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title class="white--text">
-              <h3>Sélectionnez des données à importer</h3>
+              <h3>{{ $t('import.own.header') }}</h3>
             </v-toolbar-title>
             <v-tabs
               slot="extension"
@@ -14,7 +14,7 @@
               slider-color="white"
               color="white"
             >
-              <v-tab> Vos données </v-tab>
+              <v-tab> {{ $t('import.own.label') }} </v-tab>
               <v-tab-item>
                 <v-card>
                   <v-card-text class="pt-4">
@@ -22,17 +22,16 @@
                       <v-icon color="blue" small
                         >mdi-help-circle-outline</v-icon
                       >
-                      Pour convertir vos fichiers en .csv,
+                      {{ $t('import.own.convert') }}
                       <a
                         href="https://www.aconvert.com/document/xls-to-csv/"
                         target="_blank"
-                        >cliquez ici</a
+                        >{{ $t('import.own.click_here') }}</a
                       >.
                     </div>
                     <div class="help">
                       <v-icon color="red" small>mdi-alert-outline</v-icon>
-                      Votre fichier doit contenir des entêtes et ne pas dépasser
-                      1MB.
+                      {{ $t('import.own.disclaimer') }}
                     </div>
                     <div class="form-group">
                       <div class="col-sm-9">
@@ -45,7 +44,7 @@
                           outlined
                           color="blue"
                           prepend-icon="mdi-upload"
-                          label="Parcourir..."
+                          :label="this.$t('import.own.file_label')"
                           class="form-control"
                           @change="loadCSV()"
                         />
@@ -57,12 +56,12 @@
                             depressed
                             @click="saveDataset()"
                           >
-                            Générer les graphiques
+                            {{ $t('import.own.button') }}
                           </v-btn>
                           <v-switch
                             v-if="file && file.size <= 1000000"
                             v-model="preview"
-                            label="Voir l'aperçu"
+                            :label="this.$t('import.own.preview')"
                             color="blue"
                           ></v-switch>
                         </v-layout>
@@ -86,7 +85,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="csv in parse_csv.slice(0, 6)" :key="csv">
+                        <tr v-for="csv in parse_csv.slice(0, 5)" :key="csv">
                           <td v-for="key in parse_header" :key="key">
                             {{ csv[key] }}
                           </td>
@@ -96,32 +95,14 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab> Exemple </v-tab>
+              <v-tab> {{ $t('import.sample.header') }} </v-tab>
               <v-tab-item>
                 <v-card>
-                  <v-card-title
-                    v-text="`Essayez avec notre échantillon de données`"
-                  >
+                  <v-card-title v-text="this.$t('import.sample.label')">
                   </v-card-title>
                   <v-card-text class="pt-4">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Curabitur posuere tellus sed blandit lobortis. Ut non eros
-                      mattis dolor fermentum malesuada sit amet sit amet nisl.
-                      Quisque lorem felis, ultrices in lectus eu, mollis
-                      fermentum lorem. Pellentesque tincidunt erat lectus, a
-                      faucibus dolor finibus in. Cras hendrerit, leo sit amet
-                      commodo auctor, dolor purus facilisis justo, vitae
-                      vehicula elit odio id ex. Aliquam malesuada dui at lorem
-                      interdum, at dapibus massa vehicula. Sed sodales ut ipsum
-                      quis commodo. Integer in quam a eros porttitor eleifend
-                      nec eget ex. Sed eget condimentum est, id egestas nisi.
-                      Duis rhoncus arcu at bibendum facilisis. Phasellus tempor
-                      finibus tincidunt. Mauris at egestas lectus. Ut rutrum
-                      pharetra lorem, varius malesuada mi posuere id. Sed
-                      rhoncus luctus dui, quis vestibulum risus finibus a.
-                      Aenean in velit massa. Etiam congue urna sit amet
-                      tristique commodo.
+                      {{ $t('import.sample.text') }}
                     </p>
                     <v-layout justify-space-between>
                       <v-btn
@@ -130,7 +111,7 @@
                         depressed
                         @click="generateSampleGraph()"
                       >
-                        Voir l'exemple
+                        {{ $t('import.sample.button') }}
                       </v-btn>
                     </v-layout>
                   </v-card-text>
@@ -154,10 +135,7 @@ export default {
   data() {
     return {
       rules: [
-        (value) =>
-          !value ||
-          value.size < 1000000 ||
-          'Le jeu de données ne doit pas excéder 1MB !'
+        (value) => !value || value.size < 1000000 || this.$t('import.own.error')
       ],
       sampleDataSet: null,
       file: null,
@@ -177,7 +155,7 @@ export default {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
     } catch {
-      this.$router.push({ name: 'index' })
+      this.$router.push(this.localePath({ name: 'index' }))
     }
   },
   methods: {
@@ -249,7 +227,7 @@ export default {
         .then((res) => {
           this.dataset = res.data
           this.$router.push({
-            name: 'graphs',
+            name: `graphs___${this.$i18n.locale}`,
             params: { idset: res.data.id }
           })
         })
@@ -262,7 +240,7 @@ export default {
     },
     generateSampleGraph() {
       this.$router.push({
-        name: 'graphs',
+        name: `graphs___${this.$i18n.locale}`,
         params: { idset: 1 }
       })
     }

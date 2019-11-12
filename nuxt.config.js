@@ -56,8 +56,22 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/toast'
+    '@nuxtjs/toast',
+    'nuxt-i18n'
   ],
+  i18n: {
+    vueI18nLoader: false,
+    locales: [
+      { code: 'en', iso: 'en-US', file: 'en.js' },
+      { code: 'fr', iso: 'fr-FR', file: 'fr.js' }
+    ],
+    detectBrowserLanguage: {
+      fallbackLocale: 'fr'
+    },
+    defaultLocale: 'fr',
+    lazy: true,
+    langDir: 'lang/'
+  },
   toast: {
     position: 'top-center',
     duration: 2500

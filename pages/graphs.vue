@@ -96,23 +96,19 @@
               <v-card-text>
                 <div class="help">
                   <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
-                  La sélection d'<strong>une seule</strong> variable générera
-                  toutes les combinaisons possibles avec les autres.
-                </div>
-                <div class="help">
-                  <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
-                  Vous pouvez cliquer sur le titre des graphiques pour les
-                  modifier.
+                  {{ $t('graphs.help') }}
                 </div>
                 <div v-if="countVariables > 2" class="mt-3">
-                  <v-icon color="red">mdi-alert-outline</v-icon> Deux variables
-                  à la fois au maximum.
+                  <v-icon color="red">mdi-alert-outline</v-icon>
+                  {{ $t('graphs.warn') }}
                 </div>
                 <div v-if="countVariables < 1" class="mt-3">
                   <h3>
-                    Sélectionnez <span class="emphaze">une</span> ou
-                    <span class="emphaze">deux</span> variables dans le panel, à
-                    gauche.
+                    {{ $t('graphs.tip_1') }}
+                    <span class="emphaze">{{ $t('graphs.tip_2') }}</span
+                    >{{ $t('graphs.tip_3')
+                    }}<span class="emphaze">{{ $t('graphs.tip_4') }}</span
+                    >{{ $t('graphs.tip_5') }}
                   </h3>
                   <img
                     class="mt-3"
@@ -162,7 +158,7 @@
                           @click="saveGraph(graph)"
                         >
                           <v-icon>mdi-content-save</v-icon>
-                          Enregistrer
+                          {{ $t('graphs.save') }}
                         </v-btn>
                       </v-layout>
                       <v-card-text>
@@ -220,36 +216,7 @@ export default {
       ],
       // PANEL MANAGEMENT
       panel: [],
-      panelClosed: false,
-      // TESTING
-      testdata: {
-        values: [
-          { a: 'A', b: 28 },
-          { a: 'B', b: 55 },
-          { a: 'C', b: 43 },
-          { a: 'D', b: 91 },
-          { a: 'E', b: 81 },
-          { a: 'F', b: 53 },
-          { a: 'G', b: 19 },
-          { a: 'H', b: 87 },
-          { a: 'I', b: 52 }
-        ]
-      },
-      testgraph: {
-        data: { url: 'data/movies.json' },
-        mark: { type: 'bar', tooltip: true, binSpacing: 0 },
-        encoding: {
-          x: {
-            bin: { maxbins: 10 },
-            field: 'IMDB_Rating',
-            type: 'quantitative'
-          },
-          y: {
-            aggregate: 'count',
-            type: 'quantitative'
-          }
-        }
-      }
+      panelClosed: false
     }
   },
   computed: {
@@ -279,7 +246,7 @@ export default {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
     } catch {
-      this.$router.push({ name: 'index' })
+      this.$router.push(this.localePath({ name: 'index' }))
     }
     this.init()
     this.all()
@@ -302,6 +269,7 @@ export default {
       }
       this.attributeVariablesTypes()
     },
+    // VARIABLES COMPUTATION
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
         const variableToCheck = this.json[0][this.variables[i].name]
@@ -631,10 +599,12 @@ export default {
     },
     async getNewChart(id) {
       await axios.get(`/charts/id?id=${id}`).then((res) => {
-        this.$router.push({
-          name: 'graph-url',
-          params: { url: res.data.url }
-        })
+        this.$router.push(
+          this.localePath({
+            name: 'graph-url',
+            params: { url: res.data.url }
+          })
+        )
       })
     },
     fetchUsedVariables() {
@@ -645,7 +615,6 @@ export default {
       return usedVariables
     },
     isDate(i) {
-      // TODO : Optimize the date detection
       const variableLabel = this.variables[i].name.toLowerCase()
       const variableValue = this.json[0][this.variables[i].name]
       // Check recurrent time labels

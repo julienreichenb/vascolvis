@@ -49,24 +49,24 @@ export default {
   methods: {
     logout() {
       localStorage.removeItem('usertoken')
-      this.$router.push({ name: 'index' })
+      this.$router.push(this.localePath({ name: 'index' }))
     },
     goToAbout() {
-      this.$router.push({ name: 'about' })
+      this.$router.push(this.localePath({ name: 'about' }))
     },
     goHome() {
       try {
         if (localStorage.getItem('usertoken') !== null) {
-          this.$router.push({ name: 'import' })
+          this.$router.push(this.localePath({ name: 'import' }))
         } else {
-          this.$router.push({ name: 'index' })
+          this.$router.push(this.localePath({ name: 'index' }))
         }
       } catch {
-        this.$router.push({ name: 'index' })
+        this.$router.push(this.localePath({ name: 'index' }))
       }
     },
     goToPanel() {
-      this.$router.push({ name: 'panel' })
+      this.$router.push(this.localePath({ name: 'panel' }))
     }
   }
 }
