@@ -37,10 +37,7 @@
               <v-expansion-panel
                 v-for="variable in variables"
                 :key="variable.id"
-                @click="
-                  displaySparkles()
-                  panelClosed = false
-                "
+                @click="panelClosed = false"
               >
                 <v-expansion-panel-header disable-icon-rotate>
                   <v-icon slot="actions" :color="variable.color">{{
@@ -107,19 +104,11 @@
                   Vous pouvez cliquer sur le titre des graphiques pour les
                   modifier.
                 </div>
-                <div v-if="graphs.length > 0" class="mt-3">
-                  <v-btn
-                    depressed
-                    color="white indigo--text"
-                    @click="displayGraphs"
-                    >Voir les graphiques</v-btn
-                  >
-                </div>
-                <div v-else-if="countVariables > 2" class="mt-3">
+                <div v-if="countVariables > 2" class="mt-3">
                   <v-icon color="red">mdi-alert-outline</v-icon> Deux variables
                   à la fois au maximum.
                 </div>
-                <div v-else class="mt-3">
+                <div v-if="countVariables < 1" class="mt-3">
                   <h3>
                     Sélectionnez <span class="emphaze">une</span> ou
                     <span class="emphaze">deux</span> variables dans le panel, à
@@ -158,7 +147,7 @@
               <v-container fluid>
                 <v-row dense>
                   <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
-                    <v-card v-show="display" class="grey darken-2">
+                    <v-card class="grey darken-2">
                       <v-layout justify-space-between>
                         <v-card-title
                           :id="'title-' + graph.title"
@@ -215,7 +204,6 @@ export default {
       variables: [],
       droppedVars: [],
       graphs: [],
-      display: false,
       isMoving: false,
       draggedId: null,
       // DATE FILTER
@@ -275,6 +263,13 @@ export default {
       return count
     }
   },
+  watch: {
+    graphs(newValue, oldValue) {
+      if (newValue.length > 0) {
+        this.renderGraphs()
+      }
+    }
+  },
   asyncData({ params }) {
     return axios.get(`/datasets/single/?id=${params.idset}`).then((res) => {
       return { dataset: res.data, json: JSON.parse(res.data.data) }
@@ -287,6 +282,9 @@ export default {
       this.$router.push({ name: 'index' })
     }
     this.init()
+    this.$nextTick(() => {
+      this.renderSparklines()
+    })
   },
   methods: {
     resolveDraggedVariable() {
@@ -307,7 +305,6 @@ export default {
         this.variables.push(variable)
       }
       this.attributeVariablesTypes()
-      this.displaySparkles()
     },
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
@@ -347,26 +344,25 @@ export default {
       this.computeSparkles()
     },
     // GRAPH GENERATION
+    renderGraphs() {
+      this.$nextTick(() => {
+        for (let i = 0; i < this.graphs.length; i++) {
+          window.vegaEmbed('#vis-' + this.graphs[i].title, this.graphs[i].data)
+        }
+      })
+    },
+    renderSparklines() {
+      for (let i = 0; i < this.variables.length; i++) {
+        window.vegaEmbed(
+          '#sparkle-' + this.variables[i].id,
+          this.variables[i].data,
+          { actions: false }
+        )
+      }
+    },
     computeBigGraphs() {
       const variables = this.fetchUsedVariables()
       this.fillGraphsArray(variables)
-    },
-    displayGraphs() {
-      this.display = true
-      for (let i = 0; i < this.graphs.length; i++) {
-        window.vegaEmbed('#vis-' + this.graphs[i].title, this.graphs[i].data)
-      }
-    },
-    displaySparkles() {
-      for (let i = 0; i < this.variables.length; i++) {
-        if (this.variables[i].data !== null) {
-          window.vegaEmbed(
-            '#sparkle-' + this.variables[i].id,
-            this.variables[i].data,
-            { actions: false }
-          )
-        }
-      }
     },
     computeSparkles() {
       for (let i = 0; i < this.variables.length; i++) {
@@ -409,7 +405,6 @@ export default {
     fillGraphsArray(variables) {
       // Reset graphs
       this.graphs = []
-      this.display = false
       const length = variables.length
       if (length > 0) {
         this.getGraphs(variables)
@@ -723,12 +718,10 @@ export default {
     all() {
       this.panelClosed = false
       this.panel = [...Array(this.variables.length).keys()].map((k, i) => i)
-      this.displaySparkles()
     },
     none() {
       this.panelClosed = true
       this.panel = []
-      this.displaySparkles()
     }
   }
 }
