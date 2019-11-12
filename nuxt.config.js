@@ -66,7 +66,9 @@ module.exports = {
       { code: 'fr', iso: 'fr-FR', file: 'fr.js' }
     ],
     detectBrowserLanguage: {
-      fallbackLocale: 'fr'
+      useCookie: true,
+      alwaysRedirect: true,
+      fallbackLocale: 'en'
     },
     defaultLocale: 'fr',
     lazy: true,
