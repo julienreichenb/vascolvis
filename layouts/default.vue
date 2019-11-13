@@ -73,6 +73,10 @@ export default {
 </script>
 
 <style>
+.v-application {
+  font-family: 'Montserrat', sans-serif;
+}
+
 .footer-margin {
   padding: 1em 3em 0.5em 3em;
 }

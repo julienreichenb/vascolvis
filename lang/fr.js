@@ -1,4 +1,12 @@
 export default {
+  title: {
+    index: 'Bienvenue',
+    panel: 'Mon Atelier',
+    import: 'Importation de données',
+    graphs: 'Générateur de graphiques',
+    url: 'Annotation du graphique',
+    about: 'À propos'
+  },
   index: {
     welcome: 'Bienvenue sur VASCO',
     username: "Nom d'utilisateur",
@@ -57,6 +65,7 @@ export default {
   graphs: {
     help: 'Vous pouvez cliquer sur le nom des graphiques pour le modifier.',
     warn: 'Un maximum de deux variables peuvent être sélectionnées à la fois.',
+    choose_type: 'Choix du type',
     tip_1: 'Choisissez ',
     tip_2: 'une',
     tip_3: ' ou ',
@@ -99,5 +108,17 @@ export default {
       toast_deleted: ' a été supprimé avec succès.'
     },
     no_data: 'Aucune donnée disponible.'
+  },
+  about: {
+    header: 'Le projet VASCO',
+    title_1: 'Introduction',
+    p_1:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.',
+    title_2: 'Visualisation de données',
+    p_2:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.',
+    title_3: "L'équipe",
+    p_3:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.'
   }
 }

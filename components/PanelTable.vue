@@ -149,12 +149,10 @@ export default {
     goToItem(item) {
       switch (this.type) {
         case 'datasets':
-          this.$router.push(
-            this.localePath({
-              name: 'graphs',
-              params: { idset: item.id }
-            })
-          )
+          this.$router.push({
+            name: `graphs___${this.$i18n.locale}`,
+            params: { idset: item.id }
+          })
           break
         case 'charts':
           this.$router.push(

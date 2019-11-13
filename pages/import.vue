@@ -4,8 +4,10 @@
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
-            <v-toolbar-title class="white--text">
-              <h3>{{ $t('import.own.header') }}</h3>
+            <v-toolbar-title
+              class="white--text"
+              v-text="this.$t('import.own.header')"
+            >
             </v-toolbar-title>
             <v-tabs
               slot="extension"
@@ -127,6 +129,16 @@
 <script>
 import jwtDecode from 'jwt-decode'
 export default {
+  head() {
+    return {
+      title: this.$t('title.import'),
+      meta: [
+        {
+          hid: 'import'
+        }
+      ]
+    }
+  },
   filters: {
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1)

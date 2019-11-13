@@ -44,10 +44,24 @@
                     variable.icon
                   }}</v-icon>
                   {{ variable.name }}
+                  <v-icon v-if="variable.warn" color="red lighten-1"
+                    >mdi-alert-outline</v-icon
+                  >
                 </v-expansion-panel-header>
                 <v-expansion-panel-content class="mt-4">
+                  <v-select
+                    v-model="variable.type"
+                    label="Type"
+                    :items="types"
+                    item-value="types"
+                    dense
+                    @change="
+                      (selected) =>
+                        attributeSingleVariableType(variable.id, selected)
+                    "
+                  ></v-select>
                   <v-layout justify-space-around align-center>
-                    <div :id="'sparkle-' + variable.id"></div>
+                    <div :id="'sparkline-' + variable.id"></div>
                   </v-layout>
                   <v-layout
                     v-if="variable.type === 'quantitative'"
@@ -152,13 +166,13 @@
                         ></v-card-title>
                         <v-btn
                           style="margin: 1em 1em 0 0"
-                          color="green"
-                          large
+                          color="green lighten-2"
+                          icon
+                          x-large
                           depressed
                           @click="saveGraph(graph)"
                         >
                           <v-icon>mdi-content-save</v-icon>
-                          {{ $t('graphs.save') }}
                         </v-btn>
                       </v-layout>
                       <v-card-text>
@@ -190,6 +204,16 @@ import jwtDecode from 'jwt-decode'
 import draggable from 'vuedraggable'
 import axios from '~/plugins/axios'
 export default {
+  head() {
+    return {
+      title: this.$t('title.graphs'),
+      meta: [
+        {
+          hid: 'graphs'
+        }
+      ]
+    }
+  },
   components: {
     draggable
   },
@@ -198,6 +222,7 @@ export default {
       dataset: null,
       json: null,
       variables: [],
+      types: ['quantitative', 'nominal', 'temporal'],
       droppedVars: [],
       graphs: [],
       isMoving: false,
@@ -272,6 +297,11 @@ export default {
     // VARIABLES COMPUTATION
     attributeVariablesTypes() {
       for (let i = 0; i < this.variables.length; i++) {
+        this.attributeSingleVariableType(i, null)
+      }
+    },
+    attributeSingleVariableType(i, type) {
+      if (type === null) {
         const variableToCheck = this.json[0][this.variables[i].name]
         if (!isNaN(variableToCheck)) {
           // The value is a number
@@ -281,12 +311,19 @@ export default {
         } else {
           this.setDimension(i, 'nominal')
         }
+      } else {
+        this.setDimension(i, type)
+        this.computeSparkline(i)
+        this.renderSingleSparkline(i)
+        this.$forceUpdate()
+        this.computeBigGraphs()
       }
     },
     setDimension(i, type) {
       // Set dimension for each variable
       this.variables[i].type = type
       this.variables[i].isUsed = false
+      this.variables[i].warn = false
       switch (type) {
         case 'quantitative':
           this.variables[i].color = '#e41a1c'
@@ -305,7 +342,7 @@ export default {
           this.variables[i].icon = 'mdi-timer'
           break
       }
-      this.computeSparkles()
+      this.computeSparklines()
     },
     resolveDraggedVariable() {
       const id = this.droppedVars[0].id
@@ -324,27 +361,31 @@ export default {
     renderSparklines() {
       this.$nextTick(() => {
         for (let i = 0; i < this.variables.length; i++) {
-          window.vegaEmbed(
-            '#sparkle-' + this.variables[i].id,
-            this.variables[i].data,
-            { actions: false }
-          )
+          this.renderSingleSparkline(i)
         }
       })
+    },
+    renderSingleSparkline(i) {
+      window.vegaEmbed(
+        '#sparkline-' + this.variables[i].id,
+        this.variables[i].data,
+        { actions: false }
+      )
     },
     computeBigGraphs() {
       const variables = this.fetchUsedVariables()
       this.fillGraphsArray(variables)
     },
-    computeSparkles() {
+    computeSparklines() {
       for (let i = 0; i < this.variables.length; i++) {
-        this.computeSparkle(i)
+        this.computeSparkline(i)
       }
     },
-    computeSparkle(id) {
-      const encoding = this.getSparkleEncoding(id)
+    computeSparkline(id) {
+      this.variables[id].data = []
+      const encoding = this.getSparklineEncoding(id)
       if (encoding !== null) {
-        const data = this.getSparkleData(id)
+        const data = this.getSparklineData(id)
         const graph = {
           $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
           data: {
@@ -437,7 +478,7 @@ export default {
       }
       return unusedVariables
     },
-    getSparkleData(id) {
+    getSparklineData(id) {
       const data = []
       for (let i = 0; i < this.json.length; i++) {
         const entry = {}
@@ -446,7 +487,7 @@ export default {
       }
       return data
     },
-    getSparkleEncoding(id) {
+    getSparklineEncoding(id) {
       const type = this.variables[id].type
       if (type === 'quantitative') {
         return {
@@ -514,8 +555,8 @@ export default {
       return data
     },
     getSoloGraph(selectedVar) {
-      const data = this.getSparkleData(selectedVar.id)
-      const encoding = this.getSparkleEncoding(selectedVar.id)
+      const data = this.getSparklineData(selectedVar.id)
+      const encoding = this.getSparklineEncoding(selectedVar.id)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
         data: {
@@ -671,21 +712,33 @@ export default {
       for (let i = 0; i < this.json.length; i++) {
         col.push(Number(this.json[i][variable.name]))
       }
-      return Math.max(...col)
+      const max = Math.max(...col)
+      if (isNaN(max)) {
+        variable.warn = true
+      }
+      return max
     },
     getMinValue(variable) {
       const col = []
       for (let i = 0; i < this.json.length; i++) {
         col.push(Number(this.json[i][variable.name]))
       }
-      return Math.min(...col)
+      const min = Math.min(...col)
+      if (isNaN(min)) {
+        variable.warn = true
+      }
+      return min
     },
     getMeanValue(variable) {
       let sum = 0.0
       for (let i = 0; i < this.json.length; i++) {
         sum += Number(this.json[i][variable.name])
       }
-      return sum / this.json.length
+      const mean = sum / this.json.length
+      if (isNaN(mean)) {
+        variable.warn = true
+      }
+      return mean
     },
     // Panel controls
     all() {

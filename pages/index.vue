@@ -4,8 +4,10 @@
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
-            <v-toolbar-title class="white--text">
-              <h3>{{ $t('index.welcome') }}</h3>
+            <v-toolbar-title
+              class="white--text"
+              v-text="this.$t('index.welcome')"
+            >
             </v-toolbar-title>
             <v-tabs
               slot="extension"
@@ -120,6 +122,16 @@
 </template>
 <script>
 export default {
+  head() {
+    return {
+      title: this.$t('title.index'),
+      meta: [
+        {
+          hid: 'index'
+        }
+      ]
+    }
+  },
   data() {
     return {
       usernameRules: [

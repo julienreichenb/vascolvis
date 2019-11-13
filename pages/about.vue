@@ -1,54 +1,23 @@
 <template>
   <div>
     <v-toolbar class="indigo darken-3">
-      <v-toolbar-title class="mb-4 white--text">
-        <h3>Le projet Vasco</h3>
+      <v-toolbar-title class="white--text" v-text="this.$t('about.header')">
       </v-toolbar-title>
     </v-toolbar>
     <v-card>
       <v-card-text class="pt-4">
         <div>
-          <h4>Introduction</h4>
+          <h4>{{ $t('about.title_1') }}</h4>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-            lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas
-            nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu
-            suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie
-            iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel
-            id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet
-            magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus
-            vel massa sagittis tempus. Sed et urna sed eros gravida eleifend
-            feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor
-            ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis,
-            tempor interdum turpis nec, dignissim rhoncus eros.
+            {{ $t('about.p_1') }}
           </p>
-          <h4>Data Visualisation</h4>
+          <h4>{{ $t('about.title_2') }}</h4>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-            lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas
-            nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu
-            suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie
-            iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel
-            id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet
-            magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus
-            vel massa sagittis tempus. Sed et urna sed eros gravida eleifend
-            feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor
-            ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis,
-            tempor interdum turpis nec, dignissim rhoncus eros.
+            {{ $t('about.p_2') }}
           </p>
-          <br />
+          <h4>{{ $t('about.title_3') }}</h4>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-            lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas
-            nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu
-            suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie
-            iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel
-            id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet
-            magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus
-            vel massa sagittis tempus. Sed et urna sed eros gravida eleifend
-            feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor
-            ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis,
-            tempor interdum turpis nec, dignissim rhoncus eros.
+            {{ $t('about.p_3') }}
           </p>
         </div>
       </v-card-text>
@@ -57,20 +26,14 @@
 </template>
 <script>
 export default {
-  data() {
-    return {}
-  },
-  methods: {
-    back() {
-      try {
-        if (localStorage.getItem('usertoken') !== null) {
-          this.$router.push(this.localePath({ name: 'import' }))
-        } else {
-          this.$router.push(this.localePath({ name: 'index' }))
+  head() {
+    return {
+      title: this.$t('title.about'),
+      meta: [
+        {
+          hid: 'about'
         }
-      } catch {
-        this.$router.push(this.localePath({ name: 'index' }))
-      }
+      ]
     }
   }
 }

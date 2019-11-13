@@ -104,6 +104,16 @@
 import jwtDecode from 'jwt-decode'
 import axios from '~/plugins/axios'
 export default {
+  head() {
+    return {
+      title: this.$t('title.url'),
+      meta: [
+        {
+          hid: 'url'
+        }
+      ]
+    }
+  },
   data() {
     return {
       init: false,
