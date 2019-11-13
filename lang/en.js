@@ -64,14 +64,15 @@ export default {
   },
   graphs: {
     help: 'You can click on the name of the charts to modify it.',
-    warn: 'A maximum of two variables can be selected at the same time',
+    warn: 'This variable combination is not allowed.',
     choose_type: 'Select the type',
     tip_1: 'Choose ',
     tip_2: 'one',
     tip_3: ' or ',
     tip_4: 'two',
     tip_5: ' variables in the panel on the left.',
-    save: 'Save'
+    save: 'Save',
+    switch_button: 'Switch axis'
   },
   url: {
     public: 'Public',
@@ -79,7 +80,7 @@ export default {
     add_annot: 'Add an annotation',
     msg_public: 'The chart is now public.',
     msg_private: 'The chart is now private.',
-    mail_suject: 'Collaborative chart analysis - ',
+    mail_subject: 'Collaborative chart analysis - ',
     mail_body:
       'I would like to know your opinion about the chart, available here : ',
     copied: 'Copied !'

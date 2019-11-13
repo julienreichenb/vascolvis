@@ -64,14 +64,15 @@ export default {
   },
   graphs: {
     help: 'Vous pouvez cliquer sur le nom des graphiques pour le modifier.',
-    warn: 'Un maximum de deux variables peuvent être sélectionnées à la fois.',
+    warn: "Cette combinaison de variables n'est pas autorisée.",
     choose_type: 'Choix du type',
     tip_1: 'Choisissez ',
     tip_2: 'une',
     tip_3: ' ou ',
     tip_4: 'deux',
     tip_5: ' variables dans le panel à gauche.',
-    save: 'Enregistrer'
+    save: 'Enregistrer',
+    switch_button: 'Échanger les axes'
   },
   url: {
     public: 'Public',
@@ -79,7 +80,7 @@ export default {
     add_annot: 'Ajouter une annotation',
     msg_public: 'Le graphique est maintenant public.',
     msg_private: 'Le graphique est maintenant privé.',
-    mail_suject: 'Analyse collaborative de graphique - ',
+    mail_subject: 'Analyse collaborative de graphique - ',
     mail_body: 'Je voudrais ton avis sur le graphique disponible ici : ',
     copied: 'Copié !'
   },

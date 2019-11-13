@@ -24,6 +24,7 @@
     </v-content>
     <v-footer :fixed="fixed" app class="footer-margin">
       <v-layout justify-space-between align-center>
+        <div />
         <a href="https://hes-so.ch" target="_blank">
           <img
             src="../static/hessologo.png"

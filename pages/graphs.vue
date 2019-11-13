@@ -112,7 +112,10 @@
                   <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
                   {{ $t('graphs.help') }}
                 </div>
-                <div v-if="countVariables > 2" class="mt-3">
+                <div
+                  v-if="graphs.length < 1 && countVariables > 1"
+                  class="mt-3"
+                >
                   <v-icon color="red">mdi-alert-outline</v-icon>
                   {{ $t('graphs.warn') }}
                 </div>
@@ -156,24 +159,36 @@
               >
               <v-container fluid>
                 <v-row dense>
-                  <v-col v-for="graph in graphs" :key="graph.title" :cols="12">
+                  <v-col v-for="graph in graphs" :key="graph.id" :cols="12">
                     <v-card class="grey darken-2">
                       <v-layout justify-space-between>
                         <v-card-title
-                          :id="'title-' + graph.title"
+                          :id="'title-' + graph.id"
                           contenteditable
                           v-text="graph.title"
                         ></v-card-title>
-                        <v-btn
-                          style="margin: 1em 1em 0 0"
-                          color="green lighten-2"
-                          icon
-                          x-large
-                          depressed
-                          @click="saveGraph(graph)"
-                        >
-                          <v-icon>mdi-content-save</v-icon>
-                        </v-btn>
+                        <div>
+                          <v-btn
+                            style="margin: 1em 1em 0 0"
+                            color="indigo lighten-3"
+                            icon
+                            x-large
+                            depressed
+                            @click="swapAxis(graph)"
+                          >
+                            <v-icon>mdi-rotate-3d-variant</v-icon>
+                          </v-btn>
+                          <v-btn
+                            style="margin: 1em 1em 0 0"
+                            color="green lighten-2"
+                            icon
+                            x-large
+                            depressed
+                            @click="saveGraph(graph)"
+                          >
+                            <v-icon>mdi-content-save</v-icon>
+                          </v-btn>
+                        </div>
                       </v-layout>
                       <v-card-text>
                         <v-layout
@@ -183,7 +198,7 @@
                           class="graph-wrapper"
                         >
                           <div
-                            :id="'vis-' + graph.title"
+                            :id="'vis-' + graph.id"
                             class="resize-graph"
                           ></div>
                         </v-layout>
@@ -222,12 +237,28 @@ export default {
       dataset: null,
       json: null,
       variables: [],
-      types: ['quantitative', 'nominal', 'temporal'],
       droppedVars: [],
       graphs: [],
       isMoving: false,
       draggedId: null,
-      // DATE FILTER
+      /*
+       *  UTILS
+       */
+      types: ['quantitative', 'nominal', 'temporal'],
+      /* From Tableau 10 */
+      colors: [
+        '#4E79A7',
+        '#E15759',
+        '#59A14F',
+        '#EDC948',
+        '#76B7B2',
+        '#F28E2B',
+        '#B07AA1',
+        '#9C755F',
+        '#BAB0AC',
+        '#FF9DA7'
+      ],
+      /* DATE FILTER */
       FREQUENT_DATE_LABELS: [
         'year',
         'date',
@@ -239,7 +270,7 @@ export default {
         'annee',
         'annees'
       ],
-      // PANEL MANAGEMENT
+      /* PANEL MANAGEMENT */
       panel: [],
       panelClosed: false
     }
@@ -354,7 +385,7 @@ export default {
     renderGraphs() {
       this.$nextTick(() => {
         for (let i = 0; i < this.graphs.length; i++) {
-          window.vegaEmbed('#vis-' + this.graphs[i].title, this.graphs[i].data)
+          this.renderSingleGraph(i)
         }
       })
     },
@@ -364,6 +395,9 @@ export default {
           this.renderSingleSparkline(i)
         }
       })
+    },
+    renderSingleGraph(i) {
+      window.vegaEmbed('#vis-' + this.graphs[i].id, this.graphs[i].data)
     },
     renderSingleSparkline(i) {
       window.vegaEmbed(
@@ -424,19 +458,22 @@ export default {
       }
     },
     getGraphs(variables) {
+      variables.sort((a, b) => a.type.localeCompare(b.type))
       const length = variables.length
-      // ONLY ONE VARIABLE SELECTED
+      const firstGraph = {}
+      firstGraph.id = 0
+      // One variable selected
       if (length === 1) {
         const onlyVar = variables[0]
         if (onlyVar.type === 'quantitative' || onlyVar.type === 'temporal') {
-          const soloGraph = {}
-          soloGraph.title = onlyVar.name
-          soloGraph.data = this.getSoloGraph(onlyVar)
-          this.graphs.push(soloGraph)
+          firstGraph.title = onlyVar.name
+          firstGraph.data = this.getSoloGraph(onlyVar)
+          this.graphs.push(firstGraph)
         }
         const combinationVariables = this.getCombinations(onlyVar)
-        for (let i = 0; i < combinationVariables.length; i++) {
+        for (let i = 1; i < combinationVariables.length; i++) {
           const tempGraph = {}
+          tempGraph.id = i
           tempGraph.title = this.getSingleTitle(
             onlyVar,
             combinationVariables[i]
@@ -444,16 +481,16 @@ export default {
           tempGraph.data = this.getSingleGraph(onlyVar, combinationVariables[i])
           this.graphs.push(tempGraph)
         }
-        // TWO VARIABLES SELECTED
-      } else if (length === 2) {
-        const duoGraph = {}
-        duoGraph.title = this.getSingleTitle(variables[0], variables[1])
-        duoGraph.data = this.getSingleGraph(variables[0], variables[1])
-        this.graphs.push(duoGraph)
+        // Two quantitative variables selected
+      } else if (this.twoQuantitative(variables)) {
+        firstGraph.title = this.getSingleTitle(variables[0], variables[1])
+        firstGraph.data = this.getSingleGraph(variables[0], variables[1])
+        this.graphs.push(firstGraph)
         const combinationVariables = this.getCombinations(variables)
-        for (let i = 0; i < combinationVariables.length; i++) {
+        for (let i = 1; i < combinationVariables.length; i++) {
           if (combinationVariables[i].type === 'quantitative') {
             const tempGraph = {}
+            tempGraph.id = i
             tempGraph.title = this.getMultipleTitle(
               variables,
               combinationVariables[i]
@@ -465,9 +502,140 @@ export default {
             this.graphs.push(tempGraph)
           }
         }
-        // MORE THAN TWO VARIABLES SELECTED
+        // 1 Quantitative + 1 Nominal variables
+      } else if (this.oneQuantitativeOneNominal(variables)) {
+        firstGraph.title = this.getMultipleTitle(variables, null)
+        firstGraph.data = this.getSimpleGraph(variables)
+        this.graphs.push(firstGraph)
+        const combinationVariables = this.getCombinations(variables)
+        for (let i = 1; i < combinationVariables.length; i++) {
+          if (combinationVariables[i].type === 'quantitative') {
+            const tempGraph = {}
+            tempGraph.id = i
+            tempGraph.title = this.getMultipleTitle(
+              variables,
+              combinationVariables[i]
+            )
+            tempGraph.data = this.getQuantQualData(
+              variables,
+              combinationVariables[i]
+            )
+            this.graphs.push(tempGraph)
+          }
+        }
+        // 2 Quantitative + 1 Nominal variables
+      } else if (this.twoQuantitativeOneNominal(variables)) {
+        firstGraph.title = this.getTrioTitle(variables)
+        firstGraph.data = this.getTrioGraph(variables)
+        this.graphs.push(firstGraph)
+        const combinationVariables = this.getCombinations(variables)
+        for (let i = 1; i < combinationVariables.length; i++) {
+          if (combinationVariables[i].type === 'quantitative') {
+            const tempGraph = {}
+            tempGraph.id = i
+            tempGraph.title = this.getMultipleTitle(
+              variables,
+              combinationVariables[i]
+            )
+            tempGraph.data = this.getTrioCombinationGraph(
+              variables,
+              combinationVariables[i]
+            )
+            this.graphs.push(tempGraph)
+          }
+        }
+      } else if (this.twoQuantitativeTwoNominal(variables)) {
+        // 2 Quantitative + 2 Nominal variables
+        firstGraph.title = this.getQuatuorTitle(variables)
+        firstGraph.data = this.getQuatuorGraph(variables)
+        this.graphs.push(firstGraph)
+        const combinationVariables = this.getCombinations(variables)
+        for (let i = 1; i < combinationVariables.length; i++) {
+          if (combinationVariables[i].type === 'quantitative') {
+            const tempGraph = {}
+            tempGraph.id = i
+            tempGraph.title = this.getMultipleTitle(
+              variables,
+              combinationVariables[i]
+            )
+            tempGraph.data = this.getQuatuorCombinationGraph(
+              variables,
+              combinationVariables[i]
+            )
+            this.graphs.push(tempGraph)
+          }
+        }
+        // Other scenarios ?
       } else {
       }
+    },
+    twoQuantitative(variables) {
+      let quantCounter = 0
+      let nomCounter = 0
+      for (let i = 0; i < variables.length; i++) {
+        switch (variables[i].type) {
+          case 'nominal':
+            nomCounter++
+            break
+          case 'quantitative':
+            quantCounter++
+            break
+          default:
+            quantCounter++
+        }
+      }
+      return quantCounter === 2 && nomCounter === 0
+    },
+    oneQuantitativeOneNominal(variables) {
+      let quantCounter = 0
+      let nomCounter = 0
+      for (let i = 0; i < variables.length; i++) {
+        switch (variables[i].type) {
+          case 'nominal':
+            nomCounter++
+            break
+          case 'quantitative':
+            quantCounter++
+            break
+          default:
+            quantCounter++
+        }
+      }
+      return quantCounter === 1 && nomCounter === 1
+    },
+    twoQuantitativeOneNominal(variables) {
+      let quantCounter = 0
+      let nomCounter = 0
+      for (let i = 0; i < variables.length; i++) {
+        switch (variables[i].type) {
+          case 'nominal':
+            nomCounter++
+            break
+          case 'quantitative':
+            quantCounter++
+            break
+          default:
+            break
+        }
+      }
+      return quantCounter === 2 && nomCounter === 1
+    },
+    twoQuantitativeTwoNominal(variables) {
+      let quantCounter = 0
+      let nomCounter = 0
+      for (let i = 0; i < variables.length; i++) {
+        switch (variables[i].type) {
+          case 'nominal':
+            nomCounter++
+            break
+          case 'quantitative':
+            quantCounter++
+            break
+          default:
+            break
+        }
+      }
+      return quantCounter === 2 && nomCounter === 2
     },
     getCombinations() {
       const unusedVariables = []
@@ -518,38 +686,72 @@ export default {
         return null
       }
     },
+    swapAxis(graph) {
+      const id = graph.id
+      const data = graph.data
+      let tempX = {}
+      if (data.layer) {
+        tempX = data.layer[0].encoding.x
+        data.layer[0].encoding.x = data.layer[0].encoding.y
+        data.layer[0].encoding.y = tempX
+      } else {
+        tempX = data.encoding.x
+        data.encoding.x = data.encoding.y
+        data.encoding.y = tempX
+      }
+      this.graphs[id].data = data
+      this.renderSingleGraph(id)
+    },
     getSingleTitle(selectedVar, combinationVar) {
       return (
         this.cleanTitle(selectedVar.name) +
-        '-' +
+        ' - ' +
         this.cleanTitle(combinationVar.name)
+      )
+    },
+    getTrioTitle(variables) {
+      return (
+        this.cleanTitle(variables[1].name) +
+        ' - ' +
+        this.cleanTitle(variables[2].name) +
+        ' by ' +
+        this.cleanTitle(variables[0].name)
+      )
+    },
+    getQuatuorTitle(variables) {
+      return (
+        this.cleanTitle(variables[2].name) +
+        ' - ' +
+        this.cleanTitle(variables[3].name) +
+        ' by ' +
+        this.cleanTitle(variables[0].name) +
+        ' and ' +
+        this.cleanTitle(variables[1].name)
       )
     },
     getMultipleTitle(selectedVars, combinationVar) {
       let title = this.cleanTitle(selectedVars[0].name)
       for (let i = 1; i < selectedVars.length; i++) {
-        title = title + '-' + this.cleanTitle(selectedVars[i].name)
+        title = title + ' - ' + this.cleanTitle(selectedVars[i].name)
       }
-      title = title + '-' + this.cleanTitle(combinationVar.name)
+      if (combinationVar) {
+        title = title + ' - ' + this.cleanTitle(combinationVar.name)
+      }
       return title
     },
-    getSingleData(selectedVar, combinationVar) {
-      const data = []
-      for (let i = 0; i < this.json.length; i++) {
-        const entry = {}
-        entry[selectedVar.name] = this.json[i][selectedVar.name]
-        entry[combinationVar.name] = this.json[i][combinationVar.name]
-        data.push(entry)
+    getSingleData(selectedVars, combinationVar) {
+      if (!selectedVars.length) {
+        selectedVars = [selectedVars]
       }
-      return data
-    },
-    getMultipleData(selectedVars, combinationVar) {
       const data = []
       for (let i = 0; i < this.json.length; i++) {
         const entry = {}
-        entry[selectedVars[0].name] = this.json[i][selectedVars[0].name]
-        entry[selectedVars[1].name] = this.json[i][selectedVars[1].name]
-        entry[combinationVar.name] = this.json[i][combinationVar.name]
+        for (let j = 0; j < selectedVars.length; j++) {
+          entry[selectedVars[j].name] = this.json[i][selectedVars[j].name]
+        }
+        if (combinationVar) {
+          entry[combinationVar.name] = this.json[i][combinationVar.name]
+        }
         data.push(entry)
       }
       return data
@@ -568,6 +770,26 @@ export default {
           tooltip: true
         },
         encoding
+      }
+      return graph
+    },
+    getSimpleGraph(variables) {
+      const data = this.getSingleData(variables, null)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: variables[1].name, type: variables[1].type },
+          color: {
+            field: variables[0].name,
+            type: variables[0].type,
+            scale: { range: this.colors }
+          }
+        }
       }
       return graph
     },
@@ -602,8 +824,117 @@ export default {
       }
       return graph
     },
+    getQuantQualData(variables, combinationVar) {
+      const data = this.getSingleData(variables, combinationVar)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: variables[1].name, type: variables[1].type },
+          y: { field: combinationVar.name, type: combinationVar.type },
+          color: {
+            field: variables[0].name,
+            type: variables[0].type,
+            scale: { range: this.colors }
+          }
+        }
+      }
+      return graph
+    },
+    getTrioGraph(variables) {
+      const data = this.getSingleData(variables, null)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: variables[1].name, type: variables[1].type },
+          y: { field: variables[2].name, type: variables[2].type },
+          color: {
+            field: variables[0].name,
+            type: variables[0].type,
+            scale: { range: this.colors }
+          }
+        }
+      }
+      return graph
+    },
+    getTrioCombinationGraph(selectedVars, combinationVar) {
+      const data = this.getSingleData(selectedVars, combinationVar)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: selectedVars[1].name, type: selectedVars[1].type },
+          y: { field: selectedVars[2].name, type: selectedVars[2].type },
+          size: { field: combinationVar.name, type: combinationVar.type },
+          color: {
+            field: selectedVars[0].name,
+            type: selectedVars[0].type,
+            scale: { range: this.colors }
+          }
+        }
+      }
+      return graph
+    },
+    getQuatuorGraph(variables) {
+      const data = this.getSingleData(variables, null)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: variables[2].name, type: variables[2].type },
+          y: { field: variables[3].name, type: variables[3].type },
+          color: {
+            field: variables[0].name,
+            type: variables[0].type,
+            scale: { range: this.colors }
+          },
+          shape: { field: variables[1].name, type: variables[1].type }
+        }
+      }
+      return graph
+    },
+    getQuatuorCombinationGraph(selectedVars, combinationVar) {
+      const data = this.getSingleData(selectedVars, combinationVar)
+      const graph = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
+        data: {
+          values: data
+        },
+        width: 'container',
+        mark: { type: 'point', tooltip: true },
+        encoding: {
+          x: { field: selectedVars[2].name, type: selectedVars[2].type },
+          y: { field: selectedVars[3].name, type: selectedVars[3].type },
+          size: { field: combinationVar.name, type: combinationVar.type },
+          color: {
+            field: selectedVars[0].name,
+            type: selectedVars[0].type,
+            scale: { range: this.colors }
+          },
+          shape: { field: selectedVars[1].name, type: selectedVars[1].type }
+        }
+      }
+      return graph
+    },
     getMultipleGraph(selectedVars, combinationVar) {
-      const data = this.getMultipleData(selectedVars, combinationVar)
+      const data = this.getSingleData(selectedVars, combinationVar)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
         data: {
@@ -622,7 +953,7 @@ export default {
     async saveGraph(graph) {
       await axios
         .post('/charts/save', {
-          name: document.getElementById('title-' + graph.title).innerHTML,
+          name: document.getElementById('title-' + graph.id).innerHTML,
           data: graph.data,
           id_dataset: this.dataset.id,
           id_user: this.user.id
@@ -786,7 +1117,8 @@ export default {
 
 .graph-wrapper {
   width: 100%;
-  height: 350px;
+  height: auto;
+  max-height: 800px;
   overflow: auto;
 }
 
