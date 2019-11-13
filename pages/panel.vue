@@ -4,8 +4,10 @@
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
-            <v-toolbar-title class="white--text">
-              <h3>{{ $t('panel.header') }} {{ user.username }}</h3>
+            <v-toolbar-title
+              class="white--text"
+              v-text="this.$t('panel.header') + ' ' + user.username"
+            >
             </v-toolbar-title>
             <v-tabs
               slot="extension"

@@ -77,6 +77,10 @@ export default {
   font-family: 'Montserrat', sans-serif;
 }
 
+.v-application button {
+  font-weight: 900;
+}
+
 .footer-margin {
   padding: 1em 3em 0.5em 3em;
 }
