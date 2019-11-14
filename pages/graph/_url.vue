@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chart">
+  <div v-if="chart" v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
         <v-flex xs12 sm12 elevation-6>
@@ -117,6 +117,7 @@ export default {
   data() {
     return {
       init: false,
+      show: false,
       json: null,
       chart: null,
       annotations: [],
@@ -125,10 +126,15 @@ export default {
       elements: []
     }
   },
-  asyncData({ params }) {
-    return axios.get(`/charts/?url=${params.url}`).then((res) => {
-      return { chart: res.data, json: JSON.parse(res.data.data) }
-    })
+  asyncData({ params, error }) {
+    return axios
+      .get(`/charts/?url=${params.url}`)
+      .then((res) => {
+        return { chart: res.data, json: JSON.parse(res.data.data) }
+      })
+      .catch((e) => {
+        error({ statusCode: 402, title: 'no_data', message: 'not_found' })
+      })
   },
   created() {
     try {
@@ -136,6 +142,8 @@ export default {
       this.isMyChart = this.chart.id_user === this.user.id
       if (!this.isMyChart && !this.chart.public) {
         this.$router.push(this.localePath({ name: 'import' }))
+      } else {
+        this.show = true
       }
     } catch {
       this.$router.push(this.localePath({ name: 'index' }))

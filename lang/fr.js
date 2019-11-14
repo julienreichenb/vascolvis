@@ -29,7 +29,10 @@ export default {
         "Le nom d'utilisateur est trop court ou contient des caractères interdits.",
       password_invalid:
         'Le mot de passe est trop court ou contient des caractères interdits.',
-      not_corresponding: 'Les mots de passe ne correspondent pas.'
+      not_corresponding: 'Les mots de passe ne correspondent pas.',
+      already_exist: "Le nom d'utilisateur choisi existe déjà.",
+      invalid:
+        "Nom d'utilisateur ou mot de passe invalide. Veuillez vérifier vos identifiants."
     }
   },
   import: {
@@ -39,9 +42,9 @@ export default {
       convert: 'Pour convertir votre fichier en .csv, ',
       click_here: 'cliquez ici',
       disclaimer:
-        'Votre fichier doit contenir les entêtes et ne peut pas excéder 1MB.',
+        'Votre fichier doit contenir les entêtes et ne peut pas excéder 4MB.',
       file_label: 'Parcourir...',
-      error: 'Le jeu de données ne peut pas excéder 1MB.',
+      error: 'Le jeu de données ne peut pas excéder 4MB.',
       button: 'Générer les graphiques',
       preview: "Voir l'aperçu"
     },
@@ -121,5 +124,16 @@ export default {
     title_3: "L'équipe",
     p_3:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.'
+  },
+  error: {
+    404: 'Page introuvable.',
+    default_title: "Une erreur s'est produite",
+    default_message: "La page demandée n'exsite pas. Veuillez vérifier l'URL.",
+    no_data: 'Aucun résultat',
+    not_found: "La ressource recherchée n'existe pas. Veuillez réessayer.",
+    link: {
+      panel: 'Votre atelier',
+      import: 'Importer des données'
+    }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="init">
+  <div>
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
@@ -77,7 +77,6 @@ export default {
   },
   data() {
     return {
-      init: false,
       user: Object,
       menus: [
         {
@@ -125,17 +124,14 @@ export default {
       ]
     }
   },
-  asyncData() {},
   created() {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
       this.fetchAllData()
-      this.init = true
     } catch {
       this.$router.push(this.localePath({ name: 'index' }))
     }
   },
-
   methods: {
     goToImport() {
       this.$router.push(this.localePath({ name: 'import' }))
@@ -187,5 +183,3 @@ export default {
   }
 }
 </script>
-
-<style></style>

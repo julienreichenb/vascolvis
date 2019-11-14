@@ -1,5 +1,5 @@
 <template>
-  <div v-if="dataset">
+  <div v-if="dataset" v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-space-around>
         <v-navigation-drawer
@@ -129,7 +129,7 @@
                   </h3>
                   <img
                     class="mt-3"
-                    src="../static/demo.gif"
+                    src="~/static/demo.gif"
                     alt=""
                     width="100%"
                     style="border: 1px solid white"
@@ -234,6 +234,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       dataset: null,
       json: null,
       variables: [],
@@ -293,10 +294,15 @@ export default {
       }
     }
   },
-  asyncData({ params }) {
-    return axios.get(`/datasets/single/?id=${params.idset}`).then((res) => {
-      return { dataset: res.data, json: JSON.parse(res.data.data) }
-    })
+  asyncData({ params, error }) {
+    return axios
+      .get(`/datasets/single/?id=${params.id}`)
+      .then((res) => {
+        return { dataset: res.data, json: JSON.parse(res.data.data) }
+      })
+      .catch((e) => {
+        error({ statusCode: 402, title: 'no_data', message: 'not_found' })
+      })
   },
   created() {
     try {
@@ -309,7 +315,12 @@ export default {
     this.renderSparklines()
   },
   mounted() {
-    this.none()
+    if (this.dataset.id_user !== this.user.id && this.dataset.id !== 1) {
+      this.$router.push(this.localePath({ name: 'index' }))
+    } else {
+      this.show = true
+      this.none()
+    }
   },
   methods: {
     // INIT
@@ -962,21 +973,13 @@ export default {
           // Trick to wait the new chart creation, otherwise the 'graph/url' cannot fetch it (null object)
           this.getNewChart(res.data.id)
         })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
-          this.hasError = true
-          this.error = error.response.data.error
-        })
     },
     async getNewChart(id) {
       await axios.get(`/charts/id?id=${id}`).then((res) => {
-        this.$router.push(
-          this.localePath({
-            name: 'graph-url',
-            params: { url: res.data.url }
-          })
-        )
+        this.$router.push({
+          name: `graph-url___${this.$i18n.locale}`,
+          params: { url: res.data.url }
+        })
       })
     },
     fetchUsedVariables() {

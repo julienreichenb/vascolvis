@@ -147,7 +147,7 @@ export default {
   data() {
     return {
       rules: [
-        (value) => !value || value.size < 1000000 || this.$t('import.own.error')
+        (value) => !value || value.size < 4000000 || this.$t('import.own.error')
       ],
       sampleDataSet: null,
       file: null,
@@ -239,8 +239,8 @@ export default {
         .then((res) => {
           this.dataset = res.data
           this.$router.push({
-            name: `graphs___${this.$i18n.locale}`,
-            params: { idset: res.data.id }
+            name: `graph-id___${this.$i18n.locale}`,
+            params: { id: res.data.id }
           })
         })
         .catch((error) => {
@@ -252,8 +252,8 @@ export default {
     },
     generateSampleGraph() {
       this.$router.push({
-        name: `graphs___${this.$i18n.locale}`,
-        params: { idset: 1 }
+        name: `graph-id___${this.$i18n.locale}`,
+        params: { id: 1 }
       })
     }
   }

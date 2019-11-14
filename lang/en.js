@@ -29,7 +29,9 @@ export default {
         'The username is too short or contains forbidden characters.',
       password_invalid:
         'The password is too short or contains forbidden characters.',
-      not_corresponding: 'The passwords do not match.'
+      not_corresponding: 'The passwords do not match.',
+      already_exist: 'The chosen username already exists.',
+      invalid: 'Invalid username or password. Please check your credentials.'
     }
   },
   import: {
@@ -39,9 +41,9 @@ export default {
       convert: 'To convert your files in .csv, ',
       click_here: 'click here',
       disclaimer:
-        'Your file must contain the headers and cannot be larger than 1 MB.',
+        'Your file must contain the headers and cannot be larger than 4MB.',
       file_label: 'Browse...',
-      error: 'The dataset cannot be larger than 1MB.',
+      error: 'The dataset cannot be larger than 4MB.',
       button: 'Generate charts',
       preview: 'See a preview'
     },
@@ -122,5 +124,16 @@ export default {
     title_3: 'The Team',
     p_3:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.'
+  },
+  error: {
+    404: 'Page not found.',
+    default_title: 'An error occured',
+    default_message: 'The requested page does not exist. Please check the URL.',
+    no_data: 'No result',
+    not_found: 'The requested ressource does not exist. Please try again.',
+    link: {
+      panel: 'Your atelier',
+      import: 'Import data'
+    }
   }
 }

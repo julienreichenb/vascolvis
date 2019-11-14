@@ -36,7 +36,7 @@ users.post('/register', (req, res) => {
             res.status(400).json({ error: 'Something wrong happened...' })
           })
       } else {
-        res.status(400).json({ error: 'User already exists' })
+        res.status(400).json({ error: 'already_exist' })
       }
     })
     .catch((err) => {
@@ -62,9 +62,13 @@ users.post('/login', (req, res) => {
           res.send(token)
         } else {
           res.status(400).json({
-            error: 'Impossible to log in (username or password invalid)'
+            error: 'invalid'
           })
         }
+      } else {
+        res.status(400).json({
+          error: 'invalid'
+        })
       }
     })
     .catch((error) => {

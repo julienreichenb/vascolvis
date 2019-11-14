@@ -150,17 +150,15 @@ export default {
       switch (this.type) {
         case 'datasets':
           this.$router.push({
-            name: `graphs___${this.$i18n.locale}`,
-            params: { idset: item.id }
+            name: `graph-id___${this.$i18n.locale}`,
+            params: { id: item.id }
           })
           break
         case 'charts':
-          this.$router.push(
-            this.localePath({
-              name: 'graph-url',
-              params: { url: item.url }
-            })
-          )
+          this.$router.push({
+            name: `graph-url___${this.$i18n.locale}`,
+            params: { url: item.url }
+          })
           break
         case 'annotations':
           break

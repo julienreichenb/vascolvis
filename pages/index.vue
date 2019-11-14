@@ -181,7 +181,7 @@ export default {
           // eslint-disable-next-line
           console.log(error)
           this.isWrong = true
-          this.errorReg = error.response.data.error
+          this.errorReg = this.$t('index.error.' + error.response.data.error)
         })
     },
     attemptLogin() {
@@ -198,7 +198,7 @@ export default {
           // eslint-disable-next-line
           console.log(error)
           this.isWrong = true
-          this.errorLog = error.response.data.error
+          this.errorLog = this.$t('index.error.' + error.response.data.error)
         })
     }
   }
