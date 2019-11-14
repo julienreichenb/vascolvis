@@ -424,7 +424,7 @@ export default {
         { actions: false }
       )
     },
-    /* The big methods */
+    /* The core methods */
     computeBigGraphs() {
       const variables = this.fetchUsedVariables()
       this.fillGraphsArray(variables)
@@ -463,91 +463,18 @@ export default {
     },
     getGraphs(variables) {
       variables.sort((a, b) => a.type.localeCompare(b.type))
-      const length = variables.length
       const firstGraph = {}
       firstGraph.id = 0
-      // One variable selected
-      if (length === 1) {
-        const onlyVar = variables[0]
-        if (onlyVar.type === 'quantitative' || onlyVar.type === 'temporal') {
-          firstGraph.title = onlyVar.name
-          firstGraph.data = this.getSoloGraph(onlyVar)
-          this.graphs.push(firstGraph)
-        }
-        const combinationVariables = this.getCombinations(onlyVar)
-        for (let i = 1; i < combinationVariables.length; i++) {
-          const tempGraph = {}
-          tempGraph.id = i
-          tempGraph.title = this.getTitle(onlyVar, combinationVariables[i])
-          tempGraph.data = this.getSingleGraph(onlyVar, combinationVariables[i])
-          this.graphs.push(tempGraph)
-        }
-        // Two quantitative variables selected
-      } else if (this.twoQuantitative(variables)) {
-        firstGraph.title = this.getTitle(variables[0], variables[1])
-        firstGraph.data = this.getSingleGraph(variables[0], variables[1])
-        this.graphs.push(firstGraph)
-        const combinationVariables = this.getCombinations(variables)
-        for (let i = 1; i < combinationVariables.length; i++) {
-          const tempGraph = {}
-          tempGraph.id = i
-          tempGraph.title = this.getTitle(variables, combinationVariables[i])
-          tempGraph.data = this.getMultipleGraph(
-            variables,
-            combinationVariables[i]
-          )
-          this.graphs.push(tempGraph)
-        }
-        // 1 Quantitative + 1 Nominal variables
-      } else if (this.oneQuantitativeOneNominal(variables)) {
-        firstGraph.title = this.getTitle(variables, null)
-        firstGraph.data = this.getSimpleGraph(variables)
-        this.graphs.push(firstGraph)
-        const combinationVariables = this.getCombinations(variables)
-        for (let i = 1; i < combinationVariables.length; i++) {
-          const tempGraph = {}
-          tempGraph.id = i
-          tempGraph.title = this.getTitle(variables, combinationVariables[i])
-          tempGraph.data = this.getQuantQualGraph(
-            variables,
-            combinationVariables[i]
-          )
-          this.graphs.push(tempGraph)
-        }
-        // 2 Quantitative + 1 Nominal variables
-      } else if (this.twoQuantitativeOneNominal(variables)) {
-        firstGraph.title = this.getTitle(variables)
-        firstGraph.data = this.getTrioGraph(variables)
-        this.graphs.push(firstGraph)
-        const combinationVariables = this.getCombinations(variables)
-        for (let i = 1; i < combinationVariables.length; i++) {
-          const tempGraph = {}
-          tempGraph.id = i
-          tempGraph.title = this.getTitle(variables, combinationVariables[i])
-          tempGraph.data = this.getTrioCombinationGraph(
-            variables,
-            combinationVariables[i]
-          )
-          this.graphs.push(tempGraph)
-        }
-      } else if (this.twoQuantitativeTwoNominal(variables)) {
-        // 2 Quantitative + 2 Nominal variables
-        firstGraph.title = this.getTitle(variables)
-        firstGraph.data = this.getQuatuorGraph(variables)
-        this.graphs.push(firstGraph)
-        const combinationVariables = this.getCombinations(variables)
-        for (let i = 1; i < combinationVariables.length; i++) {
-          const tempGraph = {}
-          tempGraph.id = i
-          tempGraph.title = this.getTitle(variables, combinationVariables[i])
-          tempGraph.data = this.getQuatuorCombinationGraph(
-            variables,
-            combinationVariables[i]
-          )
-          this.graphs.push(tempGraph)
-        }
-        // Other scenarios ?
-      } else {
+      firstGraph.title = this.getTitle(variables, null)
+      firstGraph.data = this.getFirstGraph(variables)
+      this.graphs.push(firstGraph)
+      const combinationVariables = this.getCombinations()
+      for (let i = 0; i < combinationVariables.length; i++) {
+        const tempGraph = {}
+        tempGraph.id = i + 1
+        tempGraph.title = this.getTitle(variables, combinationVariables[i])
+        tempGraph.data = this.getGraph(variables, combinationVariables[i])
+        this.graphs.push(tempGraph)
       }
     },
     /* Graph computation helpers */
@@ -587,75 +514,6 @@ export default {
       this.graphs[id].data = data
       this.renderSingleGraph(id)
     },
-    /* Scenario testers */
-    twoQuantitative(variables) {
-      let quantCounter = 0
-      let nomCounter = 0
-      for (let i = 0; i < variables.length; i++) {
-        switch (variables[i].type) {
-          case 'nominal':
-            nomCounter++
-            break
-          case 'quantitative':
-            quantCounter++
-            break
-          default:
-            quantCounter++
-        }
-      }
-      return quantCounter === 2 && nomCounter === 0
-    },
-    oneQuantitativeOneNominal(variables) {
-      let quantCounter = 0
-      let nomCounter = 0
-      for (let i = 0; i < variables.length; i++) {
-        switch (variables[i].type) {
-          case 'nominal':
-            nomCounter++
-            break
-          case 'quantitative':
-            quantCounter++
-            break
-          default:
-            quantCounter++
-        }
-      }
-      return quantCounter === 1 && nomCounter === 1
-    },
-    twoQuantitativeOneNominal(variables) {
-      let quantCounter = 0
-      let nomCounter = 0
-      for (let i = 0; i < variables.length; i++) {
-        switch (variables[i].type) {
-          case 'nominal':
-            nomCounter++
-            break
-          case 'quantitative':
-            quantCounter++
-            break
-          default:
-            break
-        }
-      }
-      return quantCounter === 2 && nomCounter === 1
-    },
-    twoQuantitativeTwoNominal(variables) {
-      let quantCounter = 0
-      let nomCounter = 0
-      for (let i = 0; i < variables.length; i++) {
-        switch (variables[i].type) {
-          case 'nominal':
-            nomCounter++
-            break
-          case 'quantitative':
-            quantCounter++
-            break
-          default:
-            break
-        }
-      }
-      return quantCounter === 2 && nomCounter === 2
-    },
     isAnArray(v) {
       if (!v.length) {
         return [v]
@@ -682,7 +540,12 @@ export default {
       const allVar = this.filterVariableTypes(variables, combinationVar)
       const nomVar = allVar[1]
       const nonNomVar = allVar[0].concat(allVar[2])
-      let title = this.cleanTitle(nonNomVar[0].name)
+      let title = ''
+      try {
+        title = this.cleanTitle(nonNomVar[0].name)
+      } catch {
+        return this.cleanTitle(nomVar[0].name)
+      }
       for (let i = 1; i < nonNomVar.length; i++) {
         title += ', ' + this.cleanTitle(nonNomVar[i].name)
       }
@@ -712,24 +575,113 @@ export default {
       }
       return data
     },
+    getFirstEncoding(selectedVars) {
+      const encoding = {}
+      if (selectedVars.length === 1) {
+        switch (selectedVars[0].type) {
+          case 'quantitative':
+            encoding.x = {
+              field: selectedVars[0].name,
+              type: selectedVars[0].type
+            }
+            encoding.y = {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+            break
+          case 'temporal':
+            encoding.x = {
+              timeUnit: 'year',
+              field: selectedVars[0].name,
+              type: selectedVars[0].type
+            }
+            encoding.y = {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+            break
+          case 'nominal':
+            encoding.x = {
+              bin: true,
+              field: selectedVars[0].name,
+              type: 'ordinal'
+            }
+            encoding.y = {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+            break
+        }
+      } else {
+        const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
+        const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
+        // const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
+        if (selectedQuant) {
+          switch (selectedQuant.length) {
+            case 1:
+              encoding.x = {
+                field: selectedQuant[0].name,
+                type: selectedQuant[0].type
+              }
+              break
+            case 2:
+              encoding.x = {
+                field: selectedQuant[0].name,
+                type: selectedQuant[0].type
+              }
+              encoding.y = {
+                field: selectedQuant[1].name,
+                type: selectedQuant[1].type
+              }
+              break
+          }
+        }
+        if (selectedNom) {
+          switch (selectedNom.length) {
+            case 1:
+              encoding.color = {
+                field: selectedNom[0].name,
+                type: selectedNom[0].type,
+                scale: { range: this.colors }
+              }
+              break
+            case 2:
+              encoding.color = {
+                field: selectedNom[0].name,
+                type: selectedNom[0].type,
+                scale: { range: this.colors }
+              }
+              encoding.shape = {
+                field: selectedNom[1].name,
+                type: selectedNom[1].type
+              }
+              break
+          }
+        }
+      }
+      return encoding
+    },
     getEncoding(selectedVars, combinationVar) {
       const encoding = {}
       const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
       const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
-      const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
+      // const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
       if (selectedQuant) {
         switch (selectedQuant.length) {
+          case 0:
+            encoding.x = {
+              field: combinationVar.name,
+              type: combinationVar.type
+            }
+            break
           case 1:
             encoding.x = {
               field: selectedQuant[0].name,
               type: selectedQuant[0].type
             }
-            if (selectedTemp) {
-              encoding.y = {
-                timeUnit: 'year',
-                field: selectedTemp[0].name,
-                type: selectedTemp[0].type
-              }
+            encoding.y = {
+              field: combinationVar.name,
+              type: combinationVar.type
             }
             break
           case 2:
@@ -741,6 +693,14 @@ export default {
               field: selectedQuant[1].name,
               type: selectedQuant[1].type
             }
+            if (combinationVar) {
+              encoding.size = {
+                field: combinationVar.name,
+                type: combinationVar.type
+              }
+            }
+            break
+          default:
             break
         }
       }
@@ -764,6 +724,8 @@ export default {
               type: selectedNom[1].type
             }
             break
+          default:
+            break
         }
       }
       return encoding
@@ -783,7 +745,7 @@ export default {
         return {
           x: {
             field: this.variables[id].name,
-            type: this.variables[id].type
+            type
           },
           y: {
             aggregate: 'count',
@@ -796,7 +758,7 @@ export default {
           x: {
             timeUnit: 'year',
             field: this.variables[id].name,
-            type: this.variables[id].type
+            type
           },
           y: {
             aggregate: 'count',
@@ -809,9 +771,9 @@ export default {
       }
     },
     /* Graph generator */
-    getSoloGraph(selectedVar) {
-      const data = this.getSparklineData(selectedVar.id)
-      const encoding = this.getSparklineEncoding(selectedVar.id)
+    getFirstGraph(selectedVar) {
+      const data = this.getData(selectedVar)
+      const encoding = this.getFirstEncoding(selectedVar)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v2.json',
         data: {
@@ -819,8 +781,7 @@ export default {
         },
         width: 'container',
         mark: {
-          type: 'bar',
-          tooltip: true
+          type: selectedVar.length === 1 ? 'bar' : 'point'
         },
         encoding
       }
@@ -840,183 +801,7 @@ export default {
       }
       return graph
     },
-    getSimpleGraph(variables) {
-      const data = this.getData(variables, null)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: variables[1].name, type: variables[1].type },
-          color: {
-            field: variables[0].name,
-            type: variables[0].type,
-            scale: { range: this.colors }
-          }
-        }
-      }
-      return graph
-    },
-    getSingleGraph(selectedVar, combinationVar) {
-      const data = this.getData(selectedVar, combinationVar)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        layer: [
-          {
-            mark: { type: 'point', tooltip: true },
-            encoding: {
-              x: { field: selectedVar.name, type: selectedVar.type },
-              y: { field: combinationVar.name, type: combinationVar.type }
-            }
-          },
-          {
-            mark: { type: 'rule', tooltip: true },
-            encoding: {
-              y: {
-                field: combinationVar.name,
-                type: combinationVar.type,
-                aggregate: 'mean'
-              },
-              color: { value: combinationVar.color }
-            }
-          }
-        ]
-      }
-      return graph
-    },
-    getQuantQualGraph(variables, combinationVar) {
-      const data = this.getData(variables, combinationVar)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: variables[1].name, type: variables[1].type },
-          y: { field: combinationVar.name, type: combinationVar.type },
-          color: {
-            field: variables[0].name,
-            type: variables[0].type,
-            scale: { range: this.colors }
-          }
-        }
-      }
-      return graph
-    },
-    getTrioGraph(variables) {
-      const data = this.getData(variables, null)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: variables[1].name, type: variables[1].type },
-          y: { field: variables[2].name, type: variables[2].type },
-          color: {
-            field: variables[0].name,
-            type: variables[0].type,
-            scale: { range: this.colors }
-          }
-        }
-      }
-      return graph
-    },
-    getTrioCombinationGraph(selectedVars, combinationVar) {
-      const data = this.getData(selectedVars, combinationVar)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: selectedVars[1].name, type: selectedVars[1].type },
-          y: { field: selectedVars[2].name, type: selectedVars[2].type },
-          size: { field: combinationVar.name, type: combinationVar.type },
-          color: {
-            field: selectedVars[0].name,
-            type: selectedVars[0].type,
-            scale: { range: this.colors }
-          }
-        }
-      }
-      return graph
-    },
-    getQuatuorGraph(variables) {
-      const data = this.getData(variables, null)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: variables[2].name, type: variables[2].type },
-          y: { field: variables[3].name, type: variables[3].type },
-          color: {
-            field: variables[0].name,
-            type: variables[0].type,
-            scale: { range: this.colors }
-          },
-          shape: { field: variables[1].name, type: variables[1].type }
-        }
-      }
-      return graph
-    },
-    getQuatuorCombinationGraph(selectedVars, combinationVar) {
-      const data = this.getData(selectedVars, combinationVar)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: selectedVars[2].name, type: selectedVars[2].type },
-          y: { field: selectedVars[3].name, type: selectedVars[3].type },
-          size: { field: combinationVar.name, type: combinationVar.type },
-          color: {
-            field: selectedVars[0].name,
-            type: selectedVars[0].type,
-            scale: { range: this.colors }
-          },
-          shape: { field: selectedVars[1].name, type: selectedVars[1].type }
-        }
-      }
-      return graph
-    },
-    getMultipleGraph(selectedVars, combinationVar) {
-      const data = this.getData(selectedVars, combinationVar)
-      const graph = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-        data: {
-          values: data
-        },
-        width: 'container',
-        mark: { type: 'point', tooltip: true },
-        encoding: {
-          x: { field: selectedVars[0].name, type: selectedVars[0].type },
-          y: { field: selectedVars[1].name, type: selectedVars[1].type },
-          size: { field: combinationVar.name, type: combinationVar.type }
-        }
-      }
-      return graph
-    },
+    /* Saving + Routing */
     async saveGraph(graph) {
       await axios
         .post('/charts/save', {
@@ -1038,6 +823,7 @@ export default {
         })
       })
     },
+    /* Utils */
     fetchUsedVariables() {
       const usedVariables = []
       for (let i = 0; i < this.variables.length; i++) {
