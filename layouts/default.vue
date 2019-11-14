@@ -27,12 +27,12 @@
         <div />
         <a href="https://hes-so.ch" target="_blank">
           <img
-            src="../static/hessologo.png"
+            src="~/static/hessologo.png"
             alt=""
             style="height: 50px; width: auto;"
           />
         </a>
-        <span>VASCO &copy; 2019</span>
+        <span>{{ title }} &copy; 2019</span>
       </v-layout>
     </v-footer>
   </v-app>
@@ -79,6 +79,7 @@ export default {
 }
 
 .v-application button {
+  letter-spacing: normal;
   font-weight: 900;
 }
 

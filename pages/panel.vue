@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
@@ -77,6 +77,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       user: Object,
       menus: [
         {
@@ -128,6 +129,7 @@ export default {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
       this.fetchAllData()
+      this.show = true
     } catch {
       this.$router.push(this.localePath({ name: 'index' }))
     }
