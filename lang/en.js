@@ -45,7 +45,9 @@ export default {
       file_label: 'Browse...',
       error: 'The dataset cannot be larger than 4MB.',
       button: 'Generate charts',
-      preview: 'See a preview'
+      preview: 'See a preview',
+      failed_to_save:
+        'An error occurred during the import. Please be sure to respect the required format.'
     },
     sample: {
       header: 'Sample',
@@ -130,7 +132,8 @@ export default {
     default_title: 'An error occured',
     default_message: 'The requested page does not exist. Please check the URL.',
     no_data: 'No result',
-    not_found: 'The requested ressource does not exist. Please try again.',
+    not_found:
+      'The requested ressource does not exist or has been removed. Please try again.',
     link: {
       panel: 'Your atelier',
       import: 'Import data'

@@ -150,7 +150,7 @@ export default {
       switch (this.type) {
         case 'datasets':
           this.$router.push({
-            name: `graph-id___${this.$i18n.locale}`,
+            name: `data-id___${this.$i18n.locale}`,
             params: { id: item.id }
           })
           break

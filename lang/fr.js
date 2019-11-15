@@ -46,7 +46,9 @@ export default {
       file_label: 'Parcourir...',
       error: 'Le jeu de données ne peut pas excéder 4MB.',
       button: 'Générer les graphiques',
-      preview: "Voir l'aperçu"
+      preview: "Voir l'aperçu",
+      failed_to_save:
+        "Une erreur est survenue lors de l'import des données. Veuillez vérifier que le format est valide."
     },
     sample: {
       header: 'Exemple',
@@ -130,7 +132,8 @@ export default {
     default_title: "Une erreur s'est produite",
     default_message: "La page demandée n'exsite pas. Veuillez vérifier l'URL.",
     no_data: 'Aucun résultat',
-    not_found: "La ressource recherchée n'existe pas. Veuillez réessayer.",
+    not_found:
+      "La ressource recherchée n'existe pas ou a été supprimée. Veuillez réessayer.",
     link: {
       panel: 'Votre atelier',
       import: 'Importer des données'

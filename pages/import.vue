@@ -72,6 +72,7 @@
                     <div v-if="hasError">
                       <br />
                       <h4 class="apierror">{{ error }}</h4>
+                      <br />
                     </div>
                     <table v-if="parse_csv && preview">
                       <thead>
@@ -239,7 +240,7 @@ export default {
         .then((res) => {
           this.dataset = res.data
           this.$router.push({
-            name: `graph-id___${this.$i18n.locale}`,
+            name: `data-id___${this.$i18n.locale}`,
             params: { id: res.data.id }
           })
         })
@@ -247,12 +248,12 @@ export default {
           // eslint-disable-next-line
           console.log(error)
           this.hasError = true
-          this.error = error.response.data.error
+          this.error = this.$t('import.own.' + error.response.data.error)
         })
     },
     generateSampleGraph() {
       this.$router.push({
-        name: `graph-id___${this.$i18n.locale}`,
+        name: `data-id___${this.$i18n.locale}`,
         params: { id: 1 }
       })
     }
