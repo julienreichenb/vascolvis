@@ -6,34 +6,33 @@
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
-                <v-toolbar-title class="white--text">
-                  <h3>
-                    {{ chart.name }}
-                  </h3>
-                </v-toolbar-title>
-                <div v-if="chart.public" class="public">
-                  <v-btn
-                    v-if="isMyChart"
-                    icon
-                    color="green"
-                    @click="updateChart(0)"
-                  >
-                    <v-icon>mdi-lock-open-variant</v-icon>
-                  </v-btn>
-                  <span v-else>{{ $t('url.public') }}</span>
+                <div class="row ml-1">
+                  <div v-if="chart.public">
+                    <v-btn
+                      v-if="isMyChart"
+                      icon
+                      color="green"
+                      @click="updateChart(0)"
+                    >
+                      <v-icon>mdi-lock-open-variant</v-icon>
+                    </v-btn>
+                    <span v-else>{{ $t('url.public') }}</span>
+                  </div>
+                  <div v-else>
+                    <v-btn
+                      v-if="isMyChart"
+                      icon
+                      color="red"
+                      @click="updateChart(1)"
+                    >
+                      <v-icon>mdi-lock</v-icon>
+                    </v-btn>
+                    <span v-else>{{ $t('url.private') }}</span>
+                  </div>
+                  <div />
+                  <v-toolbar-title class="white--text" v-text="chart.name">
+                  </v-toolbar-title>
                 </div>
-                <div v-else class="private">
-                  <v-btn
-                    v-if="isMyChart"
-                    icon
-                    color="red"
-                    @click="updateChart(1)"
-                  >
-                    <v-icon>mdi-lock</v-icon>
-                  </v-btn>
-                  <span v-else>{{ $t('url.private') }}</span>
-                </div>
-                <div />
                 <div>
                   <v-btn
                     v-clipboard:copy="getFullUrl()"
@@ -218,9 +217,10 @@ export default {
   color: darkgreen;
   background-color: white;
   border: 2px lightgreen solid;
-  border-radius: 5px;
-  width: 60px;
+  width: 40px;
+  height: 40px;
   text-align: center;
+  vertical-align: center;
 }
 
 .private {
@@ -228,9 +228,10 @@ export default {
   color: darkred;
   background-color: white;
   border: 2px lightcoral solid;
-  border-radius: 5px;
-  width: 60px;
+  width: 40px;
+  height: 40px;
   text-align: center;
+  vertical-align: central;
 }
 
 .resize-graph {

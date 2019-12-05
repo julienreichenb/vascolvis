@@ -31,6 +31,9 @@
         }"
         :items-per-page="parseInt('5', 10)"
       >
+        <template slot="items" slot-scope="props">
+          <tr @click="goToItem(props.item)"></tr>
+        </template>
         <template v-slot:item.id_user="{ item }">
           <span>{{ getUsername(item) }}</span>
         </template>
@@ -38,6 +41,7 @@
           <v-icon
             small
             :color="item.public === 1 ? 'green lighten-1' : 'red lighten-1'"
+            @click="item.public ? updateChart(item, 0) : updateChart(item, 1)"
             >{{ setVisibilityIcon(item) }}</v-icon
           >
         </template>
@@ -180,6 +184,21 @@ export default {
         this.$toast.success(item.name + this.$t('panel.table.toast_deleted'))
         this.$emit('refresh')
       })
+    },
+    async updateChart(item, bool) {
+      await axios
+        .put(`/charts?id=${item.id}&public=${bool}`)
+        .then((res) => {
+          this.data.filter((i) => i.id === item.id)[0].public = res.data.public
+          let msg = ''
+          bool === 1
+            ? (msg = this.$t('url.msg_public'))
+            : (msg = this.$t('url.msg_private'))
+          this.$toast.success(msg)
+        })
+        .catch((err) => {
+          alert(err)
+        })
     }
   }
 }

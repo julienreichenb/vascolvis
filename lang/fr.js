@@ -68,6 +68,7 @@ export default {
     }
   },
   graphs: {
+    title: 'Générateur de graphiques',
     help: 'Vous pouvez cliquer sur le nom des graphiques pour le modifier.',
     warn: "Cette combinaison de variables n'est pas autorisée.",
     choose_type: 'Choix du type',

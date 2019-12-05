@@ -12,8 +12,9 @@ process.env.SECRET_KEY = 'secret'
  */
 charts.post('/save', (req, res) => {
   const url = generateUrl(15)
+  const name = req.body.name === '' ? url : req.body.name
   const chartData = {
-    name: req.body.name,
+    name,
     data: req.body.data,
     id_dataset: req.body.id_dataset,
     id_user: req.body.id_user,

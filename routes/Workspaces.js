@@ -31,7 +31,7 @@ workspaces.get('/single', (req, res) => {
   const id = req.query.id
   Workspace.findOne({
     where: {
-      id: id
+      id
     }
   })
     .then((workspace) => {

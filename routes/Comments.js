@@ -33,7 +33,7 @@ comments.get('/id', (req, res) => {
   const id = req.query.id
   Comment.findOne({
     where: {
-      id: id
+      id
     }
   })
     .then((comment) => {

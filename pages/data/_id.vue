@@ -96,7 +96,7 @@
             </draggable>
           </v-expansion-panels>
         </v-navigation-drawer>
-        <v-flex xs12 sm10 elevation-6>
+        <v-flex xs12 sm10 xl9 elevation-6>
           <draggable
             v-model="droppedVars"
             draggable="false"
@@ -108,10 +108,6 @@
                 ><h2>{{ dataset.name }}</h2></v-card-title
               >
               <v-card-text>
-                <div class="help">
-                  <v-icon color="blue" small>mdi-help-circle-outline</v-icon>
-                  {{ $t('graphs.help') }}
-                </div>
                 <div
                   v-if="graphs.length < 1 && countVariables > 1"
                   class="mt-3"
@@ -155,10 +151,16 @@
                       >mdi-close-circle-outline</v-icon
                     >
                   </v-chip>
-                </div></v-card-title
-              >
+                </div>
+              </v-card-title>
               <v-container fluid>
                 <v-row dense>
+                  <div v-if="graphs.length > 0" class="help mb-2">
+                    <v-icon color="yellow"
+                      >mdi-checkbox-marked-circle-outline</v-icon
+                    >
+                    {{ $t('graphs.help') }}
+                  </div>
                   <v-col v-for="graph in graphs" :key="graph.id" :cols="12">
                     <v-card class="grey darken-2">
                       <v-layout justify-space-between>
@@ -169,24 +171,22 @@
                         ></v-card-title>
                         <div>
                           <v-btn
-                            style="margin: 1em 1em 0 0"
-                            color="indigo lighten-3"
-                            icon
-                            x-large
+                            class="mt-4"
+                            color="blue white--text"
+                            small
                             depressed
                             @click="swapAxis(graph)"
                           >
-                            <v-icon>mdi-rotate-3d-variant</v-icon>
+                            {{ $t('graphs.switch_button') }}
                           </v-btn>
                           <v-btn
-                            style="margin: 1em 1em 0 0"
-                            color="green lighten-2"
-                            icon
-                            x-large
+                            class="mt-4 mr-4"
+                            color="green darken-1 white--text"
+                            small
                             depressed
                             @click="saveGraph(graph)"
                           >
-                            <v-icon>mdi-content-save</v-icon>
+                            {{ $t('graphs.save') }}
                           </v-btn>
                         </div>
                       </v-layout>
@@ -382,6 +382,7 @@ export default {
         default:
           this.variables[i].color = '#4daf4a'
           this.variables[i].icon = 'mdi-timer'
+          this.variables[i].warn = !this.isDate(i)
           break
       }
       this.computeSparklines()
@@ -615,9 +616,11 @@ export default {
       } else {
         const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
         const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
-        // const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
+        const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
         if (selectedQuant) {
           switch (selectedQuant.length) {
+            case 0:
+              break
             case 1:
               encoding.x = {
                 field: selectedQuant[0].name,
@@ -634,10 +637,14 @@ export default {
                 type: selectedQuant[1].type
               }
               break
+            default:
+              break
           }
         }
         if (selectedNom) {
           switch (selectedNom.length) {
+            case 0:
+              break
             case 1:
               encoding.color = {
                 field: selectedNom[0].name,
@@ -656,16 +663,38 @@ export default {
                 type: selectedNom[1].type
               }
               break
+            default:
+              break
+          }
+        }
+        if (selectedTemp) {
+          switch (selectedTemp.length) {
+            case 0:
+              break
+            case 1:
+              encoding.x = {
+                field: selectedTemp[0].name,
+                type: selectedTemp[0].type,
+                timeUnit: 'year'
+              }
+              if (selectedQuant[1] !== undefined) {
+                this.variables[selectedQuant[1].id].isUsed = false
+                this.computeBigGraphs()
+              }
+              break
+            default:
+              break
           }
         }
       }
       return encoding
     },
+
     getEncoding(selectedVars, combinationVar) {
       const encoding = {}
       const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
       const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
-      // const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
+      const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
       if (selectedQuant) {
         switch (selectedQuant.length) {
           case 0:
@@ -728,8 +757,28 @@ export default {
             break
         }
       }
+      if (selectedTemp) {
+        switch (selectedTemp.length) {
+          case 0:
+            break
+          case 1:
+            encoding.x = {
+              field: selectedTemp[0].name,
+              type: selectedTemp[0].type,
+              timeUnit: 'year'
+            }
+            if (selectedQuant[1] !== undefined) {
+              this.variables[selectedQuant[1].id].isUsed = false
+              this.computeBigGraphs()
+            }
+            break
+          default:
+            break
+        }
+      }
       return encoding
     },
+
     getSparklineData(id) {
       const data = []
       for (let i = 0; i < this.json.length; i++) {
@@ -881,6 +930,10 @@ export default {
           mode.number = counters[k]
         }
       }
+      const percentage = (mode.number * 100) / this.json.length
+      if (percentage < 5 && !isNaN(mode.value)) {
+        this.variables[variable.id].warn = true
+      }
       return mode
     },
     getMaxValue(variable) {
@@ -943,7 +996,6 @@ export default {
 }
 
 .help {
-  font-size: smaller;
   color: lightgray;
 }
 

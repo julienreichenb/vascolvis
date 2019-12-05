@@ -67,6 +67,7 @@ export default {
     }
   },
   graphs: {
+    title: 'Charts generator',
     help: 'You can click on the name of the charts to modify it.',
     warn: 'This variable combination is not allowed.',
     choose_type: 'Select the type',

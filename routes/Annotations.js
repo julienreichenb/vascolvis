@@ -32,7 +32,7 @@ annotations.get('/id', (req, res) => {
   const id = req.query.id
   Annotation.findOne({
     where: {
-      id: id
+      id
     }
   })
     .then((annotation) => {
