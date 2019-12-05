@@ -1,8 +1,8 @@
 <template>
-  <div v-if="chart" v-show="show">
+  <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
-        <v-flex xs12 sm12 elevation-6>
+        <v-flex xs12 :sm9="annotating" elevation-6>
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
@@ -79,7 +79,7 @@
               >
             </v-card-subtitle>
             <v-card-text>
-              <div style="width: 100%">
+              <div id="vis-container" style="width: 100%; text-align: center;">
                 <div id="vis" class="resize-graph"></div>
               </div>
             </v-card-text>
@@ -155,7 +155,8 @@ export default {
   },
   methods: {
     displayGraph() {
-      this.json.height = '300'
+      this.json.height = '400'
+      this.json.width = 'container'
       window.vegaEmbed('#vis', this.json)
     },
     alertAnnotation(annotation) {

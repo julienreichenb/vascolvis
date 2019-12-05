@@ -40,7 +40,7 @@
                         <v-file-input
                           v-model="file"
                           type="file"
-                          accept=".csv"
+                          accept=".csv, .json"
                           :rules="rules"
                           show-size
                           outlined
@@ -48,7 +48,7 @@
                           prepend-icon="mdi-upload"
                           :label="this.$t('import.own.file_label')"
                           class="form-control"
-                          @change="loadCSV()"
+                          @change="loadFile()"
                         />
                         <v-layout justify-space-between>
                           <v-btn
@@ -74,7 +74,7 @@
                       <h4 class="apierror">{{ error }}</h4>
                       <br />
                     </div>
-                    <table v-if="parse_csv && preview">
+                    <table v-if="json && preview">
                       <thead>
                         <tr>
                           <th
@@ -88,7 +88,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="csv in parse_csv.slice(0, 5)" :key="csv">
+                        <tr v-for="csv in json.slice(0, 5)" :key="csv">
                           <td v-for="key in parse_header" :key="key">
                             {{ csv[key] }}
                           </td>
@@ -159,7 +159,6 @@ export default {
       error: '',
       hasError: false,
       parse_header: [],
-      parse_csv: [],
       sortOrders: {},
       sortKey: ''
     }
@@ -185,48 +184,74 @@ export default {
       lines[0].split(',').forEach(function(key) {
         self.sortOrders[key] = 1
       })
-
       lines.map(function(line, indexLine) {
         if (indexLine < 1) return // Jump header line
-
         const obj = {}
         const currentline = line.split(',')
-
         headers.map(function(header, indexHeader) {
           obj[header] = currentline[indexHeader]
         })
-
         result.push(obj)
       })
-
       result.pop() // remove the last item because undefined values
       this.json = result
-      return result // JavaScript object
     },
-    loadCSV() {
+    loadFile() {
       this.hasError = false
-      if (this.file && this.file.size <= 1000000) {
-        const self = this
-        if (window.FileReader) {
-          const reader = new FileReader()
-          reader.readAsText(this.file)
-          // Handle errors load
-          reader.onload = function(event) {
-            const csv = event.target.result
-            self.parse_csv = self.csvJSON(csv)
-          }
-          reader.onerror = function(evt) {
-            if (evt.target.error.name === 'NotReadableError') {
-              alert('Cannot read file !')
-            }
-          }
-        } else {
-          alert('FileReader are not supported in this browser.')
+      if (this.file && this.file.size <= 4000000) {
+        const extension = this.file.name.split('.').pop()
+        switch (extension) {
+          case 'csv':
+            this.loadCSV()
+            break
+          case 'json':
+            this.loadJson()
+            break
+          default:
+            console.log(extension)
+            break
         }
       } else {
-        this.parse_csv = []
         this.json = null
         this.preview = false
+      }
+    },
+    loadCSV() {
+      const self = this
+      if (window.FileReader) {
+        const reader = new FileReader()
+        reader.readAsText(this.file)
+        // Handle errors load
+        reader.onload = function(event) {
+          const csv = event.target.result
+          self.csvJSON(csv)
+        }
+        reader.onerror = function(evt) {
+          if (evt.target.error.name === 'NotReadableError') {
+            alert('Cannot read file !')
+          }
+        }
+      } else {
+        alert('FileReader are not supported in this browser.')
+      }
+    },
+    loadJson() {
+      const self = this
+      if (window.FileReader) {
+        const reader = new FileReader()
+        reader.readAsText(this.file)
+        // Handle errors load
+        reader.onload = function(event) {
+          self.json = JSON.parse(event.target.result)
+          self.parse_header = Object.keys(self.json[0])
+        }
+        reader.onerror = function(evt) {
+          if (evt.target.error.name === 'NotReadableError') {
+            alert('Cannot read file !')
+          }
+        }
+      } else {
+        alert('FileReader are not supported in this browser.')
       }
     },
     async saveDataset() {

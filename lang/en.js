@@ -42,7 +42,7 @@ export default {
       click_here: 'click here',
       disclaimer:
         'Your file must contain the headers and cannot be larger than 4MB.',
-      file_label: 'Browse...',
+      file_label: 'Browse... (.csv or .json files)',
       error: 'The dataset cannot be larger than 4MB.',
       button: 'Generate charts',
       preview: 'See a preview',

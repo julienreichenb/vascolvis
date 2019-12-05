@@ -43,7 +43,7 @@ export default {
       click_here: 'cliquez ici',
       disclaimer:
         'Votre fichier doit contenir les entêtes et ne peut pas excéder 4MB.',
-      file_label: 'Parcourir...',
+      file_label: 'Parcourir... (fichiers .csv ou .json)',
       error: 'Le jeu de données ne peut pas excéder 4MB.',
       button: 'Générer les graphiques',
       preview: "Voir l'aperçu",
