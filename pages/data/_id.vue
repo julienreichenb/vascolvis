@@ -104,9 +104,82 @@
             @change="resolveDraggedVariable"
           >
             <v-card class="mx-auto" :class="isMoving ? 'highlight' : ''">
-              <v-card-title
-                ><h2>{{ dataset.name }}</h2></v-card-title
-              >
+              <v-card-title>
+                <v-layout justify-space-between>
+                  <h2>{{ dataset.name }}</h2>
+                  <v-dialog v-model="dialog" width="85%">
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        x-large
+                        icon
+                        color="blue text--white"
+                        dark
+                        v-on="on"
+                      >
+                        <v-icon>mdi-help-circle-outline</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title
+                        class="headline indigo darken-3 mb-3"
+                        primary-title
+                      >
+                        {{ $t('graphs.info.title') }}
+                      </v-card-title>
+                      <v-card-text>
+                        <h2>{{ $t('graphs.info.typeselection_title') }}</h2>
+                        <p>
+                          {{ $t('graphs.info.typeselection') }}
+                          <v-icon color="red">mdi-alert-outline</v-icon>
+                          {{ $t('graphs.info.typeselection2') }}
+                        </p>
+                        <h2>{{ $t('graphs.info.combination_title') }}</h2>
+                        <h3>{{ $t('graphs.info.single_title') }}</h3>
+                        <p v-html="this.$t('graphs.info.single')"></p>
+                        <h3>
+                          <v-icon large :color="colors[1]">mdi-numeric</v-icon>
+                          -
+                          {{ $t('graphs.info.quant_title') }}
+                        </h3>
+                        <p>
+                          <span v-html="this.$t('graphs.info.quant')"></span>
+                          <v-icon :color="colors[1]">mdi-numeric</v-icon>
+                          <span v-html="this.$t('graphs.info.quant2')"></span>
+                        </p>
+                        <h3>
+                          <v-icon large :color="colors[0]"
+                            >mdi-alphabetical</v-icon
+                          >
+                          -
+                          {{ $t('graphs.info.nom_title') }}
+                        </h3>
+                        <p>
+                          <span v-html="this.$t('graphs.info.nom')"></span>
+                          <v-icon :color="colors[0]">mdi-alphabetical</v-icon>
+                          <span v-html="this.$t('graphs.info.nom2')"></span>
+                        </p>
+                        <h3>
+                          <v-icon large :color="colors[2]">mdi-timer</v-icon>
+                          -
+                          {{ $t('graphs.info.temp_title') }}
+                        </h3>
+                        <p>
+                          <span v-html="this.$t('graphs.info.temp')"></span>
+                          <v-icon :color="colors[2]">mdi-timer</v-icon>
+                          <span v-html="this.$t('graphs.info.temp2')"></span>
+                        </p>
+                        <h2>{{ $t('graphs.info.yourturn') }}</h2>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue text--white" @click="dialog = false">
+                          {{ $t('graphs.info.understood') }}
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                </v-layout>
+              </v-card-title>
               <v-card-text>
                 <div
                   v-if="graphs.length < 1 && countVariables > 1"
@@ -235,6 +308,7 @@ export default {
   data() {
     return {
       show: false,
+      dialog: false,
       dataset: null,
       json: null,
       variables: [],
@@ -939,7 +1013,11 @@ export default {
     getMaxValue(variable) {
       const col = []
       for (let i = 0; i < this.json.length; i++) {
-        col.push(Number(this.json[i][variable.name]))
+        col.push(
+          this.json[i][variable.name] !== undefined
+            ? Number(this.json[i][variable.name])
+            : 0
+        )
       }
       const max = Math.max(...col)
       if (isNaN(max)) {
@@ -950,7 +1028,11 @@ export default {
     getMinValue(variable) {
       const col = []
       for (let i = 0; i < this.json.length; i++) {
-        col.push(Number(this.json[i][variable.name]))
+        col.push(
+          this.json[i][variable.name] !== undefined
+            ? Number(this.json[i][variable.name])
+            : 0
+        )
       }
       const min = Math.min(...col)
       if (isNaN(min)) {
@@ -961,7 +1043,10 @@ export default {
     getMeanValue(variable) {
       let sum = 0.0
       for (let i = 0; i < this.json.length; i++) {
-        sum += Number(this.json[i][variable.name])
+        sum +=
+          this.json[i][variable.name] !== undefined
+            ? Number(this.json[i][variable.name])
+            : 0
       }
       const mean = sum / this.json.length
       if (isNaN(mean)) {
@@ -977,12 +1062,21 @@ export default {
     none() {
       this.panelClosed = true
       this.panel = []
-    }
+    },
+    // Modal display
+    showInfoModal() {},
+    closeInfoModal() {}
   }
 }
 </script>
 
 <style scoped>
+h2,
+h3 {
+  color: white;
+  margin-bottom: 0.5em;
+}
+
 .small {
   font-size: smaller;
   color: lightgray;

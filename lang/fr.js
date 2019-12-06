@@ -39,11 +39,11 @@ export default {
     own: {
       header: 'Sélectionner des données',
       label: 'Vos données',
-      convert: 'Pour convertir votre fichier en .csv, ',
+      convert: 'Si besoin, pour convertir un fichier en .csv, ',
       click_here: 'cliquez ici',
       disclaimer:
         'Votre fichier doit contenir les entêtes et ne peut pas excéder 4MB.',
-      file_label: 'Parcourir... (fichiers .csv ou .json)',
+      file_label: 'Parcourir...',
       error: 'Le jeu de données ne peut pas excéder 4MB.',
       button: 'Générer les graphiques',
       preview: "Voir l'aperçu",
@@ -65,6 +65,21 @@ export default {
         '                      interdum, at dapibus massa vehicula. Sed sodales ut ipsum\n' +
         '                      quis commodo.',
       button: "Générer les graphiques d'exemple"
+    },
+    howitworks: {
+      header: 'Informations',
+      top: 'Quels fichiers utiliser ?',
+      intro:
+        "À l'heure actuelle, VASCO accepte les fichiers <b>.csv</b>, <b>.json</b> et les <b>documents Excel</b>.",
+      csv_title: 'Fichers .csv',
+      csv:
+        'Veillez à ce que votre fichier possède des <b>entêtes</b>, car celles-ci seront utilisées comme variables. Chaque <b>ligne</b> représente une valeur du jeu de donnée. Prenez garde à <b>utiliser uniquement la virgule comme séparateur</b> pour que votre fichier soit traité correctement. Un fichier .txt fonctionnera également',
+      json_title: 'Fichiers .json',
+      json:
+        "Le fichier ne doit avoir <b>qu'un seul niveau de profondeur</b> pour être traité correctement. Chaque <b>objet</b> représente une valeur du jeu de données et les clés seront utilisées comme variables.",
+      excel_title: 'Fichiers Excel (.xls & .xlsx)',
+      excel:
+        '<b>Seule la première feuille</b> du fichier sera prise en compte. Veillez à ce que votre fichier possède des <b>entêtes</b>, car celles-ci seront utilisées comme variables. Chaque <b>ligne</b> représente une valeur du jeu de donnée.'
     }
   },
   graphs: {
@@ -78,7 +93,38 @@ export default {
     tip_4: 'deux',
     tip_5: ' variables dans le panel à gauche.',
     save: 'Enregistrer',
-    switch_button: 'Échanger les axes'
+    switch_button: 'Échanger les axes',
+    info: {
+      button: "Plus d'informations",
+      title: 'Combinaison de variables',
+      typeselection_title: 'Sélection du type',
+      typeselection:
+        'Le type des variables est automatiquement calculé, mais vous avez la possibilité de le déterminer manuellement en ouvrant une variable. Si le type choisi paraît incohérent, le signe',
+      typeselection2:
+        'apparaît à côté de son nom. La variable reste utilisable mais risque de produire des graphiques peu pertinents.',
+      quantitative: 'Quantitatif - ',
+      nominal: 'Nominal - ',
+      temporal: 'Temporel - ',
+      combination_title: 'Combinaisons possibles',
+      single_title: 'Variable seule',
+      single:
+        "La sélection d'une seule variable créera <b>toutes les combinaisons possibles</b> avec une autre variable du jeu de données. N'importe quel type de variable peut être sélectionné seul.",
+      quant_title: 'Variables quantitatives',
+      quant: 'Vous pouvez sélectionner <b>deux</b> variables quantitatives (',
+      quant2:
+        '). Celles-ci se combineront automatiquement avec <b>toutes les autres variables quantitatives</b> encore disponibles. Les variables sélectionnées seront sur les <b>axes</b> et la troisième déterminera la <b>taille</b> des marqueurs sur le graphique.',
+      nom_title: 'Variables nominales',
+      nom: 'Vous pouvez sélectionner <b>deux</b> variables nominales (',
+      nom2:
+        '). Les variables nominales ajouteront respectivement une <b>couleur</b> et une <b>forme</b> aux points sur le graphique.',
+      temp_title: 'Variables temporelles',
+      temp:
+        "Vous ne pouvez sélectionner <b>qu'une seule</b> variable temporelle (",
+      temp2:
+        ") à la fois. De plus, elle bloquera la sélection d'une seconde variable quantitative. La variable temporelle prendra <b>toujours</b> place sur l'axe X, sauf si vous choisissez d'inverser les axes.",
+      yourturn: 'Maintenant, à vous de jouer !',
+      understood: "J'ai compris"
+    }
   },
   url: {
     public: 'Public',

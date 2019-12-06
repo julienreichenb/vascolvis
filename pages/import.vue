@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid fill-height class="loginOverlay">
+    <v-container fluid fill-height>
       <v-layout flex align-center justify-center>
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
@@ -38,9 +38,10 @@
                     <div class="form-group">
                       <div class="col-sm-9">
                         <v-file-input
+                          id="fileloader"
                           v-model="file"
                           type="file"
-                          accept=".csv, .json"
+                          accept=".csv, .json, .xls, .xlsx"
                           :rules="rules"
                           show-size
                           outlined
@@ -98,12 +99,60 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
+              <v-tab> {{ $t('import.howitworks.header') }} </v-tab>
+              <v-tab-item>
+                <v-card>
+                  <v-card-title v-text="this.$t('import.howitworks.top')">
+                  </v-card-title>
+                  <v-card-text>
+                    <p v-html="this.$t('import.howitworks.intro')"></p>
+                  </v-card-text>
+                  <v-expansion-panels>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header
+                        v-text="this.$t('import.howitworks.csv_title')"
+                      >
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <p v-html="this.$t('import.howitworks.csv')"></p>
+                        <div class="img-container">
+                          <img src="~/static/import/csv_exemple.png" />
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header
+                        v-text="this.$t('import.howitworks.json_title')"
+                      >
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <p v-html="this.$t('import.howitworks.json')"></p>
+                        <div class="img-container json">
+                          <img src="~/static/import/json_exemple.png" />
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header
+                        v-text="this.$t('import.howitworks.excel_title')"
+                      >
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <p v-html="this.$t('import.howitworks.excel')"></p>
+                        <div class="img-container excel">
+                          <img src="~/static/import/excel_exemple.png" />
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-card>
+              </v-tab-item>
               <v-tab> {{ $t('import.sample.header') }} </v-tab>
               <v-tab-item>
                 <v-card>
                   <v-card-title v-text="this.$t('import.sample.label')">
                   </v-card-title>
-                  <v-card-text class="pt-4">
+                  <v-card-text>
                     <p>
                       {{ $t('import.sample.text') }}
                     </p>
@@ -129,6 +178,7 @@
 </template>
 <script>
 import jwtDecode from 'jwt-decode'
+import XLXS from 'xlsx'
 export default {
   head() {
     return {
@@ -175,27 +225,6 @@ export default {
       this.sortKey = key
       this.sortOrders[key] = this.sortOrders[key] * -1
     },
-    csvJSON(csv) {
-      const self = this
-      const lines = csv.split('\n')
-      const result = []
-      const headers = lines[0].split(',')
-      self.parse_header = lines[0].split(',')
-      lines[0].split(',').forEach(function(key) {
-        self.sortOrders[key] = 1
-      })
-      lines.map(function(line, indexLine) {
-        if (indexLine < 1) return // Jump header line
-        const obj = {}
-        const currentline = line.split(',')
-        headers.map(function(header, indexHeader) {
-          obj[header] = currentline[indexHeader]
-        })
-        result.push(obj)
-      })
-      result.pop() // remove the last item because undefined values
-      this.json = result
-    },
     loadFile() {
       this.hasError = false
       if (this.file && this.file.size <= 4000000) {
@@ -204,8 +233,17 @@ export default {
           case 'csv':
             this.loadCSV()
             break
+          case 'txt':
+            this.loadCSV()
+            break
           case 'json':
             this.loadJson()
+            break
+          case 'xls':
+            this.loadExcel()
+            break
+          case 'xlsx':
+            this.loadExcel()
             break
           default:
             console.log(extension)
@@ -254,6 +292,53 @@ export default {
         alert('FileReader are not supported in this browser.')
       }
     },
+    loadExcel() {
+      const self = this
+      if (window.FileReader) {
+        const reader = new FileReader()
+        reader.readAsBinaryString(this.file)
+        reader.onload = function(event) {
+          self.json = event.target.result
+          const workbook = XLXS.read(self.json, {
+            type: 'binary',
+            cellDates: true,
+            cellNF: false,
+            cellText: false
+          })
+          self.json = XLXS.utils.sheet_to_row_object_array(
+            workbook.Sheets[workbook.SheetNames[0]],
+            { dateNF: 'YYYY-MM-DD' }
+          )
+          self.parse_header = Object.keys(self.json[0])
+        }
+        reader.onerror = function(event) {
+          alert('Error : ' + event.target.error.code)
+        }
+      } else {
+        alert('FileReader are not supported in this browser.')
+      }
+    },
+    csvJSON(csv) {
+      const self = this
+      const lines = csv.split('\n')
+      const result = []
+      const headers = lines[0].split(',')
+      self.parse_header = lines[0].split(',')
+      lines[0].split(',').forEach(function(key) {
+        self.sortOrders[key] = 1
+      })
+      lines.map(function(line, indexLine) {
+        if (indexLine < 1) return // Jump header line
+        const obj = {}
+        const currentline = line.split(',')
+        headers.map(function(header, indexHeader) {
+          obj[header] = currentline[indexHeader]
+        })
+        result.push(obj)
+      })
+      result.pop() // remove the last item because undefined values
+      this.json = result
+    },
     async saveDataset() {
       await this.$axios
         .post('/datasets/save', {
@@ -289,6 +374,32 @@ export default {
 .help {
   font-size: smaller;
   color: lightgray;
+}
+
+.img-container {
+  padding: 0.5em;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  background-color: #47494e;
+}
+
+.json > img {
+  max-height: 250px !important;
+}
+
+.excel > img {
+  max-height: 150px !important;
+}
+
+img {
+  padding: 0;
+  margin: 0;
+  max-height: 100px;
+}
+
+b {
+  color: white;
 }
 
 table {

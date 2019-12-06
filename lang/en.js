@@ -38,11 +38,11 @@ export default {
     own: {
       header: 'Select a dataset',
       label: 'Your data',
-      convert: 'To convert your files in .csv, ',
+      convert: 'If needed, to convert your files in .csv, ',
       click_here: 'click here',
       disclaimer:
         'Your file must contain the headers and cannot be larger than 4MB.',
-      file_label: 'Browse... (.csv or .json files)',
+      file_label: 'Browse...',
       error: 'The dataset cannot be larger than 4MB.',
       button: 'Generate charts',
       preview: 'See a preview',
@@ -64,6 +64,21 @@ export default {
         '                      interdum, at dapibus massa vehicula. Sed sodales ut ipsum\n' +
         '                      quis commodo.',
       button: 'Generate sample charts'
+    },
+    howitworks: {
+      header: 'Informations',
+      top: 'Which files can I use ?',
+      intro:
+        'For now on, VASCO accepts <b>.csv</b>, <b>.json</b> and <b>Excel</b> files.',
+      csv_title: '.csv files',
+      csv:
+        'Take care that your file has <b>headers</b>, because they will be used as variables. Each <b>line</b> is a dataset value. Please be aware to <b>use exclusively the comma as a separator</b> to ensure your file parsing. A .txt is also valid',
+      json_title: '.json files',
+      json:
+        'The file must have <b>a single depth level only</b> to be correctly parsed. Each <b>object</b> is a dataset value and the keys will be used as variables.',
+      excel_title: 'Excel files (.xls & .xlsx)',
+      excel:
+        '<b>Only the first sheet</b> of the file will be used. Take care that your file has <b>headers</b>, because they will be used as variables. Each <b>line</b> is a dataset value.'
     }
   },
   graphs: {
