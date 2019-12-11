@@ -12,9 +12,9 @@
       </p>
     </div>
     <div v-for="link in links" :key="link">
-      <NuxtLink :to="`/${link}`">
+      <v-btn outlined color="blue" @click="goToPanel()">
         {{ $t('error.link.' + link) }}
-      </NuxtLink>
+      </v-btn>
     </div>
   </v-app>
 </template>
@@ -51,6 +51,11 @@ export default {
       this.links = ['import', 'panel']
     }
     this.errorMessage = this.error.message
+  },
+  methods: {
+    goToPanel() {
+      this.$router.push(this.localePath({ name: 'panel' }))
+    }
   }
 }
 </script>

@@ -44,8 +44,9 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validLog"
-                            color="white indigo--text"
+                            color="white"
                             depressed
+                            outlined
                             @click="attemptLogin()"
                           >
                             {{ $t('index.login.button') }}
@@ -70,8 +71,16 @@
                       <v-form ref="form" v-model="validReg">
                         <v-text-field
                           v-model="username"
-                          :label="this.$t('index.username')"
+                          :label="this.$t('index.register.username')"
                           :rules="usernameRules"
+                          required
+                          @change="isWrong = false"
+                        ></v-text-field>
+                        <br />
+                        <v-text-field
+                          v-model="email"
+                          :label="this.$t('index.register.email')"
+                          :rules="emailRules"
                           required
                           @change="isWrong = false"
                         ></v-text-field>
@@ -97,8 +106,9 @@
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validReg"
-                            color="white indigo--text"
+                            color="white"
                             depressed
+                            outlined
                             @click="createAccount()"
                           >
                             {{ $t('index.register.button') }}
@@ -134,11 +144,13 @@ export default {
   },
   data() {
     return {
-      usernameRules: [
-        (v) => !!v || this.$t('index.error.username_required'),
+      usernameRules: [(v) => !!v || this.$t('index.error.username_required')],
+      emailRules: [
+        (v) => !!v || this.$t('index.error.email_required'),
         (v) =>
-          /^[a-zA-Z0-9]{4,20}$/.test(v) ||
-          this.$t('index.error.username_invalid')
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+            v
+          ) || this.$t('index.error.email_invalid')
       ],
       passwordRules: [
         (v) => !!v || this.$t('index.error.password_required'),
@@ -154,6 +166,7 @@ export default {
       validLog: false,
       validReg: false,
       username: null,
+      email: null,
       password: null,
       checkPassword: null,
       errorLog: '',
@@ -171,15 +184,14 @@ export default {
       this.$axios
         .post('/users/register', {
           username: this.username,
-          password: this.password
+          password: this.password,
+          email: this.email
         })
         .then((res) => {
           localStorage.setItem('usertoken', res.data)
           this.$router.push(this.localePath({ name: 'import' }))
         })
         .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
           this.isWrong = true
           this.errorReg = this.$t('index.error.' + error.response.data.error)
         })
@@ -195,8 +207,6 @@ export default {
           this.$router.push(this.localePath({ name: 'import' }))
         })
         .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
           this.isWrong = true
           this.errorLog = this.$t('index.error.' + error.response.data.error)
         })

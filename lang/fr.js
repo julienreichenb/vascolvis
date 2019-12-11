@@ -2,14 +2,18 @@ export default {
   title: {
     index: 'Bienvenue',
     panel: 'Mon Atelier',
+    settings: 'Options du compte',
     import: 'Importation de données',
     graphs: 'Générateur de graphiques',
     url: 'Annotation du graphique',
     about: 'À propos'
   },
+  layout: {
+    atelier: 'Mon Atelier'
+  },
   index: {
     welcome: 'Bienvenue sur VASCO',
-    username: "Nom d'utilisateur",
+    username: "Nom d'utilisateur ou adresse e-mail",
     password: 'Mot de passe',
     login: {
       header: 'Se connecter',
@@ -18,19 +22,24 @@ export default {
     },
     register: {
       header: "S'enregistrer",
+      username: "Nom d'utilisateur",
+      email: 'Adresse email',
       label: "Choisissez un nom d'utilisateur et un mot de passe.",
       repeat: 'Répétez le mot de passe',
       button: 'Créer le compte'
     },
     error: {
       username_required: "Le nom d'utilisateur est requis.",
+      email_required: "L'email est requis.",
+      email_invalid: "Le format de l'adresse e-mail est invalide.",
       password_required: 'Le mot de passe est requis.',
       username_invalid:
         "Le nom d'utilisateur est trop court ou contient des caractères interdits.",
       password_invalid:
         'Le mot de passe est trop court ou contient des caractères interdits.',
       not_corresponding: 'Les mots de passe ne correspondent pas.',
-      already_exist: "Le nom d'utilisateur choisi existe déjà.",
+      username_already_exist: "Le nom d'utilisateur choisi existe déjà.",
+      email_already_exist: "L'adresse email choisie est déjà utilisée.",
       invalid:
         "Nom d'utilisateur ou mot de passe invalide. Veuillez vérifier vos identifiants."
     }
@@ -160,7 +169,62 @@ export default {
       delete_ok: 'Supprimer',
       toast_deleted: ' a été supprimé avec succès.'
     },
-    no_data: 'Aucune donnée disponible.'
+    no_data: 'Aucune donnée disponible.',
+    deleted_account: '[utilisateur supprimé]'
+  },
+  settings: {
+    header: 'Gestion du compte',
+    save: 'Enregistrer les changements',
+    toast_saved: 'Modifications enregistrées avec succès !',
+    toast_error: 'Erreur, veuillez vérifier les informations saisies.',
+    tabs: {
+      user: 'Paramètres utilisateur',
+      profile: 'Profil personnel',
+      password: 'Mot de passe',
+      account: 'Options du compte'
+    },
+    user: {
+      title: 'Changement des identifiants',
+      email: "Modifier l'adresse email",
+      username: "Modifier le nom d'utilisateur"
+    },
+    profile: {
+      title: 'Profil personnel',
+      publicname: 'Nom public',
+      bio: 'Description',
+      bio_placeholder: 'Parlez-nous de vous',
+      url: 'Site internet',
+      url_placeholder: 'google.com',
+      url_error: '',
+      picture: 'Photo de profil',
+      picture_placeholder: 'Choisissez votre photo de profil',
+      picture_error: "La taille de l'image ne doit pas excéder 1Mb."
+    },
+    password: {
+      title: 'Changement de mot de passe',
+      oldpsw: 'Ancien mot de passe',
+      newpsw: 'Nouveau mot de passe',
+      confirmpsw: 'Confirmez le nouveau mot de passe'
+    },
+    account: {
+      title: 'Vie privée',
+      title2: 'Suppression du compte',
+      public:
+        'Vos graphiques sont <b style="color: lightgreen">publics</b> par défaut.',
+      private:
+        'Vos graphiques sont <b style="color: lightcoral">privés</b> par défaut.',
+      switch_public: 'Public',
+      switch_private: 'Privé',
+      delete_button: 'Supprimer définitivement mon compte',
+      delete: 'Souhaitez-vous vraiment supprimer votre compte ?',
+      delete_title: 'Cette action est irréversible',
+      delete_disclaimer:
+        "Cette action est <b>irréversible</b>. Toutefois, vos jeux de données, graphiques, annotations et commentaires seront conservés mais votre nom de compte n'apparaîtra plus.<br/><br/>Confirmez votre mot de passe pour continuer.",
+      delete_cancel: 'Annuler',
+      delete_ok: 'Oui, je confirme la suppression définitive de mon compte.',
+      password: 'Mot de passe',
+      toast_error: "Mot de passe erroné. Le compte n'a pas été supprimé."
+    }
   },
   about: {
     header: 'Le projet VASCO',

@@ -5,14 +5,14 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title
-              class="white--text"
               v-text="this.$t('panel.header') + ' ' + user.username"
+              class="white--text"
             >
             </v-toolbar-title>
             <v-tabs
               slot="extension"
-              centered
               :grow="true"
+              centered
               slider-color="white"
               color="white"
             >
@@ -28,11 +28,8 @@
               </v-tab>
               <v-tab-item v-for="menu in menus" :key="menu.id">
                 <v-card-text v-if="menu.id === 'datasets'">
-                  <v-btn
-                    color="white indigo--text"
-                    depressed
-                    @click="goToImport()"
-                  >
+                  <br />
+                  <v-btn @click="goToImport()" color="white" outlined depressed>
                     {{ $t('panel.dataset_button') }}
                   </v-btn>
                 </v-card-text>
@@ -142,8 +139,18 @@ export default {
     fetchAllData() {
       this.getDatasets()
       this.getCharts()
-      // this.getAnnotations()
-      // this.getComments()
+      this.getAnnotations()
+      this.getComments()
+    },
+    async getUserProfile() {
+      await axios
+        .get(`/profiles?id=${this.user.id}`)
+        .then((res) => {
+          this.user.profile = res.data
+        })
+        .catch((error) => {
+          alert(error)
+        })
     },
     async getDatasets() {
       await axios.get(`/datasets/user/?id_user=${this.user.id}`).then((res) => {

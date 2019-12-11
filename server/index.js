@@ -17,11 +17,13 @@ app.use(cors())
 
 // DB settings
 const Users = require('../routes/Users')
+const Profiles = require('../routes/Profiles')
 const Datasets = require('../routes/DataSets')
 const Charts = require('../routes/Charts')
 const Annotations = require('../routes/Annotations')
 const Comments = require('../routes/Comments')
 app.use('/users', Users)
+app.use('/profiles', Profiles)
 app.use('/datasets', Datasets)
 app.use('/charts', Charts)
 app.use('/annotations', Annotations)

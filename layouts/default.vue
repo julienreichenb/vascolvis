@@ -6,10 +6,13 @@
       </v-btn>
       <v-toolbar-title @click.stop="goHome()" v-text="title" />
       <v-spacer />
-      <v-btn icon @click.stop="goToPanel()">
-        <v-icon>mdi-solar-panel</v-icon>
+      <v-btn outlined @click.stop="goToPanel()">
+        {{ $t('layout.atelier') }}
       </v-btn>
       <v-spacer />
+      <v-btn icon @click.stop="goToSettings()">
+        <v-icon>mdi-settings-outline</v-icon>
+      </v-btn>
       <v-btn icon @click.stop="goToAbout()">
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
@@ -28,7 +31,7 @@
         <a href="https://hes-so.ch" target="_blank">
           <img
             src="~/static/hessologo.png"
-            alt=""
+            alt="HES-SO Valais/Wallis"
             style="height: 50px; width: auto;"
           />
         </a>
@@ -68,6 +71,9 @@ export default {
     },
     goToPanel() {
       this.$router.push(this.localePath({ name: 'panel' }))
+    },
+    goToSettings() {
+      this.$router.push(this.localePath({ name: 'settings' }))
     }
   }
 }

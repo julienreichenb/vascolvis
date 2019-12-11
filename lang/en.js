@@ -2,14 +2,18 @@ export default {
   title: {
     index: 'Welcome',
     panel: 'My Atelier',
+    settings: 'Account settings',
     import: 'Data Importation',
     graphs: 'Charts Generation',
     url: 'Chart Annotation',
     about: 'About'
   },
+  layout: {
+    atelier: 'My Atelier'
+  },
   index: {
     welcome: 'Welcome on VASCO',
-    username: 'Username',
+    username: 'Username or email address',
     password: 'Password',
     login: {
       header: 'Login',
@@ -18,19 +22,24 @@ export default {
     },
     register: {
       header: 'Register',
+      username: 'Username',
+      email: 'Email address',
       label: 'Please choose your username and password',
       repeat: 'Repeat your password',
       button: 'Create account'
     },
     error: {
       username_required: 'Username is required.',
+      email_required: 'Email is required.',
+      email_invalid: 'The email format is invalid.',
       password_required: 'Password is required.',
       username_invalid:
         'The username is too short or contains forbidden characters.',
       password_invalid:
         'The password is too short or contains forbidden characters.',
       not_corresponding: 'The passwords do not match.',
-      already_exist: 'The chosen username already exists.',
+      username_already_exist: 'The chosen username already exists.',
+      email_already_exist: 'The chosen email address is already used.',
       invalid: 'Invalid username or password. Please check your credentials.'
     }
   },
@@ -129,7 +138,15 @@ export default {
       delete_ok: 'Delete',
       toast_deleted: ' has been successfully deleted.'
     },
-    no_data: 'No data available.'
+    no_data: 'No data available.',
+    deleted_account: '[deleted user]'
+  },
+  settings: {
+    save: 'Save changes',
+    tabs: {
+      user: 'User settings',
+      account: 'Account parameters'
+    }
   },
   about: {
     header: 'The VASCO Project',

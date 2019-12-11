@@ -2,7 +2,7 @@
   <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
-        <v-flex xs12 :sm9="annotating" elevation-6>
+        <v-flex :sm9="annotating" xs12 elevation-6>
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
@@ -10,9 +10,9 @@
                   <div v-if="chart.public">
                     <v-btn
                       v-if="isMyChart"
+                      @click="updateChart(0)"
                       icon
                       color="green"
-                      @click="updateChart(0)"
                     >
                       <v-icon>mdi-lock-open-variant</v-icon>
                     </v-btn>
@@ -21,16 +21,16 @@
                   <div v-else>
                     <v-btn
                       v-if="isMyChart"
+                      @click="updateChart(1)"
                       icon
                       color="red"
-                      @click="updateChart(1)"
                     >
                       <v-icon>mdi-lock</v-icon>
                     </v-btn>
                     <span v-else>{{ $t('url.private') }}</span>
                   </div>
                   <div />
-                  <v-toolbar-title class="white--text" v-text="chart.name">
+                  <v-toolbar-title v-text="chart.name" class="white--text">
                   </v-toolbar-title>
                 </div>
                 <div>
@@ -44,27 +44,27 @@
                     ><v-icon color="black">mdi-link-variant</v-icon></v-btn
                   >
                   <v-btn
+                    @click="shareByMail()"
                     small
                     icon
                     depressed
                     class="share ml-2 white indigo--text"
-                    @click="shareByMail()"
                     ><v-icon>mdi-email-outline</v-icon></v-btn
                   >
                   <v-btn
+                    @click="shareOnFacebook()"
                     small
                     icon
                     depressed
                     class="share ml-2 white indigo--text"
-                    @click="shareOnFacebook()"
                     ><v-icon color="#4267B2">mdi-facebook</v-icon></v-btn
                   >
                   <v-btn
+                    @click="shareOnTwitter()"
                     small
                     icon
                     depressed
                     class="share ml-2 white indigo--text"
-                    @click="shareOnTwitter()"
                     ><v-icon color="#55ACEE">mdi-twitter</v-icon></v-btn
                   >
                 </div>
@@ -72,9 +72,10 @@
             </v-toolbar>
             <v-card-subtitle>
               <v-btn
-                color="white indigo--text"
-                depressed
                 @click="annotating = !annotating"
+                color="white"
+                depressed
+                outlined
                 >{{ $t('url.add_annot') }}</v-btn
               >
             </v-card-subtitle>
@@ -88,13 +89,13 @@
       </v-layout>
     </v-container>
     <ColInputMain
-      vis="#vis"
       :elements="elements"
       :annotating="annotating"
       :init="init"
       :offset-top="-64"
       @close="annotating = false"
       @submittingAnnotation="alertAnnotation"
+      vis="#vis"
     />
   </div>
 </template>

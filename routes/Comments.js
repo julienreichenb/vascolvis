@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const comments = express.Router()
 
-const Comment = require('../models/Annotation')
+const Comment = require('../models/Comment')
 comments.use(cors())
 
 process.env.SECRET_KEY = 'secret'

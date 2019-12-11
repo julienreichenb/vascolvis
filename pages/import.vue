@@ -5,14 +5,14 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title
-              class="white--text"
               v-text="this.$t('import.own.header')"
+              class="white--text"
             >
             </v-toolbar-title>
             <v-tabs
               slot="extension"
-              centered
               :grow="true"
+              centered
               slider-color="white"
               color="white"
             >
@@ -40,24 +40,25 @@
                         <v-file-input
                           id="fileloader"
                           v-model="file"
+                          :rules="rules"
+                          :label="this.$t('import.own.file_label')"
+                          @change="loadFile()"
                           type="file"
                           accept=".csv, .json, .xls, .xlsx"
-                          :rules="rules"
                           show-size
                           outlined
                           color="blue"
                           prepend-icon="mdi-upload"
-                          :label="this.$t('import.own.file_label')"
                           class="form-control"
-                          @change="loadFile()"
                         />
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="json"
-                            large
-                            color="white indigo--text"
-                            depressed
                             @click="saveDataset()"
+                            large
+                            outlined
+                            color="white"
+                            depressed
                           >
                             {{ $t('import.own.button') }}
                           </v-btn>
@@ -158,10 +159,11 @@
                     </p>
                     <v-layout justify-space-between>
                       <v-btn
-                        large
-                        color="white indigo--text"
-                        depressed
                         @click="generateSampleGraph()"
+                        large
+                        outlined
+                        color="white"
+                        depressed
                       >
                         {{ $t('import.sample.button') }}
                       </v-btn>
@@ -370,6 +372,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .help {
   font-size: smaller;

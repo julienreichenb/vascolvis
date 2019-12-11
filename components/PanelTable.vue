@@ -72,10 +72,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey lighten-3" text @click="deleteDialog = false">
+          <v-btn color="grey lighten-3" outlined @click="deleteDialog = false">
             {{ $t('panel.table.delete_cancel') }}
           </v-btn>
-          <v-btn color="red darken-2" text @click="deleteItem()">
+          <v-btn color="red darken-2" outlined @click="deleteItem()">
             {{ $t('panel.table.delete_ok') }}
           </v-btn>
         </v-card-actions>
@@ -127,8 +127,13 @@ export default {
   async created() {
     for (let i = 0; i < this.data.length; i++) {
       await axios.get(`/users?id=${this.data[i].id_user}`).then((res) => {
-        if (this.usernames.filter((u) => u.id === res.data.id).length < 1) {
-          this.usernames.push({ id: res.data.id, username: res.data.username })
+        if (res.data) {
+          if (this.usernames.filter((u) => u.id === res.data.id).length < 1) {
+            this.usernames.push({
+              id: res.data.id,
+              username: res.data.username
+            })
+          }
         }
       })
     }
@@ -136,10 +141,16 @@ export default {
   methods: {
     getUsername(item) {
       const id = item.id_user
-      for (let i = 0; i < this.usernames.length; i++) {
-        if (this.usernames[i].id === id) {
-          return this.usernames[i].username
+      if (this.usernames.length > 0) {
+        for (let i = 0; i < this.usernames.length; i++) {
+          if (this.usernames[i].id === id) {
+            return this.usernames[i].username
+          } else {
+            return this.$t('panel.deleted_account')
+          }
         }
+      } else {
+        return this.$t('panel.deleted_account')
       }
     },
     setVisibilityIcon(item) {

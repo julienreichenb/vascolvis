@@ -172,7 +172,7 @@
                       </v-card-text>
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="blue text--white" @click="dialog = false">
+                        <v-btn color="green" @click="dialog = false" outlined>
                           {{ $t('graphs.info.understood') }}
                         </v-btn>
                       </v-card-actions>
@@ -245,8 +245,8 @@
                         <div>
                           <v-btn
                             class="mt-4"
-                            color="blue white--text"
-                            small
+                            color="blue lighten-1"
+                            outlined
                             depressed
                             @click="swapAxis(graph)"
                           >
@@ -254,8 +254,8 @@
                           </v-btn>
                           <v-btn
                             class="mt-4 mr-4"
-                            color="green darken-1 white--text"
-                            small
+                            color="green"
+                            outlined
                             depressed
                             @click="saveGraph(graph)"
                           >
@@ -930,6 +930,7 @@ export default {
         .post('/charts/save', {
           name: document.getElementById('title-' + graph.id).innerHTML,
           data: graph.data,
+          public: this.user.defaultpublic,
           id_dataset: this.dataset.id,
           id_user: this.user.id
         })
