@@ -31,14 +31,18 @@
         :items-per-page="parseInt('5', 10)"
         item-key="id"
       >
-        <template slot="items" slot-scope="props">
-          <tr @click="goToItem(props.item)"></tr>
-        </template>
         <template v-slot:item.id_user="{ item }">
-          <span>{{ getUsername(item) }}</span>
+          <span
+            ><a
+              :class="isDeleted(item) ? 'deleted' : 'link'"
+              @click="goToProfile(item)"
+              >{{ getUsername(item) }}</a
+            ></span
+          >
         </template>
         <template v-slot:item.public="{ item }">
           <v-icon
+            v-if="isOwner(item)"
             :color="item.public === 1 ? 'green lighten-1' : 'red lighten-1'"
             @click="item.public ? updateChart(item, 0) : updateChart(item, 1)"
             small
@@ -46,7 +50,9 @@
           >
         </template>
         <template v-slot:item.url="{ item }">
-          <a @click="goToItem(item)">{{ item.url }}</a>
+          <span>
+            <a @click="goToItem(item)" class="link">{{ item.url }}</a>
+          </span>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon @click="goToItem(item)">
@@ -84,7 +90,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from '~/plugins/axios'
 export default {
   props: {
     user: {
@@ -102,6 +108,11 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    names: {
+      optional: true,
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -109,7 +120,6 @@ export default {
       onlyMine: false,
       deleteDialog: false,
       selected: { name: '' },
-      usernames: [],
       search: ''
     }
   },
@@ -124,34 +134,17 @@ export default {
       }
     }
   },
-  async created() {
-    for (let i = 0; i < this.data.length; i++) {
-      await axios.get(`/users?id=${this.data[i].id_user}`).then((res) => {
-        if (res.data) {
-          if (this.usernames.filter((u) => u.id === res.data.id).length < 1) {
-            this.usernames.push({
-              id: res.data.id,
-              username: res.data.username
-            })
-          }
-        }
-      })
-    }
-  },
   methods: {
     getUsername(item) {
       const id = item.id_user
-      if (this.usernames.length > 0) {
-        for (let i = 0; i < this.usernames.length; i++) {
-          if (this.usernames[i].id === id) {
-            return this.usernames[i].username
-          } else {
-            return this.$t('panel.deleted_account')
-          }
+      for (let i = 0; i < this.names.length; i++) {
+        if (this.names[i].id === id) {
+          return this.names[i].publicname
+            ? this.names[i].publicname
+            : this.names[i].username
         }
-      } else {
-        return this.$t('panel.deleted_account')
       }
+      return this.$t('panel.deleted_account')
     },
     setVisibilityIcon(item) {
       return item.public === 1
@@ -181,8 +174,20 @@ export default {
           break
       }
     },
+    goToProfile(item) {
+      if (!this.isDeleted(item)) {
+        const id = item.id_user
+        this.$router.push({
+          name: `user-id___${this.$i18n.locale}`,
+          params: { id }
+        })
+      }
+    },
     isOwner(item) {
       return item.id_user === this.user.id
+    },
+    isDeleted(item) {
+      return this.getUsername(item) === this.$t('panel.deleted_account')
     },
     toggleDeleteDialog(item) {
       this.deleteDialog = true
@@ -214,12 +219,12 @@ export default {
   }
 }
 </script>
-<style>
-a:hover {
-  color: lightblue;
+<style scoped>
+.link {
+  color: cornflowerblue !important;
 }
-.help {
-  font-size: smaller;
-  color: lightgray;
+.deleted {
+  color: lightgray !important;
+  font-style: italic;
 }
 </style>

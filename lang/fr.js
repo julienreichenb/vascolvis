@@ -144,7 +144,8 @@ export default {
     msg_private: 'Le graphique est maintenant privé.',
     mail_subject: 'Analyse collaborative de graphique - ',
     mail_body: 'Je voudrais ton avis sur le graphique disponible ici : ',
-    copied: 'Copié !'
+    copied: 'Copié !',
+    graph_of: 'Graphique proposé par '
   },
   panel: {
     header: 'Bienvenue dans votre atelier, ',
@@ -199,7 +200,8 @@ export default {
       url_error: "Le format de l'URL est invalide.",
       picture: 'Photo de profil',
       picture_placeholder: 'Choisissez votre photo de profil',
-      picture_error: "La taille de l'image ne doit pas excéder 1Mb."
+      picture_error: "La taille de l'image ne doit pas excéder 1Mb.",
+      seemine: 'Voir mon profil'
     },
     password: {
       title: 'Changement de mot de passe',
@@ -227,7 +229,13 @@ export default {
       toast_error: "Mot de passe erroné. Le compte n'a pas été supprimé."
     }
   },
-  user: {},
+  user: {
+    title: 'Profil',
+    title2: 'Graphiques',
+    website: 'Site internet : ',
+    no_bio: "n'a pas encore rempli sa description.",
+    no_graphs: "n'a pas encore proposé de graphiques."
+  },
   about: {
     header: 'Le projet VASCO',
     title_1: 'Introduction',

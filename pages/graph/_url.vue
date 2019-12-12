@@ -6,33 +6,8 @@
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
-                <div class="row ml-1">
-                  <div v-if="chart.public">
-                    <v-btn
-                      v-if="isMyChart"
-                      @click="updateChart(0)"
-                      icon
-                      color="green"
-                    >
-                      <v-icon>mdi-lock-open-variant</v-icon>
-                    </v-btn>
-                    <span v-else>{{ $t('url.public') }}</span>
-                  </div>
-                  <div v-else>
-                    <v-btn
-                      v-if="isMyChart"
-                      @click="updateChart(1)"
-                      icon
-                      color="red"
-                    >
-                      <v-icon>mdi-lock</v-icon>
-                    </v-btn>
-                    <span v-else>{{ $t('url.private') }}</span>
-                  </div>
-                  <div />
-                  <v-toolbar-title v-text="chart.name" class="white--text">
-                  </v-toolbar-title>
-                </div>
+                <v-toolbar-title v-text="chart.name" class="white--text">
+                </v-toolbar-title>
                 <div>
                   <v-btn
                     v-clipboard:copy="getFullUrl()"
@@ -70,16 +45,42 @@
                 </div>
               </v-layout>
             </v-toolbar>
-            <v-card-subtitle>
+            <v-card-text>
+              <v-layout justify-space-between>
+                <div v-if="currentUser">
+                  <h2>
+                    {{ $t('url.graph_of')
+                    }}<a @click="goToProfile(profile.id_user)">{{
+                      profile.publicname
+                        ? profile.publicname
+                        : currentUser.username
+                    }}</a>
+                  </h2>
+                </div>
+                <div v-if="isMyChart">
+                  <div v-if="chart.public">
+                    <v-btn @click="updateChart(0)" icon color="green">
+                      <v-icon>mdi-lock-open-variant</v-icon>
+                    </v-btn>
+                  </div>
+                  <div v-else>
+                    <v-btn @click="updateChart(1)" icon color="red">
+                      <v-icon>mdi-lock</v-icon>
+                    </v-btn>
+                  </div>
+                  <div />
+                </div>
+              </v-layout>
+            </v-card-text>
+            <v-card-text>
               <v-btn
                 @click="annotating = !annotating"
                 color="white"
+                class="mb-2"
                 depressed
                 outlined
                 >{{ $t('url.add_annot') }}</v-btn
               >
-            </v-card-subtitle>
-            <v-card-text>
               <div id="vis-container" style="width: 100%; text-align: center;">
                 <div id="vis" class="resize-graph"></div>
               </div>
@@ -120,6 +121,8 @@ export default {
       show: false,
       json: null,
       chart: null,
+      currentUser: {},
+      profile: {},
       annotations: [],
       annotating: false,
       isMyChart: true,
@@ -139,6 +142,7 @@ export default {
   created() {
     try {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
+      this.getUser()
       this.isMyChart = this.chart.id_user === this.user.id
       if (!this.isMyChart && !this.chart.public) {
         this.$router.push(this.localePath({ name: 'import' }))
@@ -162,6 +166,23 @@ export default {
     },
     alertAnnotation(annotation) {
       this.annotations.push(annotation)
+    },
+    async getUser() {
+      await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
+        this.currentUser = res.data
+        this.getUserProfile()
+      })
+    },
+    async getUserProfile() {
+      await axios
+        .get(`/profiles/?id=${this.currentUser.id}`)
+        .then((res) => {
+          this.profile = res.data
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error)
+        })
     },
     async updateChart(bool) {
       await axios
@@ -208,34 +229,18 @@ export default {
     },
     showCopySuccess() {
       this.$toast.info(this.$t('url.copied'), { position: 'top-right' })
+    },
+    goToProfile(id) {
+      this.$router.push({
+        name: `user-id___${this.$i18n.locale}`,
+        params: { id }
+      })
     }
   }
 }
 </script>
 
 <style>
-.public {
-  font-weight: bold;
-  color: darkgreen;
-  background-color: white;
-  border: 2px lightgreen solid;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  vertical-align: center;
-}
-
-.private {
-  font-weight: bold;
-  color: darkred;
-  background-color: white;
-  border: 2px lightcoral solid;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  vertical-align: central;
-}
-
 .resize-graph {
   width: 100%;
   overflow: auto;

@@ -66,11 +66,18 @@
                   <v-card-title
                     v-text="$t('settings.profile.title')"
                   ></v-card-title>
-                  <v-form
-                    v-model="validReg.profile"
-                    enctype="multipart/form-data"
-                  >
-                    <v-card-text>
+                  <v-card-text>
+                    <v-btn
+                      @click="goToProfile()"
+                      outlined
+                      color="blue lighten-1"
+                      class="mb-3"
+                      >{{ $t('settings.profile.seemine') }}</v-btn
+                    >
+                    <v-form
+                      v-model="validReg.profile"
+                      enctype="multipart/form-data"
+                    >
                       <v-layout>
                         <div class="col-md-7 col-xs-12">
                           <v-text-field
@@ -103,8 +110,8 @@
                         color="green"
                         >{{ $t('settings.save') }}</v-btn
                       >
-                    </v-card-text>
-                  </v-form>
+                    </v-form>
+                  </v-card-text>
                 </div>
                 <div v-if="menu.id === 'password'">
                   <br />
@@ -177,7 +184,6 @@
                           ? $t('settings.account.public')
                           : $t('settings.account.private')
                       "
-                      class="col-3"
                     ></p>
                     <v-switch
                       v-model="form.account.defaultpublic"
@@ -186,7 +192,6 @@
                           ? $t('settings.account.switch_public')
                           : $t('settings.account.switch_private')
                       "
-                      class="col-3"
                       color="blue"
                     ></v-switch>
                     <v-btn
@@ -476,6 +481,12 @@ export default {
     refreshUserToken(res) {
       localStorage.setItem('usertoken', res.data)
       this.user = jwtDecode(localStorage.getItem('usertoken'))
+    },
+    goToProfile() {
+      this.$router.push({
+        name: `user-id___${this.$i18n.locale}`,
+        params: { id: this.user.id }
+      })
     }
   }
 }

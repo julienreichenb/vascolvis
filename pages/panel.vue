@@ -39,6 +39,7 @@
                   :type="menu.id"
                   :headers="menu.headers"
                   :data="menu.data"
+                  :names="names"
                   @refresh="refresh(menu.id)"
                 >
                 </PanelTable>
@@ -76,6 +77,7 @@ export default {
     return {
       show: false,
       user: Object,
+      names: [],
       menus: [
         {
           id: 'datasets',
@@ -160,6 +162,16 @@ export default {
     async getCharts() {
       await axios.get(`/charts/all`).then((res) => {
         this.menus[1].data = res.data
+        for (let i = 0; i < res.data.length; i++) {
+          const id = res.data[i].id_user
+          this.getName(id)
+        }
+      })
+    },
+    async getName(id) {
+      console.log(id)
+      await axios.get(`/users/names/?id=${id}`).then((res) => {
+        this.names.push(res.data)
       })
     },
     async getAnnotations() {

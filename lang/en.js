@@ -112,7 +112,8 @@ export default {
     mail_subject: 'Collaborative chart analysis - ',
     mail_body:
       'I would like to know your opinion about the chart, available here : ',
-    copied: 'Copied !'
+    copied: 'Copied !',
+    graph_of: 'Chart proposed by '
   },
   panel: {
     header: 'Welcome in your atelier, ',
@@ -167,7 +168,8 @@ export default {
       url_error: 'The URL format is not valid.',
       picture: 'Profile picture',
       picture_placeholder: 'Choose your profile picture',
-      picture_error: 'The picture size cannot go beyond 1Mb.'
+      picture_error: 'The picture size cannot go beyond 1Mb.',
+      seemine: 'See my profile'
     },
     password: {
       title: 'Password edition',

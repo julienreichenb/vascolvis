@@ -3,56 +3,39 @@ const profiles = express.Router()
 const cors = require('cors')
 
 const Profile = require('../models/Profile')
-const User = require('../models/User')
 profiles.use(cors())
 
 process.env.SECRET_KEY = 'secret'
 
 /*
- ** GET PROFILE BY USERNAME
+ ** GET PROFILE BY ID
  */
 profiles.get('/', (req, res) => {
   const id = req.query.id
-  User.findOne({
+  Profile.findOne({
     where: {
-      id
+      id_user: id
     }
   })
-    .then((user) => {
-      Profile.findOne({
-        where: {
-          id_user: user.id
-        }
-      })
-        .then((profile) => {
-          res.status(200).json(profile)
-        })
-        .catch((error) => {
-          res.status(400).json({ error })
-        })
+    .then((profile) => {
+      res.status(200).json(profile)
     })
     .catch((error) => {
-      User.findOne({
-        where: {
-          username: id
-        }
-      })
-        .then((user) => {
-          Profile.findOne({
-            where: {
-              id_user: user.id
-            }
-          })
-            .then((profile) => {
-              res.status(200).json(profile)
-            })
-            .catch((error) => {
-              res.status(400).json({ error })
-            })
-        })
-        .catch((error) => {
-          res.status(400).json({ error })
-        })
+      res.status(400).json({ error })
+    })
+})
+
+/*
+ ** GET ALL PROFILES
+ */
+
+profiles.get('/all', (req, res) => {
+  Profile.findAll({ raw: true })
+    .then((profiles) => {
+      res.status(200).json(profiles)
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
     })
 })
 

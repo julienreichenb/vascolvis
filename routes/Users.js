@@ -7,6 +7,8 @@ const User = require('../models/User')
 const Profile = require('../models/Profile')
 users.use(cors())
 
+const limitedAttributes = ['id', 'username']
+
 process.env.SECRET_KEY = 'secret'
 
 /*
@@ -121,44 +123,91 @@ users.post('/login', (req, res) => {
  ** GET USER BY ID OR USERNAME
  */
 users.get('/', (req, res) => {
-  const attributes = ['id', 'username']
   const id = req.query.id
-  const username = req.query.username
-  if (id) {
-    User.findOne({
-      attributes,
-      where: {
-        id
+  User.findOne({
+    attributes: limitedAttributes,
+    where: {
+      id
+    }
+  })
+    .then((user) => {
+      if (user) {
+        res.status(200).json(user)
+      } else {
+        User.findOne({
+          attributes: limitedAttributes,
+          where: {
+            username: id
+          }
+        })
+          .then((user) => {
+            res.status(200).json(user)
+          })
+          .catch((error) => {
+            res.status(400).json({ error })
+          })
       }
     })
-      .then((user) => {
-        res.status(200).json(user)
-      })
-      .catch((error) => {
-        res.status(400).json({ error })
-      })
-  } else if (username) {
-    User.findOne({
-      attributes,
-      where: {
-        username
-      }
+    .catch((error) => {
+      res.status(400).json({ error })
     })
-      .then((user) => {
-        res.status(200).json(user)
+})
+
+/*
+ ** GET ALL USERS
+ */
+users.get('/all', (req, res) => {
+  User.findAll({ attributes: limitedAttributes, raw: true })
+    .then((users) => {
+      res.status(200).json(users)
+    })
+    .catch((error) => {
+      res.status.json({ error })
+    })
+})
+
+/*
+ ** GET USER & PUBLIC NAME BY ID
+ */
+users.get('/names', (req, res) => {
+  const id = req.query.id
+  User.findOne({
+    where: {
+      id
+    }
+  })
+    .then((user) => {
+      Profile.findOne({
+        where: {
+          id_user: id
+        }
       })
-      .catch((error) => {
-        res.status(400).json({ error })
-      })
-  } else {
-    User.findAll({ attributes, raw: true })
-      .then((users) => {
-        res.status(200).json(users)
-      })
-      .catch((error) => {
-        res.status(400).json({ error })
-      })
-  }
+        .then((profile) => {
+          if (profile) {
+            res.status(200).json({
+              id: user.id,
+              username: user.username,
+              publicname: profile.publicname
+            })
+          } else {
+            res.status(200).json({
+              id: user.id,
+              username: user.username,
+              publicname: null
+            })
+          }
+        })
+        .catch((err) => {
+          res.status(200).json({
+            id: user.id,
+            username: user.username,
+            publicname: null
+          })
+        })
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
 })
 
 /*

@@ -18,6 +18,7 @@ charts.post('/save', (req, res) => {
     data: req.body.data,
     id_dataset: req.body.id_dataset,
     id_user: req.body.id_user,
+    public: req.body.public,
     url
   }
   Chart.create(chartData)
@@ -92,7 +93,7 @@ charts.get('/user', (req, res) => {
       res.status(200).json(charts)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
