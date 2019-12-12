@@ -5,14 +5,14 @@
         <v-flex xs12 sm10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title
-              class="white--text"
               v-text="this.$t('index.welcome')"
+              class="white--text"
             >
             </v-toolbar-title>
             <v-tabs
               slot="extension"
-              centered
               :grow="true"
+              centered
               slider-color="white"
               color="white"
             >
@@ -28,26 +28,26 @@
                           v-model="username"
                           :label="this.$t('index.username')"
                           :rules="usernameRules"
-                          required
                           @change="isWrong = false"
+                          required
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="password"
                           :label="this.$t('index.password')"
                           :rules="passwordRules"
+                          @change="isWrong = false"
                           required
                           type="password"
-                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validLog"
+                            @click="attemptLogin()"
                             color="white"
                             depressed
                             outlined
-                            @click="attemptLogin()"
                           >
                             {{ $t('index.login.button') }}
                           </v-btn>
@@ -73,43 +73,43 @@
                           v-model="username"
                           :label="this.$t('index.register.username')"
                           :rules="usernameRules"
-                          required
                           @change="isWrong = false"
+                          required
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="email"
                           :label="this.$t('index.register.email')"
                           :rules="emailRules"
-                          required
                           @change="isWrong = false"
+                          required
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="password"
                           :label="this.$t('index.password')"
                           :rules="passwordRules"
+                          @change="isWrong = false"
                           required
                           type="password"
-                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-text-field
                           v-model="checkPassword"
                           :label="this.$t('index.register.repeat')"
                           :rules="checkPasswordRules"
+                          @change="isWrong = false"
                           required
                           type="password"
-                          @change="isWrong = false"
                         ></v-text-field>
                         <br />
                         <v-layout justify-space-between>
                           <v-btn
                             v-if="validReg"
+                            @click="createAccount()"
                             color="white"
                             depressed
                             outlined
-                            @click="createAccount()"
                           >
                             {{ $t('index.register.button') }}
                           </v-btn>

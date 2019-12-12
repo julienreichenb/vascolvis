@@ -3,24 +3,56 @@ const profiles = express.Router()
 const cors = require('cors')
 
 const Profile = require('../models/Profile')
+const User = require('../models/User')
 profiles.use(cors())
 
 process.env.SECRET_KEY = 'secret'
 
 /*
- ** GET PROFILE BY ID
+ ** GET PROFILE BY USERNAME
  */
 profiles.get('/', (req, res) => {
-  Profile.findOne({
+  const id = req.query.id
+  User.findOne({
     where: {
-      id_user: req.query.id
+      id
     }
   })
-    .then((profile) => {
-      res.status(200).json(profile)
+    .then((user) => {
+      Profile.findOne({
+        where: {
+          id_user: user.id
+        }
+      })
+        .then((profile) => {
+          res.status(200).json(profile)
+        })
+        .catch((error) => {
+          res.status(400).json({ error })
+        })
     })
     .catch((error) => {
-      res.status(400).json({ error })
+      User.findOne({
+        where: {
+          username: id
+        }
+      })
+        .then((user) => {
+          Profile.findOne({
+            where: {
+              id_user: user.id
+            }
+          })
+            .then((profile) => {
+              res.status(200).json(profile)
+            })
+            .catch((error) => {
+              res.status(400).json({ error })
+            })
+        })
+        .catch((error) => {
+          res.status(400).json({ error })
+        })
     })
 })
 
@@ -32,7 +64,7 @@ profiles.put('/', (req, res) => {
     {
       publicname: req.body.publicname,
       bio: req.body.bio,
-      url: req.body.url,
+      url: req.body.url
     },
     {
       where: {

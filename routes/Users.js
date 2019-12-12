@@ -118,20 +118,47 @@ users.post('/login', (req, res) => {
 })
 
 /*
- ** GET USER BY ID
+ ** GET USER BY ID OR USERNAME
  */
 users.get('/', (req, res) => {
-  User.findOne({
-    where: {
-      id: req.query.id
-    }
-  })
-    .then((user) => {
-      res.status(200).json(user)
+  const attributes = ['id', 'username']
+  const id = req.query.id
+  const username = req.query.username
+  if (id) {
+    User.findOne({
+      attributes,
+      where: {
+        id
+      }
     })
-    .catch((error) => {
-      res.status(400).json({ error })
+      .then((user) => {
+        res.status(200).json(user)
+      })
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
+  } else if (username) {
+    User.findOne({
+      attributes,
+      where: {
+        username
+      }
     })
+      .then((user) => {
+        res.status(200).json(user)
+      })
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
+  } else {
+    User.findAll({ attributes, raw: true })
+      .then((users) => {
+        res.status(200).json(users)
+      })
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
+  }
 })
 
 /*
@@ -198,7 +225,6 @@ users.delete('/', (req, res) => {
 /*
  ** PASSWORD ENCRYPTION
  */
-
 function encryptPassword(psw) {
   return psw
 }

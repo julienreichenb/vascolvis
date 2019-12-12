@@ -12,7 +12,7 @@
       </p>
     </div>
     <div v-for="link in links" :key="link">
-      <v-btn outlined color="blue" @click="goToPanel()">
+      <v-btn @click="goToPanel()" outlined color="blue">
         {{ $t('error.link.' + link) }}
       </v-btn>
     </div>

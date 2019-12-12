@@ -248,6 +248,7 @@ export default {
             this.loadExcel()
             break
           default:
+            // eslint-disable-next-line
             console.log(extension)
             break
         }

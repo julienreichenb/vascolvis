@@ -441,7 +441,9 @@ export default {
             this.$router.push(this.localePath({ name: 'index' }))
           })
           .catch((error) => {
+            // eslint-disable-next-line
             console.log(error)
+            this.$toast.error(this.$t('settings.account.toast_error'))
           })
         this.deleteDialog = false
       } else {
@@ -458,7 +460,12 @@ export default {
           this.form.profile.url = this.user.profile.url
         })
         .catch((error) => {
-          alert(error)
+          // eslint-disable-next-line
+          console.log(error)
+          this.user.profile = null
+          this.form.profile.publicname = ''
+          this.form.profile.bio = ''
+          this.form.profile.url = ''
         })
     },
     resetPasswordForm() {

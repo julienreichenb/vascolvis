@@ -11,8 +11,8 @@
         <v-checkbox
           v-if="type === 'charts'"
           v-model="onlyMine"
-          flat
           :label="this.$t('panel.table.mine_only')"
+          flat
           color="blue lighten-2"
         ></v-checkbox>
       </v-card-title>
@@ -24,12 +24,12 @@
       <v-data-table
         :headers="headers"
         :items="filterGraphs"
-        item-key="id"
         :search="search"
         :footer-props="{
           'items-per-page-options': [parseInt('5', 10)]
         }"
         :items-per-page="parseInt('5', 10)"
+        item-key="id"
       >
         <template slot="items" slot-scope="props">
           <tr @click="goToItem(props.item)"></tr>
@@ -39,9 +39,9 @@
         </template>
         <template v-slot:item.public="{ item }">
           <v-icon
-            small
             :color="item.public === 1 ? 'green lighten-1' : 'red lighten-1'"
             @click="item.public ? updateChart(item, 0) : updateChart(item, 1)"
+            small
             >{{ setVisibilityIcon(item) }}</v-icon
           >
         </template>
@@ -54,8 +54,8 @@
           </v-icon>
           <v-icon
             v-if="isOwner(item)"
-            color="red"
             @click="toggleDeleteDialog(item)"
+            color="red"
           >
             mdi-trash-can-outline
           </v-icon>
@@ -72,10 +72,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey lighten-3" outlined @click="deleteDialog = false">
+          <v-btn @click="deleteDialog = false" color="grey lighten-3" outlined>
             {{ $t('panel.table.delete_cancel') }}
           </v-btn>
-          <v-btn color="red darken-2" outlined @click="deleteItem()">
+          <v-btn @click="deleteItem()" color="red darken-2" outlined>
             {{ $t('panel.table.delete_ok') }}
           </v-btn>
         </v-card-actions>

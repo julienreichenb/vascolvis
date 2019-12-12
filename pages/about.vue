@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar class="indigo darken-3">
-      <v-toolbar-title class="white--text" v-text="this.$t('about.header')">
+      <v-toolbar-title v-text="this.$t('about.header')" class="white--text">
       </v-toolbar-title>
     </v-toolbar>
     <v-card>

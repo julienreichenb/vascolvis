@@ -3,6 +3,7 @@ export default {
     index: 'Bienvenue',
     panel: 'Mon Atelier',
     settings: 'Options du compte',
+    user: 'Profile de ',
     import: 'Importation de données',
     graphs: 'Générateur de graphiques',
     url: 'Annotation du graphique',
@@ -195,7 +196,7 @@ export default {
       bio_placeholder: 'Parlez-nous de vous',
       url: 'Site internet',
       url_placeholder: 'google.com',
-      url_error: '',
+      url_error: "Le format de l'URL est invalide.",
       picture: 'Photo de profil',
       picture_placeholder: 'Choisissez votre photo de profil',
       picture_error: "La taille de l'image ne doit pas excéder 1Mb."
@@ -226,6 +227,7 @@ export default {
       toast_error: "Mot de passe erroné. Le compte n'a pas été supprimé."
     }
   },
+  user: {},
   about: {
     header: 'Le projet VASCO',
     title_1: 'Introduction',
@@ -243,6 +245,7 @@ export default {
     default_title: "Une erreur s'est produite",
     default_message: "La page demandée n'exsite pas. Veuillez vérifier l'URL.",
     no_data: 'Aucun résultat',
+    no_user: 'Utilisateur introuvable',
     not_found:
       "La ressource recherchée n'existe pas ou a été supprimée. Veuillez réessayer.",
     link: {

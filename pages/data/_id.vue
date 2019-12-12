@@ -10,18 +10,18 @@
           clipped
         >
           <v-layout align-center justify-space-around>
-            <v-btn v-if="panelClosed" text icon color="white" @click="all()">
+            <v-btn v-if="panelClosed" @click="all()" text icon color="white">
               <v-icon>mdi-eye</v-icon><v-icon>mdi-arrow-down</v-icon>
             </v-btn>
-            <v-btn v-else text icon color="red" @click="none()">
+            <v-btn v-else @click="none()" text icon color="red">
               <v-icon>mdi-eye-off</v-icon><v-icon>mdi-arrow-up</v-icon>
             </v-btn>
             <v-btn
               :disabled="countVariables < 1"
+              @click="resetVariableSelection"
               icon
               x-large
               color="red lighten-1"
-              @click="resetVariableSelection"
               ><v-icon>mdi-delete-sweep</v-icon></v-btn
             >
           </v-layout>
@@ -30,9 +30,9 @@
               v-model="variables"
               :group="{ name: 'vars', pull: 'clone', put: false }"
               :sort="false"
-              style="width: 100%"
               @start="isMoving = true"
               @end="isMoving = false"
+              style="width: 100%"
             >
               <v-expansion-panel
                 v-for="variable in variables"
@@ -51,14 +51,14 @@
                 <v-expansion-panel-content class="mt-4">
                   <v-select
                     v-model="variable.type"
-                    label="Type"
                     :items="types"
-                    item-value="types"
-                    dense
                     @change="
                       (selected) =>
                         attributeSingleVariableType(variable.id, selected)
                     "
+                    label="Type"
+                    item-value="types"
+                    dense
                   ></v-select>
                   <v-layout justify-space-around align-center>
                     <div :id="'sparkline-' + variable.id"></div>
@@ -99,22 +99,22 @@
         <v-flex xs12 sm10 xl9 elevation-6>
           <draggable
             v-model="droppedVars"
-            draggable="false"
             :options="{ group: 'vars' }"
             @change="resolveDraggedVariable"
+            draggable="false"
           >
-            <v-card class="mx-auto" :class="isMoving ? 'highlight' : ''">
+            <v-card :class="isMoving ? 'highlight' : ''" class="mx-auto">
               <v-card-title>
                 <v-layout justify-space-between>
                   <h2>{{ dataset.name }}</h2>
                   <v-dialog v-model="dialog" width="85%">
                     <template v-slot:activator="{ on }">
                       <v-btn
+                        v-on="on"
                         x-large
                         icon
                         color="blue text--white"
                         dark
-                        v-on="on"
                       >
                         <v-icon>mdi-help-circle-outline</v-icon>
                       </v-btn>
@@ -137,7 +137,7 @@
                         <h3>{{ $t('graphs.info.single_title') }}</h3>
                         <p v-html="this.$t('graphs.info.single')"></p>
                         <h3>
-                          <v-icon large :color="colors[1]">mdi-numeric</v-icon>
+                          <v-icon :color="colors[1]" large>mdi-numeric</v-icon>
                           -
                           {{ $t('graphs.info.quant_title') }}
                         </h3>
@@ -147,7 +147,7 @@
                           <span v-html="this.$t('graphs.info.quant2')"></span>
                         </p>
                         <h3>
-                          <v-icon large :color="colors[0]"
+                          <v-icon :color="colors[0]" large
                             >mdi-alphabetical</v-icon
                           >
                           -
@@ -159,7 +159,7 @@
                           <span v-html="this.$t('graphs.info.nom2')"></span>
                         </p>
                         <h3>
-                          <v-icon large :color="colors[2]">mdi-timer</v-icon>
+                          <v-icon :color="colors[2]" large>mdi-timer</v-icon>
                           -
                           {{ $t('graphs.info.temp_title') }}
                         </h3>
@@ -172,7 +172,7 @@
                       </v-card-text>
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="green" @click="dialog = false" outlined>
+                        <v-btn @click="dialog = false" color="green" outlined>
                           {{ $t('graphs.info.understood') }}
                         </v-btn>
                       </v-card-actions>
@@ -212,15 +212,15 @@
                   class="text-center"
                 >
                   <v-chip v-if="variable.isUsed" :color="variable.color">
-                    <v-icon left :color="'white'">{{ variable.icon }}</v-icon>
+                    <v-icon :color="'white'" left>{{ variable.icon }}</v-icon>
                     {{ variable.name
                     }}<v-icon
-                      right
                       :color="'white'"
                       @click="
                         variable.isUsed = false
                         computeBigGraphs()
                       "
+                      right
                       >mdi-close-circle-outline</v-icon
                     >
                   </v-chip>
@@ -239,25 +239,25 @@
                       <v-layout justify-space-between>
                         <v-card-title
                           :id="'title-' + graph.id"
-                          contenteditable
                           v-text="graph.title"
+                          contenteditable
                         ></v-card-title>
                         <div>
                           <v-btn
+                            @click="swapAxis(graph)"
                             class="mt-4"
                             color="blue lighten-1"
                             outlined
                             depressed
-                            @click="swapAxis(graph)"
                           >
                             {{ $t('graphs.switch_button') }}
                           </v-btn>
                           <v-btn
+                            @click="saveGraph(graph)"
                             class="mt-4 mr-4"
                             color="green"
                             outlined
                             depressed
-                            @click="saveGraph(graph)"
                           >
                             {{ $t('graphs.save') }}
                           </v-btn>

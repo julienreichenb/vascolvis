@@ -1,22 +1,22 @@
 <template>
   <v-app dark>
     <v-app-bar :clipped-left="clipped" fixed app>
-      <v-btn icon @click.stop="goHome()">
+      <v-btn @click.stop="goHome()" icon>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
       <v-toolbar-title @click.stop="goHome()" v-text="title" />
       <v-spacer />
-      <v-btn outlined @click.stop="goToPanel()">
+      <v-btn @click.stop="goToPanel()" outlined>
         {{ $t('layout.atelier') }}
       </v-btn>
       <v-spacer />
-      <v-btn icon @click.stop="goToSettings()">
+      <v-btn @click.stop="goToSettings()" icon>
         <v-icon>mdi-settings-outline</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="goToAbout()">
+      <v-btn @click.stop="goToAbout()" icon>
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="logout()">
+      <v-btn @click.stop="logout()" icon>
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>

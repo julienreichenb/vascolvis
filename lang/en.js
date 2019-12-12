@@ -142,10 +142,57 @@ export default {
     deleted_account: '[deleted user]'
   },
   settings: {
-    save: 'Save changes',
+    header: 'Account Management',
+    save: 'Apply changes',
+    toast_saved: 'Changes has been saved successfully !',
+    toast_error: 'Error, please verify the entered information.',
     tabs: {
       user: 'User settings',
-      account: 'Account parameters'
+      profile: 'Personal profile',
+      password: 'Password',
+      account: 'Account options'
+    },
+    user: {
+      title: 'Login edition',
+      email: 'Edit email address',
+      username: 'Edit username'
+    },
+    profile: {
+      title: 'Personal profile',
+      publicname: 'Public username',
+      bio: 'Description',
+      bio_placeholder: 'Tell us more about you',
+      url: 'Website',
+      url_placeholder: 'google.com',
+      url_error: 'The URL format is not valid.',
+      picture: 'Profile picture',
+      picture_placeholder: 'Choose your profile picture',
+      picture_error: 'The picture size cannot go beyond 1Mb.'
+    },
+    password: {
+      title: 'Password edition',
+      oldpsw: 'Old password',
+      newpsw: 'New password',
+      confirmpsw: 'Confirm the new password'
+    },
+    account: {
+      title: 'Privacy',
+      title2: 'Account deletion',
+      public:
+        'Your charts are <b style="color: lightgreen">public</b> by default.',
+      private:
+        'Your charts are <b style="color: lightcoral">private</b> by default.',
+      switch_public: 'Public',
+      switch_private: 'Private',
+      delete_button: 'Permanently delete my account',
+      delete: 'Do you really want to delete your account ?',
+      delete_title: 'This action is irreversible',
+      delete_disclaimer:
+        'This action is <b>irreversible</b>. However, your datasets, graphs, annotations and comments will be kept but your username will not appear anymore.<br/><br/>Confirm your password to delete your account.',
+      delete_cancel: 'Cancel',
+      delete_ok: 'Yes, I confirm the permanent deletion of my account.',
+      password: 'Password',
+      toast_error: 'Wrong password. Your account has not be deleted.'
     }
   },
   about: {
@@ -165,6 +212,7 @@ export default {
     default_title: 'An error occured',
     default_message: 'The requested page does not exist. Please check the URL.',
     no_data: 'No result',
+    no_user: 'User not found',
     not_found:
       'The requested ressource does not exist or has been removed. Please try again.',
     link: {
