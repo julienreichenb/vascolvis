@@ -174,15 +174,17 @@ export default {
       })
     },
     async getUserProfile() {
-      await axios
-        .get(`/profiles/?id=${this.currentUser.id}`)
-        .then((res) => {
-          this.profile = res.data
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
-        })
+      if (this.currentUser) {
+        await axios
+          .get(`/profiles/?id=${this.currentUser.id}`)
+          .then((res) => {
+            this.profile = res.data
+          })
+          .catch((error) => {
+            // eslint-disable-next-line
+            console.log(error)
+          })
+      }
     },
     async updateChart(bool) {
       await axios

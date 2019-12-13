@@ -75,8 +75,8 @@
                       >{{ $t('settings.profile.seemine') }}</v-btn
                     >
                     <v-form
-                      class="mt-2"
                       v-model="validReg.profile"
+                      class="mt-2"
                       enctype="multipart/form-data"
                     >
                       <v-layout>

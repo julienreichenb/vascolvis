@@ -37,7 +37,6 @@
             <v-card-text>
               <div v-if="graphs.length > 0">
                 <v-data-table
-                  loading
                   :loading-text="$t('panel.loading')"
                   :headers="headers"
                   :items="graphs"
@@ -45,6 +44,7 @@
                     'items-per-page-options': [parseInt('5', 10)]
                   }"
                   :items-per-page="parseInt('5', 10)"
+                  loading
                   item-key="id"
                 >
                   <template v-slot:item.url="{ item }">

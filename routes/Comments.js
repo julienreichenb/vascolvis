@@ -48,10 +48,10 @@ comments.get('/id', (req, res) => {
  ** GET ALL COMMENTS FROM A USER
  */
 comments.get('/user', (req, res) => {
-  const user = req.query.user
+  const user = req.query.id_user
   Comment.findAll({
     where: {
-      $or: [{ username: user }, { id_user: user }]
+      id_user: user
     }
   })
     .then((comments) => {

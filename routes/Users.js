@@ -177,33 +177,35 @@ users.get('/names', (req, res) => {
     }
   })
     .then((user) => {
-      Profile.findOne({
-        where: {
-          id_user: id
-        }
-      })
-        .then((profile) => {
-          if (profile) {
-            res.status(200).json({
-              id: user.id,
-              username: user.username,
-              publicname: profile.publicname
-            })
-          } else {
+      if (user) {
+        Profile.findOne({
+          where: {
+            id_user: id
+          }
+        })
+          .then((profile) => {
+            if (profile) {
+              res.status(200).json({
+                id: user.id,
+                username: user.username,
+                publicname: profile.publicname
+              })
+            } else {
+              res.status(200).json({
+                id: user.id,
+                username: user.username,
+                publicname: null
+              })
+            }
+          })
+          .catch((err) => {
             res.status(200).json({
               id: user.id,
               username: user.username,
               publicname: null
             })
-          }
-        })
-        .catch((err) => {
-          res.status(200).json({
-            id: user.id,
-            username: user.username,
-            publicname: null
           })
-        })
+      }
     })
     .catch((error) => {
       res.status(400).json({ error })

@@ -155,23 +155,41 @@ export default {
         })
     },
     async getDatasets() {
-      await axios.get(`/datasets/user/?id_user=${this.user.id}`).then((res) => {
-        this.menus[0].data = res.data
-      })
+      await axios
+        .get(`/datasets/user/?id_user=${this.user.id}`)
+        .then((res) => {
+          this.menus[0].data = res.data
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
     },
     async getCharts() {
-      await axios.get(`/charts/all`).then((res) => {
-        this.menus[1].data = res.data
-        for (let i = 0; i < res.data.length; i++) {
-          const id = res.data[i].id_user
-          this.getName(id)
-        }
-      })
+      await axios
+        .get(`/charts/all`)
+        .then((res) => {
+          this.menus[1].data = res.data
+          for (let i = 0; i < res.data.length; i++) {
+            const id = res.data[i].id_user
+            this.getName(id)
+          }
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
     },
     async getName(id) {
-      await axios.get(`/users/names/?id=${id}`).then((res) => {
-        this.names.push(res.data)
-      })
+      await axios
+        .get(`/users/names/?id=${id}`)
+        .then((res) => {
+          this.names.push(res.data)
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
     },
     async getAnnotations() {
       await axios
@@ -179,11 +197,21 @@ export default {
         .then((res) => {
           this.menu[2].data = res.data
         })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
     },
     async getComments() {
-      await axios.get(`/comments/user/?id_user=${this.user.id}`).then((res) => {
-        this.menu[3].data = res.data
-      })
+      await axios
+        .get(`/comments/user/?id_user=${this.user.id}`)
+        .then((res) => {
+          this.menu[3].data = res.data
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
     },
     refresh(type) {
       switch (type) {
