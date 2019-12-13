@@ -22,6 +22,8 @@
       >
       </v-card-subtitle>
       <v-data-table
+        :loading="!data"
+        :loading-text="$t('panel.loading')"
         :headers="headers"
         :items="filterGraphs"
         :search="search"
@@ -31,6 +33,26 @@
         :items-per-page="parseInt('5', 10)"
         item-key="id"
       >
+        <template v-slot:item.name="props">
+          <v-edit-dialog
+            v-if="isOwner(props.item)"
+            :return-value.sync="props.item.name"
+            @save="updateName(props.item)"
+            persistent
+            large
+          >
+            {{ props.item.name }}
+            <template v-slot:input>
+              <v-text-field
+                v-model="props.item.name"
+                label="Edit"
+              ></v-text-field>
+            </template>
+          </v-edit-dialog>
+          <template v-else>
+            <span>{{ props.item.name }}</span>
+          </template>
+        </template>
         <template v-slot:item.id_user="{ item }">
           <span
             ><a
@@ -44,7 +66,9 @@
           <v-icon
             v-if="isOwner(item)"
             :color="item.public === 1 ? 'green lighten-1' : 'red lighten-1'"
-            @click="item.public ? updateChart(item, 0) : updateChart(item, 1)"
+            @click="
+              item.public ? updatePrivacy(item, 0) : updatePrivacy(item, 1)
+            "
             small
             >{{ setVisibilityIcon(item) }}</v-icon
           >
@@ -201,7 +225,7 @@ export default {
         this.$emit('refresh')
       })
     },
-    async updateChart(item, bool) {
+    async updatePrivacy(item, bool) {
       await axios
         .put(`/charts?id=${item.id}&public=${bool}`)
         .then((res) => {
@@ -210,6 +234,19 @@ export default {
           bool === 1
             ? (msg = this.$t('url.msg_public'))
             : (msg = this.$t('url.msg_private'))
+          this.$toast.success(msg)
+        })
+        .catch((err) => {
+          alert(err)
+        })
+    },
+    async updateName(item) {
+      await axios
+        .put(`/${this.type}?id=${item.id}&name=${item.name}`)
+        .then((res) => {
+          this.data.filter((i) => i.id === item.id)[0].name = res.data.name
+          const msg =
+            this.$t('url.msg_name') + this.type + this.$t('url.msg_name2')
           this.$toast.success(msg)
         })
         .catch((err) => {

@@ -3,7 +3,7 @@ export default {
     index: 'Bienvenue',
     panel: 'Mon Atelier',
     settings: 'Options du compte',
-    user: 'Profile de ',
+    user: 'Profil de ',
     import: 'Importation de données',
     graphs: 'Générateur de graphiques',
     url: 'Annotation du graphique',
@@ -140,6 +140,8 @@ export default {
     public: 'Public',
     private: 'Privé',
     add_annot: 'Ajouter une annotation',
+    msg_name: 'Votre ',
+    msg_name2: ' a été renommé avec succès !',
     msg_public: 'Le graphique est maintenant public.',
     msg_private: 'Le graphique est maintenant privé.',
     mail_subject: 'Analyse collaborative de graphique - ',
@@ -150,6 +152,7 @@ export default {
   panel: {
     header: 'Bienvenue dans votre atelier, ',
     dataset_button: 'Importer un jeu de données',
+    loading: 'Chargement des données...',
     tabs: {
       datasets: 'Jeux de données',
       charts: 'Graphiques',

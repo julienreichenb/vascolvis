@@ -105,8 +105,14 @@ datasets.delete('/', (req, res) => {
  */
 datasets.put('/', (req, res) => {
   DataSet.update({ name: req.query.name }, { where: { id: req.query.id } })
-    .then((res) => {
-      res.send('Success')
+    .then(() => {
+      DataSet.findOne({
+        where: {
+          id: req.query.id
+        }
+      }).then((dataset) => {
+        res.status(200).json(dataset)
+      })
     })
     .catch((err) => {
       res.send(err)

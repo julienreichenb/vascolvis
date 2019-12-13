@@ -37,6 +37,8 @@
             <v-card-text>
               <div v-if="graphs.length > 0">
                 <v-data-table
+                  loading
+                  :loading-text="$t('panel.loading')"
                   :headers="headers"
                   :items="graphs"
                   :footer-props="{

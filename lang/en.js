@@ -3,6 +3,7 @@ export default {
     index: 'Welcome',
     panel: 'My Atelier',
     settings: 'Account settings',
+    user: 'Profile of ',
     import: 'Data Importation',
     graphs: 'Charts Generation',
     url: 'Chart Annotation',
@@ -101,7 +102,37 @@ export default {
     tip_4: 'two',
     tip_5: ' variables in the panel on the left.',
     save: 'Save',
-    switch_button: 'Switch axis'
+    switch_button: 'Switch axis',
+    info: {
+      button: 'More informations',
+      title: 'Variables combinations',
+      typeselection_title: 'Type selection',
+      typeselection:
+        'The variable type is automatically computed, but you still can determine it yourself by opening a variable. If the chosen type seems incoherent, the sign',
+      typeselection2:
+        'appears next to its label. The variable remains usable but might produce charts with low pertinence.',
+      quantitative: 'Quantitative - ',
+      nominal: 'Nominal - ',
+      temporal: 'Temporal - ',
+      combination_title: 'Available combinations',
+      single_title: 'Single variable',
+      single:
+        'The selection of a single variable will create <b>all the possible combinations</b> with another variable from the dataset. Every kind of variable type can be selected alone.',
+      quant_title: 'Quantitative variables',
+      quant: 'You can choose <b>two</b> quantitative variables (',
+      quant2:
+        '). Those will be combined with <b>all the other quantitative variables</b> remaining. The selected variables will be on the <b>axes</b> and the third one will vary the <b>size</b> of the chart marks.',
+      nom_title: 'Variables nominales',
+      nom: 'You can choose <b>two</b> nominal variables (',
+      nom2:
+        '). The nominal variables will respectively give a <b>color</b> and a <b>shape</b> to the points on the chart.',
+      temp_title: 'Temporal variables',
+      temp: 'You can choose <b>only one</b> temporal variable (',
+      temp2:
+        ') at the time. Furthermore, it will restrict the selection of another quantitative variable. The temporal variable will <b>always</b> take place on the X axe, except if you choose to switch the axes.',
+      yourturn: "Now, it's your turn !",
+      understood: 'Understood'
+    }
   },
   url: {
     public: 'Public',
@@ -118,6 +149,7 @@ export default {
   panel: {
     header: 'Welcome in your atelier, ',
     dataset_button: 'Import a dataset',
+    loading: 'Loading data...',
     tabs: {
       datasets: 'Datasets',
       charts: 'Charts',
@@ -196,6 +228,13 @@ export default {
       password: 'Password',
       toast_error: 'Wrong password. Your account has not be deleted.'
     }
+  },
+  user: {
+    title: 'Profile',
+    title2: 'Charts',
+    website: 'Website : ',
+    no_bio: 'has not yep filled his bio.',
+    no_graphs: 'has not yet generated charts.'
   },
   about: {
     header: 'The VASCO Project',

@@ -71,10 +71,11 @@
                       @click="goToProfile()"
                       outlined
                       color="blue lighten-1"
-                      class="mb-3"
+                      class="mb-5"
                       >{{ $t('settings.profile.seemine') }}</v-btn
                     >
                     <v-form
+                      class="mt-2"
                       v-model="validReg.profile"
                       enctype="multipart/form-data"
                     >
