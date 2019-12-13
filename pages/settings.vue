@@ -411,20 +411,22 @@ export default {
         })
     },
     async savePassword() {
-      if (this.user.password === this.form.password.oldpsw) {
-        await axios
-          .put(`/users`, {
-            id: this.user.id,
-            password: this.form.password.newpsw
-          })
-          .then((res) => {
-            this.refreshUserToken(res)
-            this.$toast.success(this.$t('settings.toast_saved'))
-          })
-      } else {
-        this.resetPasswordForm()
-        this.$toast.error(this.$t('settings.toast_error'))
-      }
+      await axios
+        .put(`/users`, {
+          id: this.user.id,
+          oldpassword: this.form.password.oldpsw,
+          newpassword: this.form.password.newpsw
+        })
+        .then((res) => {
+          this.refreshUserToken(res)
+          this.$toast.success(this.$t('settings.toast_saved'))
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+          this.resetPasswordForm()
+          this.$toast.error(this.$t('settings.toast_error'))
+        })
     },
     async saveAccount() {
       await axios

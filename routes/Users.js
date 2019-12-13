@@ -2,6 +2,7 @@ const express = require('express')
 const users = express.Router()
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
 const Profile = require('../models/Profile')
@@ -17,8 +18,7 @@ process.env.SECRET_KEY = 'secret'
 users.post('/register', (req, res) => {
   const userData = {
     username: req.body.username,
-    email: req.body.email,
-    password: req.body.password
+    email: req.body.email
   }
   User.findOne({
     where: {
@@ -79,7 +79,7 @@ users.post('/login', (req, res) => {
   })
     .then((user) => {
       if (user) {
-        if (req.body.password === user.password) {
+        if (authenticate(user.password, req.body.password)) {
           const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
             expiresIn: 7200
           })
@@ -214,34 +214,69 @@ users.get('/names', (req, res) => {
  ** UPDATE USER
  */
 users.put('/', (req, res) => {
-  User.update(
-    {
-      username: req.body.username,
-      email: req.body.email,
-      defaultpublic: req.body.defaultpublic,
-      password: encryptPassword(req.body.password)
-    },
-    {
+  if (req.body.newpassword) {
+    // New password
+    User.findOne({
       where: {
         id: req.body.id
       }
-    }
-  )
-    .then((data) => {
-      User.findOne({
+    })
+      .then((user) => {
+        if (authenticate(user.password, req.body.oldpassword)) {
+          User.update(
+            {
+              password: encryptPassword(req.body.newpassword)
+            },
+            { where: { id: req.body.id } }
+          ).then((data) => {
+            User.findOne({
+              where: {
+                id: req.body.id
+              }
+            }).then((user) => {
+              const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
+                expiresIn: 7200
+              })
+              res.send(token)
+            })
+          })
+        } else {
+          res.status(400).json({ error: 'invalid_password' })
+        }
+      })
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
+  } else {
+    // Other user editing
+    User.update(
+      {
+        username: req.body.username,
+        email: req.body.email,
+        defaultpublic: req.body.defaultpublic
+      },
+      {
         where: {
           id: req.body.id
         }
-      }).then((user) => {
-        const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-          expiresIn: 7200
+      }
+    )
+      .then((data) => {
+        User.findOne({
+          where: {
+            id: req.body.id
+          }
+        }).then((user) => {
+          const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
+            expiresIn: 7200
+          })
+          res.send(token)
         })
-        res.send(token)
       })
-    })
-    .catch((error) => {
-      res.status(400).json({ error })
-    })
+      .catch((error) => {
+        res.status(400).json({ error })
+      })
+  }
 })
 
 /*
@@ -275,7 +310,14 @@ users.delete('/', (req, res) => {
  ** PASSWORD ENCRYPTION
  */
 function encryptPassword(psw) {
-  return psw
+  return bcrypt.hashSync(psw, 10)
+}
+
+/*
+ ** PASSWORDS COMPARISON
+ */
+function authenticate(hash, password) {
+  return bcrypt.compareSync(password, hash)
 }
 
 module.exports = users
