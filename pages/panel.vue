@@ -2,7 +2,7 @@
   <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
-        <v-flex xs12 sm10 elevation-6>
+        <v-flex sm12 xl10 elevation-6>
           <v-toolbar class="indigo darken-3">
             <v-toolbar-title
               v-text="this.$t('panel.header') + ' ' + user.username"

@@ -162,7 +162,7 @@ export default {
     getUsername(item) {
       const id = item.id_user
       for (let i = 0; i < this.names.length; i++) {
-        if (this.names[i].id === id) {
+        if (this.names[i] && this.names[i].id === id) {
           return this.names[i].publicname
             ? this.names[i].publicname
             : this.names[i].username

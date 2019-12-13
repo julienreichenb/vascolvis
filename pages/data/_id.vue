@@ -2,13 +2,7 @@
   <div v-if="dataset" v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-space-around>
-        <v-navigation-drawer
-          class="grey darken-2"
-          absolute
-          dense
-          permanent
-          clipped
-        >
+        <v-navigation-drawer absolute dense permanent color="grey darken-2">
           <v-layout align-center justify-space-around>
             <v-btn v-if="panelClosed" @click="all()" text icon color="white">
               <v-icon>mdi-eye</v-icon><v-icon>mdi-arrow-down</v-icon>
@@ -95,6 +89,15 @@
               </v-expansion-panel>
             </draggable>
           </v-expansion-panels>
+        </v-navigation-drawer>
+        <v-navigation-drawer absolute permanent right>
+          <v-list dense>
+            <v-list-item v-for="item in workspaces" :key="item.name">
+              <v-list-item-content>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
         </v-navigation-drawer>
         <v-flex xs12 sm10 xl9 elevation-6>
           <draggable
@@ -312,6 +315,7 @@ export default {
       dataset: null,
       json: null,
       variables: [],
+      workspaces: [],
       droppedVars: [],
       graphs: [],
       isMoving: false,
@@ -409,6 +413,7 @@ export default {
         this.variables.push(variable)
       }
       this.attributeVariablesTypes()
+      this.fetchWorkspaces()
     },
     /* VARIABLES */
     attributeVariablesTypes() {
@@ -1064,9 +1069,19 @@ export default {
       this.panelClosed = true
       this.panel = []
     },
-    // Modal display
-    showInfoModal() {},
-    closeInfoModal() {}
+    /* Fetch corresponding Workspaces */
+    async fetchWorkspaces() {
+      await axios
+        .get(
+          `/workspaces/dataset/?id_user=${this.user.id}&id_dataset=${this.dataset.id}`
+        )
+        .then((res) => {
+          this.workspaces = res.data
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   }
 }
 </script>

@@ -2,25 +2,20 @@ const Sequelize = require('sequelize')
 const db = require('../database/db')
 
 module.exports = db.sequelize.define(
-  'workspaces',
+  'workspace_variables',
   {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
-      type: Sequelize.STRING
-    },
-    id_user: {
+    id_workspace: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
+      references: 'workspaces', // <<< Note, its table's name, not object name
       referencesKey: 'id' // <<< Note, its a column name
     },
-    id_dataset: {
-      type: Sequelize.INTEGER,
-      references: 'datasets', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+    id_variable: {
+      type: Sequelize.INTEGER
     }
   },
   {

@@ -205,6 +205,8 @@ users.get('/names', (req, res) => {
               publicname: null
             })
           })
+      } else {
+        res.status(200).json(null)
       }
     })
     .catch((error) => {
