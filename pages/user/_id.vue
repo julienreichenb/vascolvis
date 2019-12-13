@@ -14,8 +14,8 @@
               <div v-if="profile.url">
                 <span>{{ $t('user.website') }}</span>
                 <a
-                  class="link"
                   :href="'http://' + profile.url"
+                  class="link"
                   target="_blank"
                   >{{ profile.url }}</a
                 >
@@ -46,11 +46,11 @@
                   item-key="id"
                 >
                   <template v-slot:item.url="{ item }">
-                    <a class="link" @click="goToGraph(item)">{{ item.url }}</a>
+                    <a @click="goToGraph(item)" class="link">{{ item.url }}</a>
                   </template>
                 </v-data-table>
               </div>
-              <div class="no" v-else>
+              <div v-else class="no">
                 {{
                   (profile.publicname
                     ? profile.publicname

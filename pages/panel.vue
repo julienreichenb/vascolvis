@@ -169,7 +169,6 @@ export default {
       })
     },
     async getName(id) {
-      console.log(id)
       await axios.get(`/users/names/?id=${id}`).then((res) => {
         this.names.push(res.data)
       })
