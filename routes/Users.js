@@ -96,7 +96,7 @@ users.post('/login', (req, res) => {
           }
         }).then((user) => {
           if (user) {
-            if (req.body.password === user.password) {
+            if (authenticate(user.password, req.body.password)) {
               const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                 expiresIn: 7200
               })
@@ -287,26 +287,42 @@ users.put('/', (req, res) => {
  ** DELETE USER
  */
 users.delete('/', (req, res) => {
-  User.destroy({
+  User.findOne({
     where: {
       id: req.query.id
     }
   })
-    .then((userDeleted) => {
-      if (userDeleted === 1) {
-        Profile.destroy({
-          where: {
-            id_user: req.query.id
-          }
-        }).then((profileDeleted) => {
-          if (userDeleted === 1) {
-            res.send('Success')
-          }
-        })
+    .then((user) => {
+      if (user) {
+        if (authenticate(user.password, req.query.password)) {
+          User.destroy({
+            where: {
+              id: req.query.id
+            }
+          })
+            .then((userDeleted) => {
+              if (userDeleted === 1) {
+                Profile.destroy({
+                  where: {
+                    id_user: req.query.id
+                  }
+                }).then(() => {
+                  if (userDeleted === 1) {
+                    res.send('Success')
+                  }
+                })
+              }
+            })
+            .catch((error) => {
+              res.status(400).json({ error })
+            })
+        } else {
+          res.status(400).json({ error: 'invalid' })
+        }
       }
     })
-    .catch((err) => {
-      res.send(err)
+    .catch((error) => {
+      res.status(400).json({ error })
     })
 })
 

@@ -441,22 +441,21 @@ export default {
         })
     },
     async deleteAccount() {
-      if (this.form.account.password === this.user.password) {
-        await axios
-          .delete(`/users?id=${this.user.id}`)
-          .then((res) => {
-            localStorage.removeItem('usertoken')
-            this.$router.push(this.localePath({ name: 'index' }))
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error)
-            this.$toast.error(this.$t('settings.account.toast_error'))
-          })
-        this.deleteDialog = false
-      } else {
-        this.$toast.error(this.$t('settings.account.toast_error'))
-      }
+      await axios
+        .delete(
+          `/users?id=${this.user.id}&password=${this.form.account.password}`
+        )
+        .then((res) => {
+          localStorage.removeItem('usertoken')
+          this.$router.push(this.localePath({ name: 'index' }))
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error)
+          this.form.account.password = ''
+          this.$toast.error(this.$t('settings.account.toast_error'))
+        })
+      this.deleteDialog = false
     },
     async getUserProfile() {
       await axios
@@ -477,9 +476,9 @@ export default {
         })
     },
     resetPasswordForm() {
-      this.form.password.oldpsw = null
-      this.form.password.newpsw = null
-      this.form.password.confirmpsw = null
+      this.form.password.oldpsw = ''
+      this.form.password.newpsw = ''
+      this.form.password.confirmpsw = ''
     },
     refreshUserToken(res) {
       localStorage.setItem('usertoken', res.data)
