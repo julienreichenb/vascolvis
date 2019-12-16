@@ -1,8 +1,23 @@
 <template>
   <div v-if="dataset" v-show="show">
-    <v-container fluid fill-height class="loginOverlay">
+    <v-container fluid fill-height>
       <v-layout flex align-center justify-space-around>
-        <v-navigation-drawer absolute dense permanent color="grey darken-2">
+        <v-navigation-drawer
+          v-model="drawer.variables"
+          hide-overlay
+          absolute
+          dense
+          color="grey darken-2"
+        >
+          <div class="blue">
+            <v-btn
+              @click="drawer.variables = !drawer.variables"
+              width="100%"
+              text
+            >
+              {{ $t('graphs.hide') }}
+            </v-btn>
+          </div>
           <v-layout align-center justify-space-around>
             <v-btn v-if="panelClosed" @click="all()" text icon color="white">
               <v-icon>mdi-eye</v-icon><v-icon>mdi-arrow-down</v-icon>
@@ -90,15 +105,34 @@
             </draggable>
           </v-expansion-panels>
         </v-navigation-drawer>
-        <v-navigation-drawer absolute permanent right color="grey darken-2">
+        <v-navigation-drawer
+          v-model="drawer.workspaces"
+          absolute
+          right
+          color="grey darken-2"
+        >
+          <div class="blue">
+            <v-btn
+              @click="drawer.workspaces = !drawer.workspaces"
+              width="100%"
+              text
+            >
+              {{ $t('graphs.hide') }}
+            </v-btn>
+          </div>
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title
-                ><strong>{{ $t('graphs.ws') }}</strong></v-list-item-title
+              <v-list-item-title>
+                <strong> {{ $t('graphs.ws') }}</strong></v-list-item-title
+              >
+              <v-list-item-subtitle
+                v-if="workspaces.length === 0"
+                class="mt-4"
+                >{{ $t('graphs.no_ws') }}</v-list-item-subtitle
               >
             </v-list-item-content>
           </v-list-item>
-          <v-expansion-panels multiple accordion focusable>
+          <v-expansion-panels dense multiple accordion focusable>
             <v-expansion-panel v-for="item in workspaces" :key="item.id">
               <v-expansion-panel-header>
                 {{ item.name }}
@@ -135,7 +169,7 @@
             </v-expansion-panel>
           </v-expansion-panels>
         </v-navigation-drawer>
-        <v-flex xs12 sm10 xl9 elevation-6>
+        <v-flex lg12 xl9 elevation-6>
           <draggable
             v-model="droppedVars"
             :options="{ group: 'vars' }"
@@ -219,7 +253,25 @@
                   </v-dialog>
                 </v-layout>
               </v-card-title>
-              <v-card-text>
+              <v-card-subtitle style="padding-bottom: 0">
+                <v-layout justify-space-between>
+                  <v-btn
+                    :disabled="drawer.variables"
+                    @click="drawer.variables = !drawer.variables"
+                    outlined
+                  >
+                    <v-icon>mdi-arrow-collapse-right</v-icon> Variables
+                  </v-btn>
+                  <v-btn
+                    :disabled="drawer.workspaces"
+                    @click="drawer.workspaces = !drawer.workspaces"
+                    icon
+                  >
+                    <v-icon>mdi-arrow-collapse-left</v-icon>
+                  </v-btn>
+                </v-layout>
+              </v-card-subtitle>
+              <v-card-text style="padding-top: 0;">
                 <div v-if="countVariables < 1" class="mt-3">
                   <h3>
                     {{ $t('graphs.tip_1') }}
@@ -236,47 +288,8 @@
                     style="border: 1px solid white"
                   />
                 </div>
-                <div v-else>
-                  <v-dialog v-model="wsDialog" width="50%">
-                    <template v-slot:activator="{ on }">
-                      <v-btn v-on="on" outlined color="green lighten-1">
-                        {{ $t('graphs.saveWs') }}
-                      </v-btn>
-                    </template>
-                    <v-card class="grey darken-2">
-                      <v-card-title>{{
-                        $t('graphs.choose_ws_name')
-                      }}</v-card-title>
-                      <v-form v-model="validWs">
-                        <v-card-text>
-                          <v-text-field
-                            v-model="newWs"
-                            :rules="newWsRules"
-                            :placeholder="$t('graphs.new_ws')"
-                            required
-                          ></v-text-field>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn
-                            v-if="validWs"
-                            @click="saveWs"
-                            color="green lighten-1"
-                            outlined
-                            >{{ $t('graphs.save') }}</v-btn
-                          >
-                          <v-btn
-                            @click="wsDialog = false"
-                            color="white"
-                            outlined
-                            >{{ $t('graphs.cancel') }}</v-btn
-                          >
-                        </v-card-actions>
-                      </v-form>
-                    </v-card>
-                  </v-dialog>
-                </div>
               </v-card-text>
-              <v-card-title class="pt-1">
+              <v-card-title class="pt-1 pb-0">
                 <div
                   v-for="variable in variables"
                   :key="variable.id"
@@ -304,8 +317,49 @@
                 </div>
               </v-card-text>
               <v-container fluid>
-                <v-row dense>
-                  <div v-if="graphs.length > 0" class="help mb-2">
+                <div>
+                  <div v-if="countVariables > 0" class="mb-4">
+                    <v-dialog v-model="wsDialog" width="50%">
+                      <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" small outlined color="green lighten-1">
+                          {{ $t('graphs.saveWs') }}
+                        </v-btn>
+                      </template>
+                      <v-card class="grey darken-2">
+                        <v-card-title>{{
+                          $t('graphs.choose_ws_name')
+                        }}</v-card-title>
+                        <v-form v-model="validWs">
+                          <v-card-text>
+                            <v-text-field
+                              v-model="newWs"
+                              :rules="newWsRules"
+                              :placeholder="$t('graphs.new_ws')"
+                              autofocus
+                              required
+                            ></v-text-field>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-btn
+                              v-if="validWs"
+                              @click="saveWs"
+                              color="green lighten-1"
+                              outlined
+                              >{{ $t('graphs.save') }}</v-btn
+                            >
+                            <v-btn
+                              @click="wsDialog = false"
+                              color="white"
+                              outlined
+                              >{{ $t('graphs.cancel') }}</v-btn
+                            >
+                          </v-card-actions>
+                        </v-form>
+                      </v-card>
+                    </v-dialog>
+                  </div>
+                  <hr />
+                  <div v-if="graphs.length > 0" class="help mb-2 mt-4">
                     <v-icon color="yellow"
                       >mdi-checkbox-marked-circle-outline</v-icon
                     >
@@ -355,7 +409,7 @@
                       </v-card-text>
                     </v-card>
                   </v-col>
-                </v-row>
+                </div>
               </v-container>
             </v-card>
           </draggable>
@@ -385,6 +439,10 @@ export default {
   data() {
     return {
       show: false,
+      drawer: {
+        variables: true,
+        workspaces: false
+      },
       dialog: false,
       wsDialog: false,
       newWsRules: [(v) => !!v || this.$t('graphs.ws_name_required')],
@@ -1157,6 +1215,7 @@ export default {
           this.workspaces = res.data
         })
         .catch((err) => {
+          // eslint-disable-next-line
           console.log(err)
         })
     },
@@ -1166,7 +1225,6 @@ export default {
       for (let i = 0; i < variables.length; i++) {
         varId.push(variables[i].id)
       }
-      console.log(varId)
       await axios
         .post(`/workspaces/save`, {
           name: this.newWs,
@@ -1180,6 +1238,7 @@ export default {
           this.wsDialog = false
         })
         .catch((err) => {
+          // eslint-disable-next-line
           console.log(err)
         })
     },
@@ -1191,6 +1250,7 @@ export default {
           this.fetchWorkspaces()
         })
         .catch((err) => {
+          // eslint-disable-next-line
           console.log(err)
         })
     },
