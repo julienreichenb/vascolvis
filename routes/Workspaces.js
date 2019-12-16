@@ -30,47 +30,56 @@ workspaces.get('/', (req, res) => {
 /*
  ** GET WORKSPACES FOR A USER AND A DATASET
  */
+// TODO : Refactor the code (don't fetch ALL vars)
 workspaces.get('/dataset', (req, res) => {
+  const user = req.query.id_user
+  const dataset = req.query.id_dataset
+  const allVariables = []
+  Variables.findAll({ raw: true }).then((variables) => {
+    if (variables) {
+      for (let i = 0; i < variables.length; i++) {
+        allVariables.push(variables[i])
+      }
+    }
+  })
   Workspace.findAll(
     { raw: true },
     {
       where: {
-        id_user: req.query.id_user
-      },
-      $and: [
-        {
-          id_dataset: req.query.id_dataset
-        }
-      ]
+        id_user: user,
+        $and: [
+          {
+            id_dataset: dataset
+          }
+        ]
+      }
     }
   )
     .then((workspaces) => {
       if (workspaces) {
+        const allWs = []
         for (let i = 0; i < workspaces.length; i++) {
-          const variableSet = []
-          Variables.findAll(
-            { raw: true },
-            { where: { id_workspace: workspaces[i].id } }
-          )
-            .then((variables) => {
-              if (variables) {
-                for (let i = 0; i < variables.length; i++) {
-                  variableSet.push(variables[i])
-                }
-              }
-            })
-            .catch((err) => {
-              res.status(400).json({ err })
-            })
-          workspaces[i].variables = variableSet
+          const ws = {
+            id: workspaces[i].id,
+            name: workspaces[i].name,
+            id_user: workspaces[i].id_user,
+            id_dataset: workspaces[i].id_dataset,
+            variables: []
+          }
+          for (let j = 0; j < allVariables.length; j++) {
+            if (allVariables[j].id_workspace === ws.id) {
+              ws.variables.push(allVariables[j].id_variable)
+            }
+          }
+          allWs.push(ws)
         }
-        res.status(200).json(workspaces)
+        res.status(200).json(allWs)
       } else {
         res.status(200).json(null)
       }
     })
-    .catch((error) => {
-      res.status(400).json({ error })
+    .catch((err) => {
+      res.status(400).json(err)
     })
 })
 
@@ -91,17 +100,8 @@ workspaces.get('/user', (req, res) => {
             id: workspaces[i].id,
             name: workspaces[i].name,
             id_user: workspaces[i].id_user,
-            id_dataset: workspaces[i].id_dataset,
-            variables: []
+            id_dataset: workspaces[i].id_dataset
           })
-          Variables.findAll({ where: { id_workspace: workspaces[i].id } }).then(
-            (variables) => {
-              console.log(formattedWS[i])
-              for (let j = 0; j < variables.length; j++) {
-                formattedWS[i].variables.push(variables[j].id_variable)
-              }
-            }
-          )
         }
         res.status(200).json(formattedWS)
       } else {
@@ -117,7 +117,7 @@ workspaces.get('/user', (req, res) => {
  ** SAVE WORKSPACE
  */
 workspaces.post('/save', (req, res) => {
-  const variables = JSON.parse(req.body.variables)
+  const variables = req.body.variables
   const workspaceData = {
     name: req.body.name,
     id_user: req.body.id_user,
@@ -126,7 +126,7 @@ workspaces.post('/save', (req, res) => {
   Workspace.create(workspaceData)
     .then((workspaceData) => {
       for (let i = 0; i < variables.length; i++) {
-        const idvariable = Number.parseInt(variables[i])
+        const idvariable = variables[i]
         const variableData = {
           id_workspace: workspaceData.id,
           id_variable: idvariable
@@ -141,6 +141,38 @@ workspaces.post('/save', (req, res) => {
     })
     .catch((error) => {
       res.status(400).json({ error })
+    })
+})
+
+/*
+ ** DELETE WORKSPACE
+ */
+workspaces.delete('/', (req, res) => {
+  console.log(req.query.id)
+  Workspace.destroy({
+    where: {
+      id: req.query.id
+    }
+  })
+    .then((wsDeleted) => {
+      if (wsDeleted === 1) {
+        Variables.destroy({
+          where: {
+            id_workspace: req.query.id
+          }
+        })
+          .then((varDeleted) => {
+            res.status(200).json({ success: 'success' })
+          })
+          .catch((err) => {
+            res.status(400).json(err)
+          })
+      } else {
+        res.status(400).json({ error: 'error' })
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err)
     })
 })
 

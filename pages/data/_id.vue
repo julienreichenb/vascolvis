@@ -90,14 +90,50 @@
             </draggable>
           </v-expansion-panels>
         </v-navigation-drawer>
-        <v-navigation-drawer absolute permanent right>
-          <v-list dense>
-            <v-list-item v-for="item in workspaces" :key="item.name">
-              <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-navigation-drawer absolute permanent right color="grey darken-2">
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title
+                ><strong>{{ $t('graphs.ws') }}</strong></v-list-item-title
+              >
+            </v-list-item-content>
+          </v-list-item>
+          <v-expansion-panels multiple accordion focusable>
+            <v-expansion-panel v-for="item in workspaces" :key="item.id">
+              <v-expansion-panel-header>
+                {{ item.name }}
+              </v-expansion-panel-header>
+              <v-expansion-panel-content class="mt-4">
+                <div v-for="id in item.variables" :key="id">
+                  <v-chip
+                    :color="variables[id].color"
+                    style="font-size: 0.7em;"
+                  >
+                    <v-icon color="white" small left>{{
+                      variables[id].icon
+                    }}</v-icon>
+                    {{ variables[id].name }}
+                  </v-chip>
+                </div>
+                <v-btn
+                  @click="loadWs(item.id)"
+                  class="mt-1"
+                  small
+                  outlined
+                  color="blue lighten-1"
+                  >{{ $t('graphs.loadWs') }}</v-btn
+                >
+                <v-btn
+                  @click="deleteWs(item.id)"
+                  class="mt-1"
+                  small
+                  outlined
+                  color="red"
+                  >{{ $t('graphs.deleteWs') }}</v-btn
+                >
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-navigation-drawer>
         <v-flex xs12 sm10 xl9 elevation-6>
           <draggable
@@ -184,13 +220,6 @@
                 </v-layout>
               </v-card-title>
               <v-card-text>
-                <div
-                  v-if="graphs.length < 1 && countVariables > 1"
-                  class="mt-3"
-                >
-                  <v-icon color="red">mdi-alert-outline</v-icon>
-                  {{ $t('graphs.warn') }}
-                </div>
                 <div v-if="countVariables < 1" class="mt-3">
                   <h3>
                     {{ $t('graphs.tip_1') }}
@@ -206,6 +235,45 @@
                     width="100%"
                     style="border: 1px solid white"
                   />
+                </div>
+                <div v-else>
+                  <v-dialog v-model="wsDialog" width="50%">
+                    <template v-slot:activator="{ on }">
+                      <v-btn v-on="on" outlined color="green lighten-1">
+                        {{ $t('graphs.saveWs') }}
+                      </v-btn>
+                    </template>
+                    <v-card class="grey darken-2">
+                      <v-card-title>{{
+                        $t('graphs.choose_ws_name')
+                      }}</v-card-title>
+                      <v-form v-model="validWs">
+                        <v-card-text>
+                          <v-text-field
+                            v-model="newWs"
+                            :rules="newWsRules"
+                            :placeholder="$t('graphs.new_ws')"
+                            required
+                          ></v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn
+                            v-if="validWs"
+                            @click="saveWs"
+                            color="green lighten-1"
+                            outlined
+                            >{{ $t('graphs.save') }}</v-btn
+                          >
+                          <v-btn
+                            @click="wsDialog = false"
+                            color="white"
+                            outlined
+                            >{{ $t('graphs.cancel') }}</v-btn
+                          >
+                        </v-card-actions>
+                      </v-form>
+                    </v-card>
+                  </v-dialog>
                 </div>
               </v-card-text>
               <v-card-title class="pt-1">
@@ -229,6 +297,12 @@
                   </v-chip>
                 </div>
               </v-card-title>
+              <v-card-text v-if="graphs.length < 1 && countVariables > 1">
+                <div>
+                  <v-icon color="red">mdi-alert-outline</v-icon>
+                  {{ $t('graphs.warn') }}
+                </div>
+              </v-card-text>
               <v-container fluid>
                 <v-row dense>
                   <div v-if="graphs.length > 0" class="help mb-2">
@@ -312,10 +386,14 @@ export default {
     return {
       show: false,
       dialog: false,
+      wsDialog: false,
+      newWsRules: [(v) => !!v || this.$t('graphs.ws_name_required')],
+      validWs: false,
       dataset: null,
       json: null,
       variables: [],
       workspaces: [],
+      newWs: '',
       droppedVars: [],
       graphs: [],
       isMoving: false,
@@ -1069,7 +1147,7 @@ export default {
       this.panelClosed = true
       this.panel = []
     },
-    /* Fetch corresponding Workspaces */
+    /* Workspaces Logic */
     async fetchWorkspaces() {
       await axios
         .get(
@@ -1081,6 +1159,48 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    async saveWs() {
+      const variables = this.variables.filter((v) => v.isUsed === true)
+      const varId = []
+      for (let i = 0; i < variables.length; i++) {
+        varId.push(variables[i].id)
+      }
+      console.log(varId)
+      await axios
+        .post(`/workspaces/save`, {
+          name: this.newWs,
+          id_user: this.user.id,
+          id_dataset: this.dataset.id,
+          variables: varId
+        })
+        .then(() => {
+          this.fetchWorkspaces()
+          this.$toast.success(this.$t('graphs.toast_saved'))
+          this.wsDialog = false
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async deleteWs(id) {
+      await axios
+        .delete(`/workspaces/?id=${id}`)
+        .then(() => {
+          this.$toast.success(this.$t('graphs.toast_deleted'))
+          this.fetchWorkspaces()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    loadWs(id) {
+      const ws = this.workspaces.filter((w) => w.id === id)[0]
+      this.resetVariableSelection()
+      for (let i = 0; i < ws.variables.length; i++) {
+        this.variables[ws.variables[i]].isUsed = true
+      }
+      this.computeBigGraphs()
     }
   }
 }
