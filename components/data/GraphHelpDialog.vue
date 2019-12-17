@@ -54,6 +54,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn @click="closeDialog" color="green" outlined>
+          <v-icon>mdi-check-circle-outline</v-icon>
           {{ $t('graphs.info.understood') }}
         </v-btn>
       </v-card-actions>

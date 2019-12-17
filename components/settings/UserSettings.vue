@@ -20,9 +20,10 @@
             required
           ></v-text-field>
         </v-row>
-        <v-btn v-if="valid" @click="saveUser()" outlined large color="green">{{
-          $t('settings.save')
-        }}</v-btn>
+        <v-btn v-if="valid" @click="saveUser()" outlined large color="green"
+          ><v-icon>mdi-content-save-outline</v-icon>
+          {{ $t('settings.save') }}</v-btn
+        >
       </v-card-text>
     </v-form>
   </div>

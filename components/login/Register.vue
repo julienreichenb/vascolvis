@@ -46,7 +46,7 @@
                 color="white"
                 depressed
                 outlined
-              >
+                ><v-icon>mdi-login</v-icon>
                 {{ $t('index.register.button') }}
               </v-btn>
             </v-layout>

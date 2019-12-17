@@ -13,7 +13,7 @@
           color="blue lighten-1"
           outlined
           depressed
-        >
+          ><v-icon>mdi-swap-horizontal</v-icon>
           {{ $t('graphs.switch_button') }}
         </v-btn>
         <v-btn
@@ -22,7 +22,7 @@
           color="green"
           outlined
           depressed
-        >
+          ><v-icon>mdi-content-save-outline</v-icon>
           {{ $t('graphs.save') }}
         </v-btn>
       </div>

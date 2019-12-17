@@ -13,12 +13,9 @@
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            v-if="validWs"
-            @click="save"
-            color="green lighten-1"
-            outlined
-            >{{ $t('graphs.save') }}</v-btn
+          <v-btn v-if="validWs" @click="save" color="green lighten-1" outlined
+            ><v-icon>mdi-content-save-outline</v-icon>
+            {{ $t('graphs.save') }}</v-btn
           >
           <v-btn @click="close" color="white" outlined>{{
             $t('graphs.cancel')

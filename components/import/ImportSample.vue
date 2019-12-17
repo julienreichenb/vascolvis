@@ -7,6 +7,7 @@
       </p>
       <v-layout justify-space-between>
         <v-btn @click="generate()" large outlined color="white" depressed>
+          <v-icon>mdi-scatter-plot-outline</v-icon>
           {{ $t('import.sample.button') }}
         </v-btn>
       </v-layout>

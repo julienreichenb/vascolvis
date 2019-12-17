@@ -19,9 +19,10 @@
         "
         color="blue"
       ></v-switch>
-      <v-btn @click="save()" outlined large color="green">{{
-        $t('settings.save')
-      }}</v-btn>
+      <v-btn @click="save()" outlined large color="green"
+        ><v-icon>mdi-content-save-outline</v-icon>
+        {{ $t('settings.save') }}</v-btn
+      >
     </v-card-text>
     <br />
     <hr />

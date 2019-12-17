@@ -38,7 +38,7 @@
               outlined
               color="white"
               depressed
-            >
+              ><v-icon>mdi-scatter-plot-outline</v-icon>
               {{ $t('import.own.button') }}
             </v-btn>
             <v-switch

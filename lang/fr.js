@@ -80,7 +80,7 @@ export default {
       header: 'Informations',
       top: 'Quels fichiers utiliser ?',
       intro:
-        "À l'heure actuelle, VASCO accepte les fichiers <b>.csv</b>, <b>.json</b> et les <b>documents Excel</b>.",
+        "À l'heure actuelle, VASCO accepte les tableaux de données en <b>.csv</b> et <b>Excel</b> comprenant des <b>entêtes</b> et <b>aucune ligne vide</b>. Les fichiers <b>.json</b> sont également acceptés .",
       csv_title: 'Fichers .csv',
       csv:
         'Veillez à ce que votre fichier possède des <b>entêtes</b>, car celles-ci seront utilisées comme variables. Chaque <b>ligne</b> représente une valeur du jeu de donnée. Prenez garde à <b>utiliser uniquement la virgule comme séparateur</b> pour que votre fichier soit traité correctement. Un fichier .txt fonctionnera également',

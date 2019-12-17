@@ -3,12 +3,9 @@
     <br />
     <v-card-title v-text="$t('settings.profile.title')"></v-card-title>
     <v-card-text>
-      <v-btn
-        @click="goToProfile()"
-        outlined
-        color="blue lighten-1"
-        class="mb-5"
-        >{{ $t('settings.profile.seemine') }}</v-btn
+      <v-btn @click="goToProfile()" outlined color="blue lighten-1" class="mb-5"
+        ><v-icon>mdi-account-circle-outline</v-icon>
+        {{ $t('settings.profile.seemine') }}</v-btn
       >
       <v-form v-model="valid" class="mt-2" enctype="multipart/form-data">
         <v-layout>
@@ -33,13 +30,9 @@
             ></v-text-field>
           </div>
         </v-layout>
-        <v-btn
-          v-if="valid"
-          @click="saveProfile()"
-          outlined
-          large
-          color="green"
-          >{{ $t('settings.save') }}</v-btn
+        <v-btn v-if="valid" @click="saveProfile()" outlined large color="green"
+          ><v-icon>mdi-content-save-outline</v-icon>
+          {{ $t('settings.save') }}</v-btn
         >
       </v-form>
     </v-card-text>

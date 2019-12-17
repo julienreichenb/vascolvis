@@ -79,7 +79,7 @@ export default {
       header: 'Informations',
       top: 'Which files can I use ?',
       intro:
-        'For now on, VASCO accepts <b>.csv</b>, <b>.json</b> and <b>Excel</b> files.',
+        'For now on, VASCO accepts data tables in <b>.csv</b> and <b>Excel</b> which have <b>headers</b> and <b>no empty line</b>. <b>.json</b> files are also accepted.',
       csv_title: '.csv files',
       csv:
         'Take care that your file has <b>headers</b>, because they will be used as variables. Each <b>line</b> is a dataset value. Please be aware to <b>use exclusively the comma as a separator</b> to ensure your file parsing. A .txt is also valid',
