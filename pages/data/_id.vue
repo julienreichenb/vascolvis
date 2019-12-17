@@ -942,7 +942,7 @@ export default {
     async fetchWorkspaces() {
       await axios
         .get(
-          `/workspaces/dataset/?id_user=${this.user.id}&id_dataset=${this.dataset.id}`
+          `/workspaces/dataset/?user=${this.user.id}&dataset=${this.dataset.id}`
         )
         .then((res) => {
           this.workspaces = res.data

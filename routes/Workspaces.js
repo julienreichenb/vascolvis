@@ -30,10 +30,9 @@ workspaces.get('/', (req, res) => {
 /*
  ** GET WORKSPACES FOR A USER AND A DATASET
  */
-// TODO : Refactor the code (don't fetch ALL vars)
 workspaces.get('/dataset', (req, res) => {
-  const user = req.query.id_user
-  const dataset = req.query.id_dataset
+  const user = req.query.user
+  const dataset = req.query.dataset
   const allVariables = []
   Variables.findAll({ raw: true }).then((variables) => {
     if (variables) {
@@ -42,19 +41,12 @@ workspaces.get('/dataset', (req, res) => {
       }
     }
   })
-  Workspace.findAll(
-    { raw: true },
-    {
-      where: {
-        id_user: user,
-        $and: [
-          {
-            id_dataset: dataset
-          }
-        ]
-      }
+  Workspace.findAll({
+    where: {
+      id_user: user,
+      id_dataset: dataset
     }
-  )
+  })
     .then((workspaces) => {
       if (workspaces) {
         const allWs = []
