@@ -13,7 +13,7 @@
           color="blue lighten-1"
           outlined
           depressed
-          ><v-icon>mdi-swap-horizontal</v-icon>
+          ><v-icon>mdi-autorenew</v-icon>
           {{ $t('graphs.switch_button') }}
         </v-btn>
         <v-btn

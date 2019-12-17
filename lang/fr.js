@@ -112,10 +112,12 @@ export default {
     toast_saved: 'Workspace enregistré avec succès !',
     toast_deleted: 'Workspace supprimé avec succès !',
     deleteWs: 'Supprimer le Workspace',
+    deleteWs_confirm: 'Êtes-vous sûr ?',
     choose_ws_name: 'Sélectionner un nom pour le Workspace',
     ws_name_required: 'Vous devez choisir un nom pour le Workspace.',
     new_ws: 'Nouveau Workspace',
     cancel: 'Annuler',
+    delete: 'Supprimer',
     info: {
       button: "Plus d'informations",
       title: 'Combinaison de variables',

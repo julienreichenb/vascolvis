@@ -52,9 +52,35 @@
             <v-card :class="isMoving ? 'highlight' : ''" class="mx-auto">
               <v-toolbar color="indigo darken-3">
                 <template v-slot:extension>
-                  <v-tabs slot="extension" slider-color="white" color="white">
-                    <v-tab v-for="item in workspaces" :key="item.id">
+                  <v-tabs
+                    slot="extension"
+                    slider-color="white"
+                    color="white"
+                    background-color="blue darken-3"
+                  >
+                    <v-tab @click="resetVariableSelection"
+                      ><v-icon color="white">mdi-moon-new</v-icon></v-tab
+                    >
+                    <v-tab
+                      @click="loadWs(item.id)"
+                      v-for="item in workspaces"
+                      :key="item.id"
+                    >
                       {{ item.name }}
+                      <v-icon
+                        @click="toggleDeleteDialog(item)"
+                        color="red lighten-1"
+                        right
+                        >mdi-delete-circle-outline</v-icon
+                      >
+                    </v-tab>
+                    <v-tab
+                      v-if="countVariables > 0"
+                      @click="createWsDialog = true"
+                    >
+                      <v-icon color="green lighten-2"
+                        >mdi-plus-circle-outline</v-icon
+                      >
                     </v-tab>
                   </v-tabs>
                 </template>
@@ -82,7 +108,10 @@
                 >
                   <VariableChips
                     :variable="variable"
-                    @compute="computeBigGraphs"
+                    @compute="
+                      computeBigGraphs()
+                      resetActiveTab()
+                    "
                   ></VariableChips>
                 </div>
               </v-card-title>
@@ -94,16 +123,6 @@
               </v-card-text>
               <v-container fluid>
                 <div>
-                  <v-btn
-                    v-if="countVariables > 0"
-                    class="mb-4"
-                    small
-                    outlined
-                    color="green lighten-1"
-                    @click="wsDialog = true"
-                  >
-                    {{ $t('graphs.saveWs') }}
-                  </v-btn>
                   <hr />
                   <div v-if="graphs.length > 0" class="help mb-2 mt-4">
                     <v-icon color="yellow"
@@ -125,12 +144,22 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <WorkspaceDialog
-      :dialog="wsDialog"
+    <CreateWorkspaceDialog
+      :dialog="createWsDialog"
       :total-variable="countVariables"
-      @close="wsDialog = false"
+      @close="
+        createWsDialog = false
+        resetActiveTab()
+      "
       @save="saveWs"
-    ></WorkspaceDialog>
+    ></CreateWorkspaceDialog>
+    <DeleteWorkspaceDialog
+      :dialog="deleteWsDialog"
+      :workspace="selectedWs"
+      @close="deleteWsDialog = false"
+      @delete="deleteWs"
+    >
+    </DeleteWorkspaceDialog>
   </div>
 </template>
 <script>
@@ -144,7 +173,8 @@ import DrawerHideButton from '~/components/data/DrawerHideButton'
 import GraphHelpDialog from '~/components/data/GraphHelpDialog'
 import GraphTips from '~/components/data/GraphTips'
 import GeneratedGraph from '~/components/data/GeneratedGraph'
-import WorkspaceDialog from '~/components/data/WorkspaceDialog'
+import CreateWorkspaceDialog from '~/components/data/CreateWorkspaceDialog'
+import DeleteWorkspaceDialog from '~/components/data/DeleteWorkspaceDialog'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -167,7 +197,8 @@ export default {
     GraphHelpDialog,
     GraphTips,
     GeneratedGraph,
-    WorkspaceDialog
+    CreateWorkspaceDialog,
+    DeleteWorkspaceDialog
   },
   data() {
     return {
@@ -177,11 +208,14 @@ export default {
         workspaces: false
       },
       dialog: false,
-      wsDialog: false,
+      createWsDialog: false,
+      deleteWsDialog: false,
       dataset: null,
       json: null,
       variables: [],
       workspaces: [],
+      selectedWs: null,
+      currentTab: 0,
       droppedVars: [],
       graphs: [],
       isMoving: false,
@@ -333,6 +367,7 @@ export default {
       const id = this.droppedVars[0].id
       this.variables[id].isUsed = true
       this.droppedVars = []
+      this.resetActiveTab()
       this.computeBigGraphs()
     },
     resetVariableSelection() {
@@ -340,6 +375,7 @@ export default {
       for (let i = 0; i < this.variables.length; i++) {
         this.variables[i].isUsed = false
       }
+      this.resetActiveTab()
     },
     /* GRAPHS */
     /* Display */
@@ -968,19 +1004,7 @@ export default {
         .then(() => {
           this.fetchWorkspaces()
           this.$toast.success(this.$t('graphs.toast_saved'))
-          this.wsDialog = false
-        })
-        .catch((err) => {
-          // eslint-disable-next-line
-          console.log(err)
-        })
-    },
-    async deleteWs(id) {
-      await axios
-        .delete(`/workspaces/?id=${id}`)
-        .then(() => {
-          this.$toast.success(this.$t('graphs.toast_deleted'))
-          this.fetchWorkspaces()
+          this.createWsDialog = false
         })
         .catch((err) => {
           // eslint-disable-next-line
@@ -988,12 +1012,33 @@ export default {
         })
     },
     loadWs(id) {
-      const ws = this.workspaces.filter((w) => w.id === id)[0]
+      this.fetchWorkspaces()
       this.resetVariableSelection()
+      const ws = this.workspaces.filter((w) => w.id === id)[0]
       for (let i = 0; i < ws.variables.length; i++) {
         this.variables[ws.variables[i]].isUsed = true
       }
       this.computeBigGraphs()
+    },
+    toggleDeleteDialog(item) {
+      this.selectedWs = item
+      this.deleteWsDialog = true
+    },
+    async deleteWs(id) {
+      await axios
+        .delete(`/workspaces/?id=${id}`)
+        .then(() => {
+          this.$toast.success(this.$t('graphs.toast_deleted'))
+          this.fetchWorkspaces()
+          this.resetActiveTab()
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
+    },
+    resetActiveTab() {
+      this.currentTab = 0
     }
   }
 }

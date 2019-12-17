@@ -111,10 +111,12 @@ export default {
     toast_saved: 'Workspace successfully saved !',
     toast_deleted: 'Workspace successfully deleted !',
     deleteWs: 'Delete the Workspace',
+    deleteWs_confirm: 'Are you sure ?',
     choose_ws_name: 'Choose a name for the Workspace',
     ws_name_required: 'You have to choose a name for the Workspace.',
     new_ws: 'New Workspace',
     cancel: 'Cancel',
+    delete: 'Delete',
     info: {
       button: 'More informations',
       title: 'Variables combinations',

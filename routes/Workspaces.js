@@ -140,7 +140,6 @@ workspaces.post('/save', (req, res) => {
  ** DELETE WORKSPACE
  */
 workspaces.delete('/', (req, res) => {
-  console.log(req.query.id)
   Workspace.destroy({
     where: {
       id: req.query.id

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="50%">
+  <v-dialog v-model="dialog" @input="(v) => v || close()" width="50%">
     <v-card class="grey darken-2">
       <v-card-title>{{ $t('graphs.choose_ws_name') }}</v-card-title>
       <v-form v-model="validWs">
@@ -49,7 +49,10 @@ export default {
       this.$emit('close')
     },
     save() {
-      this.$emit('save', this.newWs)
+      if (this.validWs) {
+        this.$emit('save', this.newWs)
+        this.newWs = ''
+      }
     }
   }
 }
