@@ -9,31 +9,17 @@
           dense
           color="grey darken-2"
         >
-          <div class="blue">
-            <v-btn
-              @click="drawer.variables = !drawer.variables"
-              width="100%"
-              text
-            >
-              {{ $t('graphs.hide') }}
-            </v-btn>
-          </div>
-          <v-layout align-center justify-space-around>
-            <v-btn v-if="panelClosed" @click="all()" text icon color="white">
-              <v-icon>mdi-eye</v-icon><v-icon>mdi-arrow-down</v-icon>
-            </v-btn>
-            <v-btn v-else @click="none()" text icon color="red">
-              <v-icon>mdi-eye-off</v-icon><v-icon>mdi-arrow-up</v-icon>
-            </v-btn>
-            <v-btn
-              :disabled="countVariables < 1"
-              @click="resetVariableSelection"
-              icon
-              x-large
-              color="red lighten-1"
-              ><v-icon>mdi-delete-sweep</v-icon></v-btn
-            >
-          </v-layout>
+          <DrawerHideButton
+            :drawer="drawer.variables"
+            @close="drawer.variables = false"
+          ></DrawerHideButton>
+          <VariablesButtons
+            :panel="panelClosed"
+            :total-variable="countVariables"
+            @all="all()"
+            @none="none()"
+            @resetvariables="resetVariableSelection"
+          ></VariablesButtons>
           <v-expansion-panels v-model="panel" multiple accordion focusable>
             <draggable
               v-model="variables"
@@ -48,125 +34,12 @@
                 :key="variable.id"
                 @click="panelClosed = false"
               >
-                <v-expansion-panel-header disable-icon-rotate>
-                  <v-icon slot="actions" :color="variable.color">{{
-                    variable.icon
-                  }}</v-icon>
-                  {{ variable.name }}
-                  <v-icon v-if="variable.warn" color="red lighten-1"
-                    >mdi-alert-outline</v-icon
-                  >
-                </v-expansion-panel-header>
-                <v-expansion-panel-content class="mt-4">
-                  <v-select
-                    v-model="variable.type"
-                    :items="types"
-                    @change="
-                      (selected) =>
-                        attributeSingleVariableType(variable.id, selected)
-                    "
-                    label="Type"
-                    item-value="types"
-                    dense
-                  ></v-select>
-                  <v-layout justify-space-around align-center>
-                    <div :id="'sparkline-' + variable.id"></div>
-                  </v-layout>
-                  <v-layout
-                    v-if="variable.type === 'quantitative'"
-                    class="small"
-                    justify-space-around
-                  >
-                    <span
-                      >MAX : <span>{{ variable.max }}</span></span
-                    >
-                    <span
-                      >MIN : <span>{{ variable.min }}</span></span
-                    >
-                    <span
-                      >AVG : <span>{{ variable.mean.toFixed(2) }}</span></span
-                    >
-                  </v-layout>
-                  <v-layout
-                    v-if="variable.type === 'nominal'"
-                    class="small"
-                    justify-space-around
-                  >
-                    <span
-                      >MODE :
-                      <span v-if="variable.mode">{{
-                        variable.mode.value + ' - ' + variable.mode.number
-                      }}</span>
-                      <span v-else>Non-pertinent</span></span
-                    >
-                  </v-layout>
-                </v-expansion-panel-content>
+                <VariableDetails
+                  :variable="variable"
+                  @change-type="attributeSingleVariableType"
+                ></VariableDetails>
               </v-expansion-panel>
             </draggable>
-          </v-expansion-panels>
-        </v-navigation-drawer>
-        <v-navigation-drawer
-          v-model="drawer.workspaces"
-          absolute
-          right
-          color="grey darken-2"
-        >
-          <div class="blue">
-            <v-btn
-              @click="drawer.workspaces = !drawer.workspaces"
-              width="100%"
-              text
-            >
-              {{ $t('graphs.hide') }}
-            </v-btn>
-          </div>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
-                <strong> {{ $t('graphs.ws') }}</strong></v-list-item-title
-              >
-              <v-list-item-subtitle
-                v-if="workspaces.length === 0"
-                class="mt-4"
-                >{{ $t('graphs.no_ws') }}</v-list-item-subtitle
-              >
-            </v-list-item-content>
-          </v-list-item>
-          <v-expansion-panels dense multiple accordion focusable>
-            <v-expansion-panel v-for="item in workspaces" :key="item.id">
-              <v-expansion-panel-header>
-                {{ item.name }}
-              </v-expansion-panel-header>
-              <v-expansion-panel-content class="mt-4">
-                <div v-for="id in item.variables" :key="id">
-                  <v-chip
-                    :color="variables[id].color"
-                    style="font-size: 0.7em;"
-                  >
-                    <v-icon color="white" small left>{{
-                      variables[id].icon
-                    }}</v-icon>
-                    {{ variables[id].name }}
-                  </v-chip>
-                </div>
-                <v-btn
-                  @click="loadWs(item.id)"
-                  class="mt-1"
-                  small
-                  outlined
-                  color="blue lighten-1"
-                  >{{ $t('graphs.loadWs') }}</v-btn
-                >
-                <v-btn
-                  @click="deleteWs(item.id)"
-                  class="mt-1"
-                  small
-                  outlined
-                  color="red"
-                  >{{ $t('graphs.deleteWs') }}</v-btn
-                >
-              </v-expansion-panel-content>
-            </v-expansion-panel>
           </v-expansion-panels>
         </v-navigation-drawer>
         <v-flex lg12 xl9 elevation-6>
@@ -177,117 +50,29 @@
             draggable="false"
           >
             <v-card :class="isMoving ? 'highlight' : ''" class="mx-auto">
-              <v-card-title>
+              <v-toolbar color="indigo darken-3">
+                <template v-slot:extension>
+                  <v-tabs slot="extension" slider-color="white" color="white">
+                    <v-tab v-for="item in workspaces" :key="item.id">
+                      {{ item.name }}
+                    </v-tab>
+                  </v-tabs>
+                </template>
                 <v-layout justify-space-between>
-                  <h2>{{ dataset.name }}</h2>
-                  <v-dialog v-model="dialog" width="85%">
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        v-on="on"
-                        x-large
-                        icon
-                        color="blue text--white"
-                        dark
-                      >
-                        <v-icon>mdi-help-circle-outline</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-card>
-                      <v-card-title
-                        class="headline indigo darken-3 mb-3"
-                        primary-title
-                      >
-                        {{ $t('graphs.info.title') }}
-                      </v-card-title>
-                      <v-card-text>
-                        <h2>{{ $t('graphs.info.typeselection_title') }}</h2>
-                        <p>
-                          {{ $t('graphs.info.typeselection') }}
-                          <v-icon color="red">mdi-alert-outline</v-icon>
-                          {{ $t('graphs.info.typeselection2') }}
-                        </p>
-                        <h2>{{ $t('graphs.info.combination_title') }}</h2>
-                        <h3>{{ $t('graphs.info.single_title') }}</h3>
-                        <p v-html="this.$t('graphs.info.single')"></p>
-                        <h3>
-                          <v-icon :color="colors[1]" large>mdi-numeric</v-icon>
-                          -
-                          {{ $t('graphs.info.quant_title') }}
-                        </h3>
-                        <p>
-                          <span v-html="this.$t('graphs.info.quant')"></span>
-                          <v-icon :color="colors[1]">mdi-numeric</v-icon>
-                          <span v-html="this.$t('graphs.info.quant2')"></span>
-                        </p>
-                        <h3>
-                          <v-icon :color="colors[0]" large
-                            >mdi-alphabetical</v-icon
-                          >
-                          -
-                          {{ $t('graphs.info.nom_title') }}
-                        </h3>
-                        <p>
-                          <span v-html="this.$t('graphs.info.nom')"></span>
-                          <v-icon :color="colors[0]">mdi-alphabetical</v-icon>
-                          <span v-html="this.$t('graphs.info.nom2')"></span>
-                        </p>
-                        <h3>
-                          <v-icon :color="colors[2]" large>mdi-timer</v-icon>
-                          -
-                          {{ $t('graphs.info.temp_title') }}
-                        </h3>
-                        <p>
-                          <span v-html="this.$t('graphs.info.temp')"></span>
-                          <v-icon :color="colors[2]">mdi-timer</v-icon>
-                          <span v-html="this.$t('graphs.info.temp2')"></span>
-                        </p>
-                        <h2>{{ $t('graphs.info.yourturn') }}</h2>
-                      </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click="dialog = false" color="green" outlined>
-                          {{ $t('graphs.info.understood') }}
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
+                  <DrawerButton
+                    :drawer="drawer.variables"
+                    @open="drawer.variables = true"
+                  ></DrawerButton>
+                  <h1 v-text="dataset.name" class="white--text"></h1>
+                  <GraphHelpDialog
+                    :dialog="dialog"
+                    :colors="colors"
+                    @close="dialog = false"
+                  ></GraphHelpDialog>
                 </v-layout>
-              </v-card-title>
-              <v-card-subtitle style="padding-bottom: 0">
-                <v-layout justify-space-between>
-                  <v-btn
-                    :disabled="drawer.variables"
-                    @click="drawer.variables = !drawer.variables"
-                    outlined
-                  >
-                    <v-icon>mdi-arrow-collapse-right</v-icon> Variables
-                  </v-btn>
-                  <v-btn
-                    :disabled="drawer.workspaces"
-                    @click="drawer.workspaces = !drawer.workspaces"
-                    icon
-                  >
-                    <v-icon>mdi-arrow-collapse-left</v-icon>
-                  </v-btn>
-                </v-layout>
-              </v-card-subtitle>
+              </v-toolbar>
               <v-card-text style="padding-top: 0;">
-                <div v-if="countVariables < 1" class="mt-3">
-                  <h3>
-                    {{ $t('graphs.tip_1') }}
-                    <span class="emphaze">{{ $t('graphs.tip_2') }}</span
-                    >{{ $t('graphs.tip_3')
-                    }}<span class="emphaze">{{ $t('graphs.tip_4') }}</span
-                    >{{ $t('graphs.tip_5') }}
-                  </h3>
-                  <img
-                    class="mt-3"
-                    src="~/static/demo.gif"
-                    alt=""
-                    width="100%"
-                    style="border: 1px solid white"
-                  />
-                </div>
+                <GraphTips v-if="countVariables < 1"></GraphTips>
               </v-card-text>
               <v-card-title class="pt-1 pb-0">
                 <div
@@ -295,19 +80,10 @@
                   :key="variable.id"
                   class="text-center"
                 >
-                  <v-chip v-if="variable.isUsed" :color="variable.color">
-                    <v-icon :color="'white'" left>{{ variable.icon }}</v-icon>
-                    {{ variable.name
-                    }}<v-icon
-                      :color="'white'"
-                      @click="
-                        variable.isUsed = false
-                        computeBigGraphs()
-                      "
-                      right
-                      >mdi-close-circle-outline</v-icon
-                    >
-                  </v-chip>
+                  <VariableChips
+                    :variable="variable"
+                    @compute="computeBigGraphs"
+                  ></VariableChips>
                 </div>
               </v-card-title>
               <v-card-text v-if="graphs.length < 1 && countVariables > 1">
@@ -318,46 +94,12 @@
               </v-card-text>
               <v-container fluid>
                 <div>
-                  <div v-if="countVariables > 0" class="mb-4">
-                    <v-dialog v-model="wsDialog" width="50%">
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" small outlined color="green lighten-1">
-                          {{ $t('graphs.saveWs') }}
-                        </v-btn>
-                      </template>
-                      <v-card class="grey darken-2">
-                        <v-card-title>{{
-                          $t('graphs.choose_ws_name')
-                        }}</v-card-title>
-                        <v-form v-model="validWs">
-                          <v-card-text>
-                            <v-text-field
-                              v-model="newWs"
-                              :rules="newWsRules"
-                              :placeholder="$t('graphs.new_ws')"
-                              autofocus
-                              required
-                            ></v-text-field>
-                          </v-card-text>
-                          <v-card-actions>
-                            <v-btn
-                              v-if="validWs"
-                              @click="saveWs"
-                              color="green lighten-1"
-                              outlined
-                              >{{ $t('graphs.save') }}</v-btn
-                            >
-                            <v-btn
-                              @click="wsDialog = false"
-                              color="white"
-                              outlined
-                              >{{ $t('graphs.cancel') }}</v-btn
-                            >
-                          </v-card-actions>
-                        </v-form>
-                      </v-card>
-                    </v-dialog>
-                  </div>
+                  <WorkspaceDialog
+                    :dialog="wsDialog"
+                    :total-variable="countVariables"
+                    @close="wsDialog = false"
+                    @save="saveWs"
+                  ></WorkspaceDialog>
                   <hr />
                   <div v-if="graphs.length > 0" class="help mb-2 mt-4">
                     <v-icon color="yellow"
@@ -366,48 +108,11 @@
                     {{ $t('graphs.help') }}
                   </div>
                   <v-col v-for="graph in graphs" :key="graph.id" :cols="12">
-                    <v-card class="grey darken-2">
-                      <v-layout justify-space-between>
-                        <v-card-title
-                          :id="'title-' + graph.id"
-                          v-text="graph.title"
-                          contenteditable
-                        ></v-card-title>
-                        <div>
-                          <v-btn
-                            @click="swapAxis(graph)"
-                            class="mt-4"
-                            color="blue lighten-1"
-                            outlined
-                            depressed
-                          >
-                            {{ $t('graphs.switch_button') }}
-                          </v-btn>
-                          <v-btn
-                            @click="saveGraph(graph)"
-                            class="mt-4 mr-4"
-                            color="green"
-                            outlined
-                            depressed
-                          >
-                            {{ $t('graphs.save') }}
-                          </v-btn>
-                        </div>
-                      </v-layout>
-                      <v-card-text>
-                        <v-layout
-                          flex
-                          align-center
-                          justify-space-around
-                          class="graph-wrapper"
-                        >
-                          <div
-                            :id="'vis-' + graph.id"
-                            class="resize-graph"
-                          ></div>
-                        </v-layout>
-                      </v-card-text>
-                    </v-card>
+                    <GeneratedGraph
+                      :graph="graph"
+                      @save="saveGraph"
+                      @swap="swapAxis"
+                    ></GeneratedGraph>
                   </v-col>
                 </div>
               </v-container>
@@ -421,6 +126,15 @@
 <script>
 import jwtDecode from 'jwt-decode'
 import draggable from 'vuedraggable'
+import VariablesButtons from '~/components/data/VariablesButtons'
+import VariableDetails from '~/components/data/VariableDetails'
+import VariableChips from '~/components/data/VariableChips'
+import DrawerButton from '~/components/data/DrawerButton'
+import DrawerHideButton from '~/components/data/DrawerHideButton'
+import GraphHelpDialog from '~/components/data/GraphHelpDialog'
+import GraphTips from '~/components/data/GraphTips'
+import GeneratedGraph from '~/components/data/GeneratedGraph'
+import WorkspaceDialog from '~/components/data/WorkspaceDialog'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -434,7 +148,16 @@ export default {
     }
   },
   components: {
-    draggable
+    draggable,
+    VariablesButtons,
+    VariableDetails,
+    VariableChips,
+    DrawerButton,
+    DrawerHideButton,
+    GraphHelpDialog,
+    GraphTips,
+    GeneratedGraph,
+    WorkspaceDialog
   },
   data() {
     return {
@@ -445,21 +168,14 @@ export default {
       },
       dialog: false,
       wsDialog: false,
-      newWsRules: [(v) => !!v || this.$t('graphs.ws_name_required')],
-      validWs: false,
       dataset: null,
       json: null,
       variables: [],
       workspaces: [],
-      newWs: '',
       droppedVars: [],
       graphs: [],
       isMoving: false,
       draggedId: null,
-      /*
-       *  UTILS
-       */
-      types: ['quantitative', 'nominal', 'temporal'],
       /* From Tableau 10 */
       colors: [
         '#4E79A7',
@@ -557,27 +273,28 @@ export default {
         this.attributeSingleVariableType(i, null)
       }
     },
-    attributeSingleVariableType(i, type) {
-      if (type === null) {
-        const variableToCheck = this.json[0][this.variables[i].name]
+    attributeSingleVariableType(id, selected) {
+      if (selected === null) {
+        const variableToCheck = this.json[0][this.variables[id].name]
         if (!isNaN(variableToCheck)) {
           // The value is a number
-          this.setDimension(i, 'quantitative')
-        } else if (this.isDate(i)) {
-          this.setDimension(i, 'temporal')
+          this.setDimension(id, 'quantitative')
+        } else if (this.isDate(id)) {
+          this.setDimension(id, 'temporal')
         } else {
-          this.setDimension(i, 'nominal')
+          this.setDimension(id, 'nominal')
         }
       } else {
-        this.setDimension(i, type)
-        this.computeSparkline(i)
-        this.renderSingleSparkline(i)
+        this.setDimension(id, selected)
+        this.computeSparkline(id)
+        this.renderSingleSparkline(id)
         this.$forceUpdate()
         this.computeBigGraphs()
       }
     },
     setDimension(i, type) {
       // Set dimension for each variable
+      console.log(this.variables[i])
       this.variables[i].type = type
       this.variables[i].isUsed = false
       this.variables[i].warn = false
@@ -1103,14 +820,20 @@ export default {
       for (const LABEL in this.FREQUENT_DATE_LABELS) {
         if (variableLabel === LABEL) return true
       }
-      // Check the value itself
-      // If the string contains usual spliters at least 3 times, it might be a date
-      const partsDash = variableValue.split('-')
-      const partsDot = variableValue.split('.')
-      const partsSlash = variableValue.split('/')
-      return (
-        partsDash.length > 2 || partsDot.length > 2 || partsSlash.length > 2
-      )
+      try {
+        // Check the value itself
+        // If the string contains usual spliters at least 3 times, it might be a date
+        const partsDash = variableValue.split('-')
+        const partsDot = variableValue.split('.')
+        const partsSlash = variableValue.split('/')
+        return (
+          partsDash.length > 2 || partsDot.length > 2 || partsSlash.length > 2
+        )
+      } catch (e) {
+        // eslint-disable-next-line
+        console.log(e)
+        return false
+      }
     },
     cleanTitle(string) {
       string = string.replace('"', '')
@@ -1219,7 +942,7 @@ export default {
           console.log(err)
         })
     },
-    async saveWs() {
+    async saveWs(name) {
       const variables = this.variables.filter((v) => v.isUsed === true)
       const varId = []
       for (let i = 0; i < variables.length; i++) {
@@ -1227,7 +950,7 @@ export default {
       }
       await axios
         .post(`/workspaces/save`, {
-          name: this.newWs,
+          name,
           id_user: this.user.id,
           id_dataset: this.dataset.id,
           variables: varId
@@ -1273,25 +996,8 @@ h3 {
   margin-bottom: 0.5em;
 }
 
-.small {
-  font-size: smaller;
-  color: lightgray;
-}
-.small > span {
-  color: dodgerblue;
-}
-
-.small > span > span {
-  color: white;
-}
-
 .help {
   color: lightgray;
-}
-
-.emphaze {
-  font-weight: bold;
-  color: dodgerblue;
 }
 
 .highlight {
@@ -1300,17 +1006,6 @@ h3 {
 
 .ghost {
   opacity: 0;
-}
-
-.graph-wrapper {
-  width: 100%;
-  height: auto;
-  max-height: 800px;
-  overflow: auto;
-}
-
-.resize-graph {
-  width: 100%;
 }
 
 .v-chip {
