@@ -94,12 +94,16 @@
               </v-card-text>
               <v-container fluid>
                 <div>
-                  <WorkspaceDialog
-                    :dialog="wsDialog"
-                    :total-variable="countVariables"
-                    @close="wsDialog = false"
-                    @save="saveWs"
-                  ></WorkspaceDialog>
+                  <v-btn
+                    v-if="countVariables > 0"
+                    class="mb-4"
+                    small
+                    outlined
+                    color="green lighten-1"
+                    @click="wsDialog = true"
+                  >
+                    {{ $t('graphs.saveWs') }}
+                  </v-btn>
                   <hr />
                   <div v-if="graphs.length > 0" class="help mb-2 mt-4">
                     <v-icon color="yellow"
@@ -121,6 +125,12 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <WorkspaceDialog
+      :dialog="wsDialog"
+      :total-variable="countVariables"
+      @close="wsDialog = false"
+      @save="saveWs"
+    ></WorkspaceDialog>
   </div>
 </template>
 <script>
