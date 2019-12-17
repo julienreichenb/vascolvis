@@ -54,6 +54,7 @@
                 <template v-slot:extension>
                   <v-tabs
                     slot="extension"
+                    v-model="currentTab"
                     slider-color="white"
                     color="white"
                     background-color="blue darken-3"
