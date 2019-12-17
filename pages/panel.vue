@@ -86,6 +86,16 @@ export default {
             { text: this.$t('panel.table.name'), value: 'name' },
             { text: this.$t('panel.table.size'), value: 'size' },
             {
+              text: this.$t('panel.table.workspace'),
+              value: 'workspaces',
+              sortable: false
+            },
+            {
+              text: this.$t('panel.table.graph'),
+              value: 'graphs',
+              sortable: false
+            },
+            {
               text: this.$t('panel.table.actions'),
               value: 'actions',
               sortable: false

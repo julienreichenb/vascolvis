@@ -176,6 +176,8 @@ export default {
     table: {
       name: 'Nom',
       size: 'Taille(kb)',
+      workspace: 'Nb de workspaces associés',
+      graph: 'Nb de graphs associés',
       actions: 'Actions',
       url: 'URL',
       user: 'Utilisateur',

@@ -173,6 +173,8 @@ export default {
     table: {
       name: 'Name',
       size: 'Size(ko)',
+      workspace: 'Nb of associated workspaces',
+      graph: 'Nb of associated charts',
       actions: 'Actions',
       url: 'URL',
       user: 'User',

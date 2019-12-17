@@ -98,6 +98,27 @@ charts.get('/user', (req, res) => {
 })
 
 /*
+ ** GET CHART NUMBER FOR A DATASET
+ */
+charts.get('/nb', (req, res) => {
+  Chart.findAll({
+    where: {
+      id_dataset: req.query.dataset
+    }
+  })
+    .then((charts) => {
+      if (charts) {
+        res.status(200).json(charts.length)
+      } else {
+        res.status(200).json(null)
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
+})
+
+/*
  ** DELETE A CHART WITH ID
  */
 charts.delete('/', (req, res) => {

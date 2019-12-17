@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="show">
     <v-card>
       <v-card-title>
         <v-text-field
@@ -78,6 +78,16 @@
             <a @click="goToItem(item)" class="link">{{ item.url }}</a>
           </span>
         </template>
+        <template v-slot:item.workspaces="{ item }">
+          <span>
+            {{ nbOfWorkspaces.filter((i) => i.id === item.id)[0].nb }}
+          </span>
+        </template>
+        <template v-slot:item.graphs="{ item }">
+          <span>
+            {{ nbOfGraphs.filter((i) => i.id === item.id)[0].nb }}
+          </span>
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon @click="goToItem(item)">
             mdi-eye-outline
@@ -141,10 +151,13 @@ export default {
   },
   data() {
     return {
+      show: false,
       onlyMine: false,
       deleteDialog: false,
       selected: { name: '' },
-      search: ''
+      search: '',
+      nbOfWorkspaces: [],
+      nbOfGraphs: []
     }
   },
   computed: {
@@ -157,6 +170,9 @@ export default {
         )
       }
     }
+  },
+  created() {
+    this.getNumbers()
   },
   methods: {
     getUsername(item) {
@@ -175,9 +191,33 @@ export default {
         ? 'mdi-lock-open-variant-outline'
         : 'mdi-lock-outline'
     },
-    /*
-     ** Buttons methods
-     */
+    /* Numbers for the Datasets */
+    async getNbsOfWorkspaces() {
+      for (let i = 0; i < this.data.length; i++) {
+        await this.getNbOfWorkspaces(this.data[i].id)
+      }
+    },
+    async getNbOfWorkspaces(id) {
+      await axios.get(`/workspaces/nb/?dataset=${id}`).then((res) => {
+        this.nbOfWorkspaces.push({ id, nb: res.data })
+      })
+    },
+    async getNbsOfGraphs() {
+      for (let i = 0; i < this.data.length; i++) {
+        await this.getNbOfGraphs(this.data[i].id)
+      }
+      this.show = true
+    },
+    async getNbOfGraphs(id) {
+      await axios.get(`/charts/nb/?dataset=${id}`).then((res) => {
+        this.nbOfGraphs.push({ id, nb: res.data })
+      })
+    },
+    async getNumbers() {
+      await this.getNbsOfWorkspaces()
+      await this.getNbsOfGraphs()
+    },
+    /* Buttons methods */
     goToItem(item) {
       switch (this.type) {
         case 'datasets':

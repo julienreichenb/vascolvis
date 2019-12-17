@@ -76,10 +76,12 @@ export default {
       this.form.url = this.user.profile.url
     },
     async saveProfile() {
+      const publicname =
+        this.form.publicname !== '' ? this.form.publicname : this.user.username
       await axios
         .put(`/profiles`, {
           id: this.user.id,
-          publicname: this.form.publicname,
+          publicname,
           bio: this.form.bio,
           url: this.form.url
         })

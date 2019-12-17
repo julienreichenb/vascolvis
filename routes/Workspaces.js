@@ -106,6 +106,27 @@ workspaces.get('/user', (req, res) => {
 })
 
 /*
+ ** GET WORKSPACE NUMBER FOR A DATASET
+ */
+workspaces.get('/nb', (req, res) => {
+  Workspace.findAll({
+    where: {
+      id_dataset: req.query.dataset
+    }
+  })
+    .then((workspaces) => {
+      if (workspaces) {
+        res.status(200).json(workspaces.length)
+      } else {
+        res.status(200).json(null)
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
+})
+
+/*
  ** SAVE WORKSPACE
  */
 workspaces.post('/save', (req, res) => {
