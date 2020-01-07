@@ -57,7 +57,7 @@
 
 <script>
 import jwtDecode from 'jwt-decode'
-import axios from 'axios'
+import axios from '~/plugins/axios'
 import PanelTable from '~/components/panel/PanelTable'
 export default {
   head() {

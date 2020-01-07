@@ -339,7 +339,6 @@ export default {
     },
     setDimension(i, type) {
       // Set dimension for each variable
-      console.log(this.variables[i])
       this.variables[i].type = type
       this.variables[i].isUsed = false
       this.variables[i].warn = false

@@ -45,8 +45,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import DeleteAccountDialog from './DeleteAccountDialog'
+import axios from '~/plugins/axios'
 export default {
   components: {
     DeleteAccountDialog

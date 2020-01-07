@@ -64,7 +64,7 @@
 
 <script>
 import jwtDecode from 'jwt-decode'
-import axios from 'axios'
+import axios from '~/plugins/axios'
 import UserSettings from '~/components/settings/UserSettings'
 import ProfileSettings from '~/components/settings/ProfileSettings'
 import PasswordSettings from '~/components/settings/PasswordSettings'

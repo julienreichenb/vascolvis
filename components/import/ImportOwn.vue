@@ -81,6 +81,7 @@
 </template>
 <script>
 import XLXS from 'xlsx'
+import axios from '~/plugins/axios'
 export default {
   props: {
     user: {
@@ -225,7 +226,7 @@ export default {
       this.json = result
     },
     async saveDataset() {
-      await this.$axios
+      await axios
         .post('/datasets/save', {
           name: this.file.name,
           data: this.json,

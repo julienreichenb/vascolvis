@@ -61,6 +61,7 @@
   </div>
 </template>
 <script>
+import axios from '~/plugins/axios'
 export default {
   props: {
     usernameRules: {
@@ -94,7 +95,7 @@ export default {
   },
   methods: {
     createAccount() {
-      this.$axios
+      axios
         .post('/users/register', {
           username: this.username,
           password: this.password,
