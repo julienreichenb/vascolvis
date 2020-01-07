@@ -1,5 +1,4 @@
 const colors = require('vuetify/es5/util/colors').default
-
 module.exports = {
   mode: 'universal',
   /*
@@ -17,8 +16,8 @@ module.exports = {
         src: 'https://cdn.jsdelivr.net/npm/vega-embed@5.1.3'
       }
     ],
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: '%s - VASCO',
+    title: 'VASCO',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

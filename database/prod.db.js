@@ -9,8 +9,15 @@ const sequelize = new Sequelize('vascolvis', 'iig', 'password', {
     min: 0,
     acquire: 30000,
     idle: 10000
+  },
+  dialectOptions: {
+    socketPath: '/var/run/mysqld/mysqld.sock'
+  },
+  define: {
+    paranoid: true
   }
 })
+
 db.sequelize = sequelize
 db.Sequelize = Sequelize
 

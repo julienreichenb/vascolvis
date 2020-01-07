@@ -11,6 +11,7 @@ const sequelize = new Sequelize('vascolvis', 'root', '', {
     idle: 10000
   }
 })
+
 db.sequelize = sequelize
 db.Sequelize = Sequelize
 
