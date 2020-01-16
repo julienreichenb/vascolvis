@@ -54,6 +54,7 @@ export default {
         'Your file must contain the headers and cannot be larger than 4MB.',
       file_label: 'Browse...',
       error: 'The dataset cannot be larger than 4MB.',
+      error_format: 'The file seems wrongly formatted. Please check.',
       button: 'Generate charts',
       preview: 'See a preview',
       failed_to_save:

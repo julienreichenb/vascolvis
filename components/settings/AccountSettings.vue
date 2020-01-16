@@ -1,7 +1,7 @@
 <template>
   <div>
     <br />
-    <v-card-title v-text="$t('settings.account.title')"></v-card-title>
+    <v-card-title v-text="$t('settings.account.title')" />
     <v-card-text>
       <p
         v-html="
@@ -9,7 +9,7 @@
             ? $t('settings.account.public')
             : $t('settings.account.private')
         "
-      ></p>
+      />
       <v-switch
         v-model="form.defaultpublic"
         :label="
@@ -18,7 +18,7 @@
             : $t('settings.account.switch_private')
         "
         color="blue"
-      ></v-switch>
+      />
       <v-btn @click="save()" outlined large color="green"
         ><v-icon>mdi-content-save-outline</v-icon>
         {{ $t('settings.save') }}</v-btn
@@ -26,7 +26,7 @@
     </v-card-text>
     <br />
     <hr />
-    <v-card-title v-text="$t('settings.account.title2')"></v-card-title>
+    <v-card-title v-text="$t('settings.account.title2')" />
     <v-card-text>
       <p>
         <v-icon color="red">mdi-alert-outline</v-icon>
@@ -41,7 +41,7 @@
       :user="user"
       :password-rules="passwordRules"
       @close="deleteDialog = false"
-    ></DeleteAccountDialog>
+    />
   </div>
 </template>
 <script>

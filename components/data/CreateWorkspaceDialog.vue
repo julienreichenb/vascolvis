@@ -10,7 +10,7 @@
             :placeholder="$t('graphs.new_ws')"
             autofocus
             required
-          ></v-text-field>
+          />
         </v-card-text>
         <v-card-actions>
           <v-btn v-if="validWs" @click="save" color="green lighten-1" outlined

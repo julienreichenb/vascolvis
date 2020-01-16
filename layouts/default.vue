@@ -35,7 +35,7 @@
             style="height: 50px; width: auto;"
           />
         </a>
-        <span>{{ title }} &copy; 2019</span>
+        <span>{{ title }} &copy; {{ new Date().getFullYear() }}</span>
       </v-layout>
     </v-footer>
   </v-app>

@@ -135,6 +135,12 @@ export default {
             console.log(extension)
             break
         }
+        setTimeout(() => {
+          if (!this.json) {
+            this.hasError = true
+            this.error = this.$t('import.own.error_format')
+          }
+        }, 200)
       } else {
         this.json = null
         this.preview = false

@@ -615,6 +615,20 @@ export default {
                 type: selectedQuant[1].type
               }
               break
+            case 3:
+              encoding.x = {
+                field: selectedQuant[0].name,
+                type: selectedQuant[0].type
+              }
+              encoding.y = {
+                field: selectedQuant[1].name,
+                type: selectedQuant[1].type
+              }
+              encoding.size = {
+                field: selectedQuant[2].name,
+                type: selectedQuant[2].type
+              }
+              break
             default:
               break
           }
@@ -667,7 +681,6 @@ export default {
       }
       return encoding
     },
-
     getEncoding(selectedVars, combinationVar) {
       const encoding = {}
       const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]

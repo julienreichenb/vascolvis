@@ -55,6 +55,7 @@ export default {
         'Votre fichier doit contenir les entêtes et ne peut pas excéder 4MB.',
       file_label: 'Parcourir...',
       error: 'Le jeu de données ne peut pas excéder 4MB.',
+      error_format: 'Le fichier semble mal formaté. Veuillez vérifier.',
       button: 'Générer les graphiques',
       preview: "Voir l'aperçu",
       failed_to_save:

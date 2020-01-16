@@ -1,12 +1,12 @@
 <template>
-  <v-dialog v-model="dialog" max-width="800">
+  <v-dialog v-model="dialog" @input="(v) => v || close()" max-width="800">
     <v-card>
       <v-card-title class="headline">{{
         $t('settings.account.delete')
       }}</v-card-title>
       <v-form v-model="valid">
         <v-card-text>
-          <p v-html="$t('settings.account.delete_disclaimer')"></p>
+          <p v-html="$t('settings.account.delete_disclaimer')" />
           <v-text-field
             v-model="form.password"
             :label="$t('settings.account.password')"
@@ -15,8 +15,8 @@
             :append-icon="showpsw ? 'mdi-eye-off' : 'mdi-eye'"
             @click:append="() => (showpsw = !showpsw)"
             class="col-12"
-          ></v-text-field>
-          <v-spacer></v-spacer>
+          />
+          <v-spacer />
           <v-btn @click="close" color="grey lighten-3" outlined>
             {{ $t('settings.account.delete_cancel') }}
           </v-btn>
