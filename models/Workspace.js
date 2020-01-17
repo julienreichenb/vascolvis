@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
+const WorkspaceVariable = require('./WorkspaceVariable')
 
-module.exports = db.sequelize.define(
+const Workspace = db.sequelize.define(
   'workspaces',
   {
     id: {
@@ -14,16 +15,25 @@ module.exports = db.sequelize.define(
     },
     id_user: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     id_dataset: {
       type: Sequelize.INTEGER,
-      references: 'datasets', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'datasets',
+        key: 'id'
+      }
     }
   },
   {
     timestamps: false
   }
 )
+// Associations
+Workspace.hasMany(WorkspaceVariable, { foreignKey: 'id_workspace' })
+WorkspaceVariable.belongsTo(Workspace, { foreignKey: 'id_workspace' })
+
+module.exports = Workspace

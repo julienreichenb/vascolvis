@@ -1,7 +1,7 @@
 <template>
   <div>
     <br />
-    <v-card-title v-text="$t('settings.user.title')"></v-card-title>
+    <v-card-title v-text="$t('settings.user.title')" />
     <v-form v-model="valid">
       <v-card-text>
         <v-row>
@@ -11,14 +11,14 @@
             :rules="emailRules"
             class="col-md-7 col-xs-12"
             required
-          ></v-text-field>
+          />
           <v-text-field
             v-model="form.username"
             :label="$t('settings.user.username')"
             :rules="usernameRules"
             class="col-md-7 col-xs-12"
             required
-          ></v-text-field>
+          />
         </v-row>
         <v-btn v-if="valid" @click="saveUser()" outlined large color="green"
           ><v-icon>mdi-content-save-outline</v-icon>

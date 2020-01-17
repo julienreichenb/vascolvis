@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
+const Chart = require('./Chart')
+const Workspace = require('./Workspace')
 
-module.exports = db.sequelize.define(
+const DataSet = db.sequelize.define(
   'datasets',
   {
     id: {
@@ -20,11 +22,20 @@ module.exports = db.sequelize.define(
     },
     id_user: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     }
   },
   {
     timestamps: false
   }
 )
+// Associations
+DataSet.hasMany(Chart, { foreignKey: 'id_dataset' })
+Chart.belongsTo(DataSet, { foreignKey: 'id_dataset' })
+DataSet.hasMany(Workspace, { foreignKey: 'id_dataset' })
+Workspace.belongsTo(DataSet, { foreignKey: 'id_dataset' })
+
+module.exports = DataSet

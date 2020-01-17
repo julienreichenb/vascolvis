@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
 const Profile = require('../models/Profile')
+const Workspace = require('../models/Workspace')
+const Variables = require('../models/WorkspaceVariable')
 users.use(cors())
 
 const limitedAttributes = ['id', 'username']
@@ -79,7 +81,7 @@ users.post('/login', (req, res) => {
   })
     .then((user) => {
       if (user) {
-        if (authenticate(user.password, req.body.password)) {
+        if (user.authenticate(req.body.password)) {
           const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
             expiresIn: 7200
           })
@@ -96,7 +98,7 @@ users.post('/login', (req, res) => {
           }
         }).then((user) => {
           if (user) {
-            if (authenticate(user.password, req.body.password)) {
+            if (user.authenticate(req.body.password)) {
               const token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
                 expiresIn: 7200
               })
@@ -128,7 +130,8 @@ users.get('/', (req, res) => {
     attributes: limitedAttributes,
     where: {
       id
-    }
+    },
+    include: Profile
   })
     .then((user) => {
       if (user) {
@@ -138,13 +141,14 @@ users.get('/', (req, res) => {
           attributes: limitedAttributes,
           where: {
             username: id
-          }
+          },
+          include: Profile
         })
           .then((user) => {
             if (user) {
               res.status(200).json(user)
             } else {
-              res.status(400).json({ error: 'no_user' })
+              res.send(null)
             }
           })
           .catch((error) => {
@@ -161,7 +165,7 @@ users.get('/', (req, res) => {
  ** GET ALL USERS
  */
 users.get('/all', (req, res) => {
-  User.findAll({ attributes: limitedAttributes, raw: true })
+  User.findAll({ attributes: limitedAttributes, raw: true, include: Profile })
     .then((users) => {
       res.status(200).json(users)
     })
@@ -178,37 +182,16 @@ users.get('/names', (req, res) => {
   User.findOne({
     where: {
       id
-    }
+    },
+    include: Profile
   })
     .then((user) => {
       if (user) {
-        Profile.findOne({
-          where: {
-            id_user: id
-          }
+        res.status(200).json({
+          id: user.id,
+          username: user.username,
+          publicname: user.profile.publicname
         })
-          .then((profile) => {
-            if (profile) {
-              res.status(200).json({
-                id: user.id,
-                username: user.username,
-                publicname: profile.publicname
-              })
-            } else {
-              res.status(200).json({
-                id: user.id,
-                username: user.username,
-                publicname: null
-              })
-            }
-          })
-          .catch((err) => {
-            res.status(200).json({
-              id: user.id,
-              username: user.username,
-              publicname: null
-            })
-          })
       } else {
         res.status(200).json(null)
       }
@@ -230,7 +213,7 @@ users.put('/', (req, res) => {
       }
     })
       .then((user) => {
-        if (authenticate(user.password, req.body.oldpassword)) {
+        if (user.authenticate(req.body.oldpassword)) {
           User.update(
             {
               password: encryptPassword(req.body.newpassword)
@@ -298,7 +281,7 @@ users.delete('/', (req, res) => {
   })
     .then((user) => {
       if (user) {
-        if (authenticate(user.password, req.query.password)) {
+        if (user.authenticate(req.query.password)) {
           User.destroy({
             where: {
               id: req.query.id
@@ -306,16 +289,30 @@ users.delete('/', (req, res) => {
           })
             .then((userDeleted) => {
               if (userDeleted === 1) {
-                Profile.destroy({
+                Workspace.findAll({
                   where: {
                     id_user: req.query.id
                   }
-                }).then(() => {
-                  if (userDeleted === 1) {
-                    res.send('Success')
+                }).then((workspaces) => {
+                  if (workspaces) {
+                    for (let i = 0; i < workspaces.length; i++) {
+                      const id = workspaces[i].id
+                      Variables.destroy({
+                        where: {
+                          id_workspace: id
+                        }
+                      }).then(() => {
+                        Workspace.destroy({
+                          where: {
+                            id
+                          }
+                        })
+                      })
+                    }
                   }
                 })
               }
+              res.send('Success')
             })
             .catch((error) => {
               res.status(400).json({ error })
@@ -335,13 +332,6 @@ users.delete('/', (req, res) => {
  */
 function encryptPassword(psw) {
   return bcrypt.hashSync(psw, 10)
-}
-
-/*
- ** PASSWORDS COMPARISON
- */
-function authenticate(hash, password) {
-  return bcrypt.compareSync(password, hash)
 }
 
 module.exports = users

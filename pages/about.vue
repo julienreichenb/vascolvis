@@ -7,18 +7,17 @@
     <v-card>
       <v-card-text class="pt-4">
         <div>
-          <h4>{{ $t('about.title_1') }}</h4>
           <p>
             {{ $t('about.p_1') }}
           </p>
           <h4>{{ $t('about.title_2') }}</h4>
-          <p>
-            {{ $t('about.p_2') }}
-          </p>
+          <p v-html="$t('about.p_2')" />
           <h4>{{ $t('about.title_3') }}</h4>
           <p>
             {{ $t('about.p_3') }}
           </p>
+          <h4>{{ $t('about.title_4') }}</h4>
+          <p v-html="$t('about.p_4')" />
         </div>
       </v-card-text>
     </v-card>

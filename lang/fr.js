@@ -65,23 +65,14 @@ export default {
       header: 'Exemple',
       label: 'Essayez avec notre échantillon de données',
       text:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n' +
-        '                      Curabitur posuere tellus sed blandit lobortis. Ut non eros\n' +
-        '                      mattis dolor fermentum malesuada sit amet sit amet nisl.\n' +
-        '                      Quisque lorem felis, ultrices in lectus eu, mollis\n' +
-        '                      fermentum lorem. Pellentesque tincidunt erat lectus, a\n' +
-        '                      faucibus dolor finibus in. Cras hendrerit, leo sit amet\n' +
-        '                      commodo auctor, dolor purus facilisis justo, vitae\n' +
-        '                      vehicula elit odio id ex. Aliquam malesuada dui at lorem\n' +
-        '                      interdum, at dapibus massa vehicula. Sed sodales ut ipsum\n' +
-        '                      quis commodo.',
+        "Un jeu de données de test est fourni par Vasco. Celui-ci porte sur des véhicules automobiles et leurs caractéristiques : modèle, provenance, puissance en chevaux, année de mise en service, ... Il permet de tester les différents scénarios couverts par Vasco et de générer des graphiques pertinents. Vous pouvez l'utiliser et faire des expérimentations sur les données en cliquant sur le bouton ci-dessous.",
       button: "Générer les graphiques d'exemple"
     },
     howitworks: {
       header: 'Informations',
       top: 'Quels fichiers utiliser ?',
       intro:
-        "À l'heure actuelle, VASCO accepte les tableaux de données en <b>.csv</b> et <b>Excel</b> comprenant des <b>entêtes</b> et <b>aucune ligne vide</b>. Les fichiers <b>.json</b> sont également acceptés .",
+        "À l'heure actuelle, VASCO accepte les tableaux de données en <b>.csv</b> et <b>Excel</b> comprenant des <b>entêtes</b> et <b>aucune ligne vide</b>. Les fichiers <b>.json</b> sont également acceptés.",
       csv_title: 'Fichers .csv',
       csv:
         'Veillez à ce que votre fichier possède des <b>entêtes</b>, car celles-ci seront utilisées comme variables. Chaque <b>ligne</b> représente une valeur du jeu de donnée. Prenez garde à <b>utiliser uniquement la virgule comme séparateur</b> pour que votre fichier soit traité correctement. Un fichier .txt fonctionnera également',
@@ -254,19 +245,25 @@ export default {
     title2: 'Graphiques',
     website: 'Site internet : ',
     no_bio: "n'a pas encore rempli sa description.",
-    no_graphs: "n'a pas encore proposé de graphiques."
+    no_graphs: "n'a pas encore proposé de graphiques.",
+    edit_profile: 'Modifier mon profil'
   },
   about: {
     header: 'Le projet VASCO',
-    title_1: 'Introduction',
     p_1:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.',
+      "Vasco est un outil de visualisation de données visant les utilisateurs inexpérimentés. Vasco est pensé pour promouvoir l'exploration préliminaire de données pour des utilisateurs sans expérience en design et analyse de données. L'interface de Vasco est structurée pour sélectionner facilement des données et créer des visualisations, au travers de panels et de cartes.",
     title_2: 'Visualisation de données',
     p_2:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.',
-    title_3: "L'équipe",
+      "Les graphiques générés par l'outil sont simplistes, car ils poursuivent un but exploratoire et non d'analyse en profondeur du jeu de données. Lors d'implémentations futures, il est envisageable que des graphiques plus élaborés puissent être générés. Vasco s'appuie sur la librairie de génération de graphiques <a href='https://vega.github.io/vega-lite-v1/' target='_blank'>Vega-Lite</a>.",
+    title_3: 'Annotation de graphique',
     p_3:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia faucibus sapien, nec pulvinar metus auctor in. Ut egestas nulla eget lacus tincidunt suscipit. Nullam dignissim lacus eu suscipit lobortis. Mauris aliquam velit in tellus sagittis, molestie iaculis magna tincidunt. In eget nunc eu ipsum elementum pretium vel id arcu. Donec vulputate ornare mollis. Nulla egestas ipsum sit amet magna vulputate, sed commodo lacus hendrerit. Fusce interdum lacus vel massa sagittis tempus. Sed et urna sed eros gravida eleifend feugiat a augue. Sed faucibus lacinia velit, ullamcorper porttitor ipsum. Aliquam rutrum est sed pulvinar iaculis. Praesent odio felis, tempor interdum turpis nec, dignissim rhoncus eros.'
+      "Le deuxième objectif de Vasco est de permettre de collaborer autour de l'exploration de données, via l'utilisation du plugin colVis, développé en parallèle dans le cadre d'un travail de Master. Le plugin permet de mettre en évidence une portion du graphique et de l'annoter ou de commenter les annotations existantes, encourageant ainsi les échanges autour des possibles trouvailles.",
+    title_4: "L'équipe",
+    p_4:
+      '<strong>PhD Florian Evéquoz</strong> - Project manager and initiator <br />' +
+      '<strong>Miriam Luque Chipana</strong> - Master Thesis on Vasco (UNIFR) & Developpement of the project prequel <br />' +
+      '<strong>Pierre Vanhulst</strong> - Master Thesis on colVis (UNIFR) <br />' +
+      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developper'
   },
   error: {
     404: 'Page introuvable.',

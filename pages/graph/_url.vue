@@ -47,12 +47,12 @@
             </v-toolbar>
             <v-card-text>
               <v-layout justify-space-between>
-                <div v-if="currentUser">
+                <div v-if="currentUser && currentUser.profile !== undefined">
                   <h2>
                     {{ $t('url.graph_of')
-                    }}<a @click="goToProfile(profile.id_user)">{{
-                      profile.publicname
-                        ? profile.publicname
+                    }}<a @click="goToProfile(currentUser.profile.id_user)">{{
+                      currentUser.profile.publicname
+                        ? currentUser.profile.publicname
                         : currentUser.username
                     }}</a>
                   </h2>
@@ -122,7 +122,6 @@ export default {
       json: null,
       chart: null,
       currentUser: {},
-      profile: {},
       annotations: [],
       annotating: false,
       isMyChart: true,
@@ -170,21 +169,7 @@ export default {
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data
-        this.getUserProfile()
       })
-    },
-    async getUserProfile() {
-      if (this.currentUser) {
-        await axios
-          .get(`/profiles/?id=${this.currentUser.id}`)
-          .then((res) => {
-            this.profile = res.data
-          })
-          .catch((error) => {
-            // eslint-disable-next-line
-            console.log(error)
-          })
-      }
     },
     async updateChart(bool) {
       await axios

@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
+const Comment = require('./Comment')
 
-module.exports = db.sequelize.define(
+const Annotation = db.sequelize.define(
   'annotations',
   {
     id: {
@@ -9,24 +10,30 @@ module.exports = db.sequelize.define(
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
-      type: Sequelize.STRING
-    },
     data: {
       type: Sequelize.JSON
     },
     id_user: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     id_chart: {
       type: Sequelize.INTEGER,
-      references: 'charts', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'charts',
+        key: 'id'
+      }
     }
   },
   {
     timestamps: false
   }
 )
+// Associations
+Annotation.hasMany(Comment, { foreignKey: 'id_annotation' })
+Comment.belongsTo(Annotation, { foreignKey: 'id_annotation' })
+
+module.exports = Annotation

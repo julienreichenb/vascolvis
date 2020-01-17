@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
+const Annotation = require('./Annotation')
 
-module.exports = db.sequelize.define(
+const Chart = db.sequelize.define(
   'charts',
   {
     id: {
@@ -24,16 +25,25 @@ module.exports = db.sequelize.define(
     },
     id_user: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     id_dataset: {
       type: Sequelize.INTEGER,
-      references: 'datasets', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'datasets',
+        key: 'id'
+      }
     }
   },
   {
     timestamps: false
   }
 )
+// Associations
+Chart.hasMany(Annotation, { foreignKey: 'id_chart' })
+Annotation.belongsTo(Chart, { foreignKey: 'id_chart' })
+
+module.exports = Chart

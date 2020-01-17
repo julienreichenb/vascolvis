@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
 
-module.exports = db.sequelize.define(
+const Comment = db.sequelize.define(
   'comments',
   {
     id: {
@@ -14,9 +14,10 @@ module.exports = db.sequelize.define(
     },
     id_user: {
       type: Sequelize.INTEGER,
-      references: 'users', // <<< Note, its table's name, not object name
-      referencesKey: 'id', // <<< Note, its a column name
-      nullable: true
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     username: {
       type: Sequelize.STRING,
@@ -24,11 +25,15 @@ module.exports = db.sequelize.define(
     },
     id_annotation: {
       type: Sequelize.INTEGER,
-      references: 'annotations', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'annotations',
+        key: 'id'
+      }
     }
   },
   {
     timestamps: false
   }
 )
+
+module.exports = Comment

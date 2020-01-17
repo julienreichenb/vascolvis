@@ -21,7 +21,7 @@
                 :username-rules="usernameRules"
                 :password-rules="passwordRules"
                 :email-rules="emailRules"
-              ></Login>
+              />
             </v-tab-item>
             <v-tab> {{ $t('index.register.header') }} </v-tab>
             <v-tab-item>
@@ -29,7 +29,7 @@
                 :username-rules="usernameRules"
                 :password-rules="passwordRules"
                 :email-rules="emailRules"
-              ></Register>
+              />
             </v-tab-item>
           </v-tabs>
         </v-toolbar>

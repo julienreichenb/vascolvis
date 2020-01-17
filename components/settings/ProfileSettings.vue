@@ -1,7 +1,7 @@
 <template>
   <div>
     <br />
-    <v-card-title v-text="$t('settings.profile.title')"></v-card-title>
+    <v-card-title v-text="$t('settings.profile.title')" />
     <v-card-text>
       <v-btn @click="goToProfile()" outlined color="blue lighten-1" class="mb-5"
         ><v-icon>mdi-account-circle-outline</v-icon>
@@ -15,19 +15,19 @@
               :label="$t('settings.profile.publicname')"
               :placeholder="user.username"
               class="mb-3"
-            ></v-text-field>
+            />
             <v-textarea
               v-model="form.bio"
               :label="$t('settings.profile.bio')"
               :placeholder="$t('settings.profile.bio_placeholder')"
               class="mb-3"
-            ></v-textarea>
+            />
             <v-text-field
               v-model="form.url"
               :label="$t('settings.profile.url')"
               :placeholder="$t('settings.profile.url_placeholder')"
               :rules="urlRules"
-            ></v-text-field>
+            />
           </div>
         </v-layout>
         <v-btn v-if="valid" @click="saveProfile()" outlined large color="green"

@@ -1,7 +1,14 @@
 const Sequelize = require('sequelize')
+const bcrypt = require('bcrypt')
 const db = require('../database/db')
+const Profile = require('./Profile')
+const DataSet = require('./DataSet')
+const Chart = require('./Chart')
+const Annotation = require('./Annotation')
+const Comment = require('./Comment')
+const Workspace = require('./Workspace')
 
-module.exports = db.sequelize.define(
+const User = db.sequelize.define(
   'users',
   {
     id: {
@@ -26,3 +33,23 @@ module.exports = db.sequelize.define(
     timestamps: false
   }
 )
+// Methods
+User.prototype.authenticate = function(psw) {
+  return bcrypt.compareSync(psw, this.password)
+}
+
+// Associations
+User.hasOne(Profile, { foreignKey: 'id_user' })
+Profile.belongsTo(User, { foreignKey: 'id_user' })
+User.hasMany(DataSet, { foreignKey: 'id_user' })
+DataSet.belongsTo(User, { foreignKey: 'id_user' })
+User.hasMany(Chart, { foreignKey: 'id_user' })
+Chart.belongsTo(User, { foreignKey: 'id_user' })
+User.hasMany(Annotation, { foreignKey: 'id_user' })
+Annotation.belongsTo(User, { foreignKey: 'id_user' })
+User.hasMany(Comment, { foreignKey: 'id_user' })
+Comment.belongsTo(User, { foreignKey: 'id_user' })
+User.hasMany(Workspace, { foreignKey: 'id_user' })
+Workspace.belongsTo(User, { foreignKey: 'id_user' })
+
+module.exports = User

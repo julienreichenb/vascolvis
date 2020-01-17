@@ -3,6 +3,8 @@ const cors = require('cors')
 const datasets = express.Router()
 
 const DataSet = require('../models/DataSet')
+const Workspace = require('../models/Workspace')
+const Variables = require('../models/WorkspaceVariable')
 datasets.use(cors())
 
 process.env.SECRET_KEY = 'secret'
@@ -87,17 +89,37 @@ datasets.delete('/', (req, res) => {
     where: {
       id: req.query.id
     }
-  }).then(
-    function(rowDeleted) {
+  })
+    .then((rowDeleted) => {
       // rowDeleted will return number of rows deleted
       if (rowDeleted === 1) {
-        res.send('Success')
+        Workspace.findAll({
+          where: {
+            id_dataset: req.query.id
+          }
+        }).then((workspaces) => {
+          if (workspaces) {
+            for (let i = 0; i < workspaces.length; i++) {
+              const id = workspaces[i].id
+              Variables.destroy({
+                where: {
+                  id_workspace: id
+                }
+              }).then(() => {
+                Workspace.destroy({
+                  where: {
+                    id
+                  }
+                })
+              })
+            }
+          }
+        })
       }
-    },
-    function(err) {
+    })
+    .catch((err) => {
       res.send(err)
-    }
-  )
+    })
 })
 
 /*

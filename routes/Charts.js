@@ -3,6 +3,7 @@ const cors = require('cors')
 const charts = express.Router()
 
 const Chart = require('../models/Chart')
+const Annotation = require('../models/Annotation')
 charts.use(cors())
 
 process.env.SECRET_KEY = 'secret'
@@ -38,7 +39,8 @@ charts.get('/id', (req, res) => {
   Chart.findOne({
     where: {
       id
-    }
+    },
+    include: Annotation
   })
     .then((chart) => {
       res.status(200).json(chart)
@@ -56,13 +58,14 @@ charts.get('/', (req, res) => {
   Chart.findOne({
     where: {
       url
-    }
+    },
+    include: Annotation
   })
     .then((chart) => {
       res.status(200).json(chart)
     })
     .catch((error) => {
-      res.status(400).json({ error: 'Something wrong happened...' })
+      res.status(400).json({ error })
     })
 })
 
@@ -126,17 +129,22 @@ charts.delete('/', (req, res) => {
     where: {
       id: req.query.id
     }
-  }).then(
-    function(rowDeleted) {
+  })
+    .then((rowDeleted) => {
       // rowDeleted will return number of rows deleted
       if (rowDeleted === 1) {
-        res.send('Success')
+        Annotation.destroy({
+          where: {
+            id_chart: req.query.id
+          }
+        }).then(() => {
+          res.send('Success')
+        })
       }
-    },
-    function(err) {
+    })
+    .catch((err) => {
       res.send(err)
-    }
-  )
+    })
 })
 
 /*

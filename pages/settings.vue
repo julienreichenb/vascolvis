@@ -31,28 +31,24 @@
                   v-if="menu.id === 'user'"
                   :user="user"
                   @refresh="refreshUserToken"
-                >
-                </UserSettings>
+                />
                 <ProfileSettings
                   v-if="menu.id === 'profile'"
                   :user="user"
                   @profile="getUserProfile"
-                >
-                </ProfileSettings>
+                />
                 <PasswordSettings
                   v-if="menu.id === 'password'"
                   :user="user"
                   :passwordRules="passwordRules"
                   @refresh="refreshUserToken"
-                >
-                </PasswordSettings>
+                />
                 <AccountSettings
                   v-if="menu.id === 'account'"
                   :user="user"
                   :passwordRules="passwordRules"
                   @refresh="refreshUserToken"
-                >
-                </AccountSettings>
+                />
               </v-tab-item>
             </v-tabs>
           </v-toolbar>

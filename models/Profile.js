@@ -1,12 +1,17 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
 
-module.exports = db.sequelize.define(
+const Profile = db.sequelize.define(
   'profiles',
   {
     id_user: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      foreignKey: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     publicname: {
       type: Sequelize.STRING
@@ -22,3 +27,4 @@ module.exports = db.sequelize.define(
     timestamps: false
   }
 )
+module.exports = Profile

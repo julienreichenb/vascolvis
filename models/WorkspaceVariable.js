@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const db = require('../database/db')
 
-module.exports = db.sequelize.define(
+const WorkspaceVariable = db.sequelize.define(
   'workspace_variables',
   {
     id: {
@@ -11,8 +11,10 @@ module.exports = db.sequelize.define(
     },
     id_workspace: {
       type: Sequelize.INTEGER,
-      references: 'workspaces', // <<< Note, its table's name, not object name
-      referencesKey: 'id' // <<< Note, its a column name
+      references: {
+        model: 'workspaces',
+        key: 'id'
+      }
     },
     id_variable: {
       type: Sequelize.INTEGER
@@ -22,3 +24,5 @@ module.exports = db.sequelize.define(
     timestamps: false
   }
 )
+
+module.exports = WorkspaceVariable

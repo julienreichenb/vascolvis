@@ -5,28 +5,40 @@
         <v-flex elevation-6>
           <v-card>
             <v-toolbar class="indigo darken-3">
-              <v-toolbar-title>{{
-                profile.publicname ? profile.publicname : currentUser.username
-              }}</v-toolbar-title>
+              <v-layout justify-space-between>
+                <v-toolbar-title>{{
+                  currentUser.profile.publicname
+                    ? currentUser.profile.publicname
+                    : currentUser.username
+                }}</v-toolbar-title>
+              </v-layout>
+              <v-btn
+                v-if="user.id === currentUser.id"
+                @click="goToSettings()"
+                outlined
+                large
+                color="blue lighten-2"
+                >{{ $t('user.edit_profile') }}</v-btn
+              >
             </v-toolbar>
             <v-card-title>{{ $t('user.title') }}</v-card-title>
             <v-card-text>
-              <div v-if="profile.url">
+              <div v-if="currentUser.profile.url">
                 <span>{{ $t('user.website') }}</span>
                 <a
-                  :href="'http://' + profile.url"
+                  :href="'http://' + currentUser.profile.url"
                   class="link"
                   target="_blank"
-                  >{{ profile.url }}</a
+                  >{{ currentUser.profile.url }}</a
                 >
               </div>
               <div>
-                <div v-if="profile.bio" class="highlight">
-                  {{ profile.bio }}
+                <div v-if="currentUser.profile.bio" class="highlight">
+                  {{ currentUser.profile.bio }}
                 </div>
                 <span v-else class="no">{{
-                  (profile.publicname
-                    ? profile.publicname
+                  (currentUser.profile.publicname
+                    ? currentUser.profile.publicname
                     : currentUser.username) +
                     ' ' +
                     $t('user.no_bio')
@@ -52,8 +64,8 @@
               </div>
               <div v-else class="no">
                 {{
-                  (profile.publicname
-                    ? profile.publicname
+                  (currentUser.profile.publicname
+                    ? currentUser.profile.publicname
                     : currentUser.username) +
                     ' ' +
                     $t('user.no_graphs')
@@ -68,20 +80,21 @@
 </template>
 
 <script>
+import jwtDecode from 'jwt-decode'
 import axios from '~/plugins/axios'
 export default {
   head() {
     return {
       title:
         this.$t('title.user') +
-        (this.profile.publicname
-          ? this.profile.publicname
+        (this.currentUser.profile.publicname
+          ? this.currentUser.profile.publicname
           : this.currentUser.username)
     }
   },
   data() {
     return {
-      profile: {},
+      user: null,
       graphs: [{}],
       headers: [
         { text: this.$t('panel.table.name'), value: 'name' },
@@ -100,21 +113,14 @@ export default {
       })
   },
   created() {
-    this.getUserProfile()
+    try {
+      this.user = jwtDecode(localStorage.getItem('usertoken'))
+    } catch {
+      this.$router.push(this.localePath({ name: 'index' }))
+    }
     this.getUserCharts()
   },
   methods: {
-    async getUserProfile() {
-      await axios
-        .get(`/profiles/?id=${this.currentUser.id}`)
-        .then((res) => {
-          this.profile = res.data
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error)
-        })
-    },
     async getUserCharts() {
       await axios
         .get(`/charts/user?id_user=${this.currentUser.id}`)
@@ -131,6 +137,9 @@ export default {
         name: `graph-url___${this.$i18n.locale}`,
         params: { url: item.url }
       })
+    },
+    goToSettings() {
+      this.$router.push(this.localePath({ name: 'settings' }))
     }
   }
 }

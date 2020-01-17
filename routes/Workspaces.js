@@ -86,16 +86,7 @@ workspaces.get('/user', (req, res) => {
   })
     .then((workspaces) => {
       if (workspaces) {
-        const formattedWS = []
-        for (let i = 0; i < workspaces.length; i++) {
-          formattedWS.push({
-            id: workspaces[i].id,
-            name: workspaces[i].name,
-            id_user: workspaces[i].id_user,
-            id_dataset: workspaces[i].id_dataset
-          })
-        }
-        res.status(200).json(formattedWS)
+        res.status(200).json(workspaces)
       } else {
         res.status(200).json(null)
       }

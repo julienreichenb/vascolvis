@@ -3,6 +3,7 @@ const cors = require('cors')
 const annotations = express.Router()
 
 const Annotation = require('../models/Annotation')
+const Comment = require('../models/Comment')
 annotations.use(cors())
 
 process.env.SECRET_KEY = 'secret'
@@ -33,7 +34,8 @@ annotations.get('/id', (req, res) => {
   Annotation.findOne({
     where: {
       id
-    }
+    },
+    include: Comment
   })
     .then((annotation) => {
       res.status(200).json(annotation)
@@ -51,7 +53,8 @@ annotations.get('/user', (req, res) => {
   Annotation.findAll({
     where: {
       id_user: user
-    }
+    },
+    include: Comment
   })
     .then((annotations) => {
       res.status(200).json(annotations)
@@ -69,7 +72,8 @@ annotations.get('/chart', (req, res) => {
   Annotation.findAll({
     where: {
       id_chart: chart
-    }
+    },
+    include: Comment
   })
     .then((annotations) => {
       res.status(200).json(annotations)
@@ -87,17 +91,26 @@ annotations.delete('/', (req, res) => {
     where: {
       id: req.query.id
     }
-  }).then(
-    function(rowDeleted) {
+  })
+    .then((rowDeleted) => {
       // rowDeleted will return number of rows deleted
       if (rowDeleted === 1) {
-        res.send('Success')
+        Comment.destroy({
+          where: {
+            id_annotation: req.query.id
+          }
+        })
+          .then(() => {
+            res.send('Success')
+          })
+          .catch((err) => {
+            res.send(err)
+          })
       }
-    },
-    function(err) {
+    })
+    .catch((err) => {
       res.send(err)
-    }
-  )
+    })
 })
 
 module.exports = annotations
