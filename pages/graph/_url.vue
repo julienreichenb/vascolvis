@@ -2,7 +2,7 @@
   <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
-        <v-flex :sm9="annotating" xs12 elevation-6>
+        <v-flex :xs9="annotating" :xl9="annotating" xs12 xl12 elevation-6>
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
@@ -90,13 +90,9 @@
       </v-layout>
     </v-container>
     <ColInputMain
-      :elements="elements"
-      :annotating="annotating"
-      :init="init"
-      :offset-top="-64"
+      :offsetTop="-64"
       @close="annotating = false"
       @submittingAnnotation="alertAnnotation"
-      vis="#vis"
     />
   </div>
 </template>
@@ -155,16 +151,15 @@ export default {
   },
   mounted() {
     this.displayGraph()
-    this.element = this.$getDataFromContainer
   },
   methods: {
     displayGraph() {
       this.json.height = '400'
       this.json.width = 'container'
-      window.vegaEmbed('#vis', this.json)
+      window.vegaEmbed('#vis', this.json, { renderer: 'svg' })
     },
     alertAnnotation(annotation) {
-      this.annotations.push(annotation)
+      console.log(annotation)
     },
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
