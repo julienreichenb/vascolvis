@@ -158,9 +158,7 @@ export default {
       this.json.width = 'container'
       window.vegaEmbed('#vis', this.json, { renderer: 'svg' })
     },
-    alertAnnotation(annotation) {
-      console.log(annotation)
-    },
+    alertAnnotation(annotation) {},
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data

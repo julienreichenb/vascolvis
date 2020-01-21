@@ -260,10 +260,10 @@ export default {
       "Le deuxième objectif de Vasco est de permettre de collaborer autour de l'exploration de données, via l'utilisation du plugin colVis, développé en parallèle dans le cadre d'un travail de Master. Le plugin permet de mettre en évidence une portion du graphique et de l'annoter ou de commenter les annotations existantes, encourageant ainsi les échanges autour des possibles trouvailles.",
     title_4: "L'équipe",
     p_4:
-      '<strong>PhD Florian Evéquoz</strong> - Project manager and initiator <br />' +
-      '<strong>Miriam Luque Chipana</strong> - Master Thesis on Vasco (UNIFR) & Developpement of the project prequel <br />' +
-      '<strong>Pierre Vanhulst</strong> - Master Thesis on colVis (UNIFR) <br />' +
-      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developper'
+      '<strong>PhD Florian Evéquoz</strong> - Chef & initiateur du projet<br />' +
+      '<strong>Miriam Luque Chipana</strong> - Thèse de Master sur Vasco (UNIFR) & Développement de la première itération du site<br />' +
+      '<strong>Pierre Vanhulst</strong> - Thèse de Master sur colVis (UNIFR) <br />' +
+      '<strong>Julien Reichenbach</strong> - Assistant de recherche et présent développeur de Vasco'
   },
   error: {
     404: 'Page introuvable.',

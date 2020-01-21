@@ -1,5 +1,5 @@
 <template>
-  <div v-show="currentUser">
+  <div v-if="init">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
         <v-flex elevation-6>
@@ -17,7 +17,8 @@
                 @click="goToSettings()"
                 outlined
                 large
-                color="blue lighten-2"
+                color="blue lighten-3"
+                ><v-icon>mdi-file-document-edit-outline</v-icon
                 >{{ $t('user.edit_profile') }}</v-btn
               >
             </v-toolbar>
@@ -33,21 +34,27 @@
                 >
               </div>
               <div>
-                <div v-if="currentUser.profile.bio" class="highlight">
-                  {{ currentUser.profile.bio }}
-                </div>
-                <span v-else class="no">{{
-                  (currentUser.profile.publicname
-                    ? currentUser.profile.publicname
-                    : currentUser.username) +
-                    ' ' +
-                    $t('user.no_bio')
-                }}</span>
+                <div
+                  v-if="currentUser.profile.bio"
+                  v-html="currentUser.profile.bio"
+                  class="highlight"
+                />
+                <span
+                  v-else
+                  v-html="
+                    (currentUser.profile.publicname
+                      ? currentUser.profile.publicname
+                      : currentUser.username) +
+                      ' ' +
+                      $t('user.no_bio')
+                  "
+                  class="no"
+                />
               </div>
             </v-card-text>
             <v-card-title>{{ $t('user.title2') }}</v-card-title>
             <v-card-text>
-              <div v-if="graphs.length > 0">
+              <div v-if="graphs.length > 0 && graphs">
                 <v-data-table
                   :headers="headers"
                   :items="graphs"
@@ -94,8 +101,8 @@ export default {
   },
   data() {
     return {
-      user: null,
-      graphs: [{}],
+      init: false,
+      graphs: [],
       headers: [
         { text: this.$t('panel.table.name'), value: 'name' },
         { text: this.$t('panel.table.url'), value: 'url', sortable: false }
@@ -106,7 +113,9 @@ export default {
     return axios
       .get(`/users/?id=${params.id}`)
       .then((res) => {
-        return { currentUser: res.data }
+        return {
+          currentUser: res.data
+        }
       })
       .catch((e) => {
         error({ statusCode: 402, title: 'no_user', message: 'not_found' })
@@ -119,6 +128,9 @@ export default {
       this.$router.push(this.localePath({ name: 'index' }))
     }
     this.getUserCharts()
+  },
+  mounted() {
+    this.init = true
   },
   methods: {
     async getUserCharts() {

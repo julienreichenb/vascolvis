@@ -179,7 +179,7 @@ export default {
       const id = item.id_user
       for (let i = 0; i < this.names.length; i++) {
         if (this.names[i] && this.names[i].id === id) {
-          return this.names[i].publicname
+          return this.names[i].publicname !== null
             ? this.names[i].publicname
             : this.names[i].username
         }

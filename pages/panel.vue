@@ -161,7 +161,8 @@ export default {
           this.user.profile = res.data
         })
         .catch((error) => {
-          alert(error)
+          // eslint-disable-next-line
+          console.log(error)
         })
     },
     async getDatasets() {

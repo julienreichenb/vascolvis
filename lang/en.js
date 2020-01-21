@@ -261,10 +261,10 @@ export default {
       'The second goal of Vasco is to allow collaboration around the data exploration, by using the colVis plugin, developed aside in the context of a Master thesis. The plugin allows to highlight a graph part and to annotate it or to attach a comment to an existing annotation, to encourage discussions around the potential findings.',
     title_4: 'The Team',
     p_4:
-      '<strong>PhD Florian Evéquoz</strong> - Project manager and initiator <br />' +
-      '<strong>Miriam Luque Chipana</strong> - Master Thesis on Vasco (UNIFR) & Developpement of the project prequel <br />' +
+      '<strong>PhD Florian Evéquoz</strong> - Project manager & initiator <br />' +
+      '<strong>Miriam Luque Chipana</strong> - Master Thesis on Vasco (UNIFR) & Development of the project prequel <br />' +
       '<strong>Pierre Vanhulst</strong> - Master Thesis on colVis (UNIFR) <br />' +
-      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developper'
+      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developer'
   },
   error: {
     404: 'Page not found.',

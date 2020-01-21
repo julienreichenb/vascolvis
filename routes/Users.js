@@ -147,7 +147,7 @@ users.get('/', (req, res) => {
             if (user) {
               res.status(200).json(user)
             } else {
-              res.send(null)
+              res.status(400).json({ error: 'no_user' })
             }
           })
           .catch((error) => {
@@ -179,20 +179,34 @@ users.get('/all', (req, res) => {
 users.get('/names', (req, res) => {
   const id = req.query.id
   User.findOne({
+    attributes: limitedAttributes,
     where: {
       id
-    },
-    include: Profile
+    }
   })
     .then((user) => {
       if (user) {
-        res.status(200).json({
-          id: user.id,
-          username: user.username,
-          publicname: user.profile.publicname
+        Profile.findOne({
+          where: {
+            id_user: user.id
+          }
+        }).then((profile) => {
+          if (profile) {
+            res.json({
+              id: user.id,
+              username: user.username,
+              publicname: profile.publicname
+            })
+          } else {
+            res.json({
+              id: user.id,
+              username: user.username,
+              publicname: null
+            })
+          }
         })
       } else {
-        res.status(200).json(null)
+        res.json(null)
       }
     })
     .catch((error) => {

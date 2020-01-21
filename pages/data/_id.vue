@@ -669,6 +669,12 @@ export default {
                 type: selectedTemp[0].type,
                 timeUnit: 'year'
               }
+              if (selectedQuant[0] !== undefined || selectedQuant[0]) {
+                encoding.y = {
+                  field: selectedQuant[0].name,
+                  type: selectedQuant[0].type
+                }
+              }
               if (selectedQuant[1] !== undefined) {
                 this.variables[selectedQuant[1].id].isUsed = false
                 this.computeBigGraphs()
@@ -757,6 +763,18 @@ export default {
               field: selectedTemp[0].name,
               type: selectedTemp[0].type,
               timeUnit: 'year'
+            }
+            if (selectedQuant[0] !== undefined || selectedQuant[0]) {
+              encoding.y = {
+                field: selectedQuant[0].name,
+                type: selectedQuant[0].type
+              }
+              if (combinationVar) {
+                encoding.size = {
+                  field: combinationVar.name,
+                  type: combinationVar.type
+                }
+              }
             }
             if (selectedQuant[1] !== undefined) {
               this.variables[selectedQuant[1].id].isUsed = false
