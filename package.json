@@ -1,6 +1,6 @@
 {
-  "name": "VASCO",
-  "version": "1.0.0",
+  "name": "vasco",
+  "version": "1.0.1",
   "description": "VASCO integration, with the ColVis plugin",
   "author": "JulienReichenbach",
   "private": true,
@@ -42,8 +42,7 @@
     "vue-vega": "^1.0.0-alpha.13",
     "vuedraggable": "^2.23.2",
     "vuetify-upload-button": "^2.0.2",
-    "xlsx": "^0.15.3",
-    "colvis-client": "https://gogs@gogs.vanhulst.one/Human-IST/colvis-client.git"
+    "xlsx": "^0.15.3"
   },
   "devDependencies": {
     "@nuxtjs/dotenv": "^1.4.1",

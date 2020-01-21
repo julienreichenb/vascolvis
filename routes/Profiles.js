@@ -69,4 +69,19 @@ profiles.put('/', (req, res) => {
     })
 })
 
+/* CREATE PROFILE */
+profiles.post('/', (req, res) => {
+  const profileData = {
+    id_user: req.body.id,
+    publicname: req.body.username
+  }
+  Profile.create(profileData)
+    .then((profile) => {
+      res.send(profile)
+    })
+    .catch((error) => {
+      res.send(error)
+    })
+})
+
 module.exports = profiles

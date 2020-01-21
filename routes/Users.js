@@ -50,9 +50,8 @@ users.post('/register', (req, res) => {
                   id_user: user.id,
                   publicname: user.username
                 }
-                Profile.create(profileData).then((profile) => {
-                  res.send(token)
-                })
+                Profile.create(profileData)
+                res.send(token)
               })
               .catch((error) => {
                 res.send('error : ' + error)
