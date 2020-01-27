@@ -105,7 +105,7 @@ export default {
         },
         {
           id: 'charts',
-          icon: 'mdi-chart-pie',
+          icon: 'mdi-chart-scatter-plot',
           headers: [
             { text: '', value: 'public' },
             { text: this.$t('panel.table.name'), value: 'name' },

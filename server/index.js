@@ -5,10 +5,10 @@ const bodyParser = require('body-parser')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
 
-app.use(bodyParser.json({ limit: '2mb' }))
+app.use(bodyParser.json({ limit: '4gb' }))
 app.use(
   bodyParser.urlencoded({
-    limit: '2mb',
+    limit: '4gb',
     extended: true,
     parameterLimit: 100000
   })

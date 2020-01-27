@@ -2,7 +2,7 @@
   <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
-        <v-flex :xs9="annotating" :xl9="annotating" xs12 xl12 elevation-6>
+        <v-flex :class="annotating ? 'col-xl-9 col-md-8' : 'col-12'">
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
@@ -74,7 +74,7 @@
             </v-card-text>
             <v-card-text>
               <v-btn
-                @click="annotating = !annotating"
+                @click="toggleAnnotation()"
                 color="white"
                 class="mb-2"
                 depressed
@@ -90,9 +90,10 @@
       </v-layout>
     </v-container>
     <ColInputMain
-      :offsetTop="-64"
-      @close="annotating = false"
-      @submittingAnnotation="alertAnnotation"
+      :annotating="annotating"
+      :offsetTop="-65"
+      @close="toggleAnnotation"
+      @submittingAnnotation="alertAnnotation()"
     />
   </div>
 </template>
@@ -156,9 +157,26 @@ export default {
     displayGraph() {
       this.json.height = '400'
       this.json.width = 'container'
-      window.vegaEmbed('#vis', this.json, { renderer: 'svg' })
+      window.vegaEmbed('#vis', this.json, { renderer: 'svg' }).then((view) => {
+        this.$colvis.initialize()
+      })
     },
-    alertAnnotation(annotation) {},
+    toggleAnnotation() {
+      this.annotating = !this.annotating
+      // Resize the graph
+      this.$nextTick(() => {
+        this.customizeButtons()
+        this.repositionButton()
+        window
+          .vegaEmbed('#vis', this.json, { renderer: 'svg' })
+          .then((view) => {
+            this.$colvis.initialize()
+          })
+      })
+    },
+    alertAnnotation(annotation) {
+      console.log(annotation)
+    },
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data
@@ -210,6 +228,50 @@ export default {
     showCopySuccess() {
       this.$toast.info(this.$t('url.copied'), { position: 'top-right' })
     },
+    customizeButtons() {
+      const cancelButton = document
+        .getElementsByClassName('col-input-overlay__drawer')[0]
+        .getElementsByTagName('button')[0]
+      const submitbutton = document
+        .getElementsByClassName('col-input-overlay__drawer')[0]
+        .getElementsByTagName('button')[1]
+      cancelButton.className = ''
+      cancelButton.classList.add(
+        'mb-2',
+        'mr-2',
+        'mt-5',
+        'v-btn',
+        'v-btn--depressed',
+        'v-btn--flat',
+        'v-btn--outlined',
+        'theme--dark',
+        'v-size--default',
+        'white--text'
+      )
+      submitbutton.className = ''
+      submitbutton.classList.add(
+        'mb-2',
+        'v-btn',
+        'v-btn--depressed',
+        'v-btn--flat',
+        'v-btn--outlined',
+        'theme--dark',
+        'v-size--default',
+        'blue--text'
+      )
+    },
+    repositionButton() {
+      const headerTitle = document
+        .getElementsByClassName('col-input-overlay__drawer')[0]
+        .getElementsByTagName('header')[0]
+        .getElementsByTagName('h3')[0]
+      try {
+        headerTitle.remove()
+      } catch (e) {
+        // eslint-disable-next-line
+        console.log()
+      }
+    },
     goToProfile(id) {
       this.$router.push({
         name: `user-id___${this.$i18n.locale}`,
@@ -225,8 +287,36 @@ export default {
   width: 100%;
   overflow: auto;
 }
-
 .share:hover {
   top: -1px;
+}
+
+#vis details {
+  display: none;
+}
+
+header.toolbar {
+  justify-content: space-around !important;
+}
+
+.col-input-overlay__drawer {
+  background: #212121 !important;
+}
+
+.col-input-overlay__drawer textarea {
+  color: #212121 !important;
+}
+
+.stepper__step__head {
+  background: #283593;
+}
+
+.verb.selected {
+  background: #1565c0 !important;
+  border-color: #f5f5f5 !important;
+}
+
+.container {
+  max-width: 95% !important;
 }
 </style>

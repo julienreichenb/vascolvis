@@ -23,8 +23,8 @@ datasets.post('/save', (req, res) => {
     .then((dataset) => {
       res.status(200).json(dataset)
     })
-    .catch((err) => {
-      res.status(400).json({ error: 'failed_to_save' })
+    .catch((error) => {
+      res.status(400).json({ error })
     })
 })
 

@@ -18,7 +18,7 @@ const Chart = db.sequelize.define(
       type: Sequelize.STRING
     },
     data: {
-      type: Sequelize.JSON
+      type: Sequelize.TEXT('long')
     },
     public: {
       type: Sequelize.TINYINT

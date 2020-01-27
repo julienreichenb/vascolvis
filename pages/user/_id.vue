@@ -27,7 +27,7 @@
               <div v-if="currentUser.profile.url">
                 <span>{{ $t('user.website') }}</span>
                 <a
-                  :href="'http://' + currentUser.profile.url"
+                  :href="'https://www.' + cleanedUrl(currentUser.profile.url)"
                   class="link"
                   target="_blank"
                   >{{ currentUser.profile.url }}</a
@@ -152,6 +152,13 @@ export default {
     },
     goToSettings() {
       this.$router.push(this.localePath({ name: 'settings' }))
+    },
+    cleanedUrl(url) {
+      url = url.replace('https', '')
+      url = url.replace('http', '')
+      url = url.replace('://', '')
+      url = url.replace('www.', '')
+      return url
     }
   }
 }

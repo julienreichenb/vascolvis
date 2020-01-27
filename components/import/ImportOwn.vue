@@ -101,7 +101,8 @@ export default {
       sortOrders: {},
       sortKey: '',
       rules: [
-        (value) => !value || value.size < 4000000 || this.$t('import.own.error')
+        (value) =>
+          !value || value.size < 4000000000 || this.$t('import.own.error')
       ]
     }
   },
@@ -112,7 +113,7 @@ export default {
     },
     loadFile() {
       this.hasError = false
-      if (this.file && this.file.size <= 4000000) {
+      if (this.file && this.file.size <= 4000000000) {
         const extension = this.file.name.split('.').pop()
         switch (extension) {
           case 'csv':
@@ -235,7 +236,7 @@ export default {
       await axios
         .post('/datasets/save', {
           name: this.file.name,
-          data: this.json,
+          data: this.json.toString(),
           size: this.file.size.toFixed(2),
           id_user: this.user.id
         })
