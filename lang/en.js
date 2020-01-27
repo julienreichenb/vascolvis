@@ -51,9 +51,9 @@ export default {
       convert: 'If needed, to convert your files in .csv, ',
       click_here: 'click here',
       disclaimer:
-        'Your file must contain the headers and cannot be larger than 4MB.',
+        'Your file must contain the headers and cannot be larger than 1.5MB.',
       file_label: 'Browse...',
-      error: 'The dataset cannot be larger than 4MB.',
+      error: 'The dataset cannot be larger than 1.5MB.',
       error_format: 'The file seems wrongly formatted. Please check.',
       button: 'Generate charts',
       preview: 'See a preview',

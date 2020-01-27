@@ -1,39 +1,37 @@
 <template>
-  <div>
-    <v-container fluid fill-height>
-      <v-layout flex align-center justify-center>
-        <v-flex xs12 sm10 elevation-6>
-          <v-toolbar class="indigo darken-3">
-            <v-toolbar-title
-              v-text="this.$t('import.own.header')"
-              class="white--text"
-            >
-            </v-toolbar-title>
-            <v-tabs
-              slot="extension"
-              :grow="true"
-              centered
-              slider-color="white"
-              color="white"
-            >
-              <v-tab> {{ $t('import.own.label') }} </v-tab>
-              <v-tab-item>
-                <ImportOwn :user="user"></ImportOwn>
-              </v-tab-item>
-              <v-tab> {{ $t('import.howitworks.header') }} </v-tab>
-              <v-tab-item>
-                <ImportInfo></ImportInfo>
-              </v-tab-item>
-              <v-tab> {{ $t('import.sample.header') }} </v-tab>
-              <v-tab-item>
-                <ImportSample @generate="generateSampleGraph"></ImportSample>
-              </v-tab-item>
-            </v-tabs>
-          </v-toolbar>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </div>
+  <v-container fluid fill-height>
+    <v-layout flex align-center justify-center>
+      <v-flex xs12 sm10 elevation-6>
+        <v-toolbar class="indigo darken-3">
+          <v-toolbar-title
+            v-text="this.$t('import.own.header')"
+            class="white--text"
+          >
+          </v-toolbar-title>
+          <v-tabs
+            slot="extension"
+            :grow="true"
+            centered
+            slider-color="white"
+            color="white"
+          >
+            <v-tab> {{ $t('import.own.label') }} </v-tab>
+            <v-tab-item>
+              <ImportOwn :user="user" />
+            </v-tab-item>
+            <v-tab> {{ $t('import.howitworks.header') }} </v-tab>
+            <v-tab-item>
+              <ImportInfo />
+            </v-tab-item>
+            <v-tab> {{ $t('import.sample.header') }} </v-tab>
+            <v-tab-item>
+              <ImportSample @generate="generateSampleGraph" />
+            </v-tab-item>
+          </v-tabs>
+        </v-toolbar>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 <script>
 import jwtDecode from 'jwt-decode'

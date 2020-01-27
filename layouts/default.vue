@@ -20,12 +20,12 @@
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-content>
+    <v-content v-scroll>
       <v-container>
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer :fixed="fixed" app class="footer-margin">
+    <v-footer fixed app class="footer-margin">
       <v-layout justify-space-between align-center>
         <div />
         <a href="https://hes-so.ch" target="_blank">
@@ -46,7 +46,6 @@ export default {
   data() {
     return {
       clipped: false,
-      fixed: false,
       title: 'VASCO'
     }
   },

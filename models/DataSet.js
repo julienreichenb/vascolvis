@@ -15,7 +15,7 @@ const DataSet = db.sequelize.define(
       type: Sequelize.STRING
     },
     data: {
-      type: Sequelize.TEXT('long')
+      type: Sequelize.JSON
     },
     size: {
       type: Sequelize.FLOAT

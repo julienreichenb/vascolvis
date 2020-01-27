@@ -42,11 +42,11 @@
               {{ $t('import.own.button') }}
             </v-btn>
             <v-switch
-              v-if="file && file.size <= 1000000"
+              v-if="file && file.size <= 1500000"
               v-model="preview"
               :label="this.$t('import.own.preview')"
               color="blue"
-            ></v-switch>
+            />
           </v-layout>
         </div>
       </div>
@@ -101,8 +101,7 @@ export default {
       sortOrders: {},
       sortKey: '',
       rules: [
-        (value) =>
-          !value || value.size < 4000000000 || this.$t('import.own.error')
+        (value) => !value || value.size < 1500000 || this.$t('import.own.error')
       ]
     }
   },
@@ -113,7 +112,7 @@ export default {
     },
     loadFile() {
       this.hasError = false
-      if (this.file && this.file.size <= 4000000000) {
+      if (this.file && this.file.size <= 1500000) {
         const extension = this.file.name.split('.').pop()
         switch (extension) {
           case 'csv':
@@ -236,7 +235,7 @@ export default {
       await axios
         .post('/datasets/save', {
           name: this.file.name,
-          data: this.json.toString(),
+          data: this.json,
           size: this.file.size.toFixed(2),
           id_user: this.user.id
         })

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fluid fill-height>
     <v-toolbar class="indigo darken-3">
       <v-toolbar-title v-text="this.$t('about.header')" class="white--text">
       </v-toolbar-title>
@@ -21,7 +21,7 @@
         </div>
       </v-card-text>
     </v-card>
-  </div>
+  </v-container>
 </template>
 <script>
 export default {
@@ -37,3 +37,15 @@ export default {
   }
 }
 </script>
+<style scoped>
+h1,
+h2,
+h3,
+h4 {
+  color: white;
+}
+h4 {
+  font-size: 1.2em;
+  padding: 0.5em 0;
+}
+</style>

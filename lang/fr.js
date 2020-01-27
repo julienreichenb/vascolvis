@@ -52,9 +52,9 @@ export default {
       convert: 'Si besoin, pour convertir un fichier en .csv, ',
       click_here: 'cliquez ici',
       disclaimer:
-        'Votre fichier doit contenir les entêtes et ne peut pas excéder 4MB.',
+        'Votre fichier doit contenir les entêtes et ne peut pas excéder 1.5MB.',
       file_label: 'Parcourir...',
-      error: 'Le jeu de données ne peut pas excéder 4MB.',
+      error: 'Le jeu de données ne peut pas excéder 1.5MB.',
       error_format: 'Le fichier semble mal formaté. Veuillez vérifier.',
       button: 'Générer les graphiques',
       preview: "Voir l'aperçu",

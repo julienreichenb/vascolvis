@@ -7,6 +7,8 @@ const Workspace = require('../models/Workspace')
 const Variables = require('../models/WorkspaceVariable')
 datasets.use(cors())
 
+const limitedAttributes = ['id', 'name', 'size', 'id_user']
+
 process.env.SECRET_KEY = 'secret'
 
 /*
@@ -69,6 +71,7 @@ datasets.get('/single', (req, res) => {
 datasets.get('/user', (req, res) => {
   const user = req.query.id_user
   DataSet.findAll({
+    attributes: limitedAttributes,
     where: {
       id_user: user
     }
