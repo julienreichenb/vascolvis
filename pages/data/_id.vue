@@ -12,14 +12,14 @@
           <DrawerHideButton
             :drawer="drawer.variables"
             @close="drawer.variables = false"
-          ></DrawerHideButton>
+          />
           <VariablesButtons
             :panel="panelClosed"
             :total-variable="countVariables"
             @all="all()"
             @none="none()"
             @resetvariables="resetVariableSelection"
-          ></VariablesButtons>
+          />
           <v-expansion-panels v-model="panel" multiple accordion focusable>
             <draggable
               v-model="variables"
@@ -37,7 +37,7 @@
                 <VariableDetails
                   :variable="variable"
                   @change-type="attributeSingleVariableType"
-                ></VariableDetails>
+                />
               </v-expansion-panel>
             </draggable>
           </v-expansion-panels>
@@ -89,17 +89,17 @@
                   <DrawerButton
                     :drawer="drawer.variables"
                     @open="drawer.variables = true"
-                  ></DrawerButton>
+                  />
                   <h1 v-text="dataset.name" class="white--text"></h1>
                   <GraphHelpDialog
                     :dialog="dialog"
                     :colors="colors"
                     @close="dialog = false"
-                  ></GraphHelpDialog>
+                  />
                 </v-layout>
               </v-toolbar>
               <v-card-text style="padding-top: 0;">
-                <GraphTips v-if="countVariables < 1"></GraphTips>
+                <GraphTips v-if="countVariables < 1" />
               </v-card-text>
               <v-card-title class="pt-1 pb-0">
                 <div
@@ -113,7 +113,7 @@
                       computeBigGraphs()
                       resetActiveTab()
                     "
-                  ></VariableChips>
+                  />
                 </div>
               </v-card-title>
               <v-card-text v-if="graphs.length < 1 && countVariables > 1">
@@ -136,7 +136,7 @@
                       :graph="graph"
                       @save="saveGraph"
                       @swap="swapAxis"
-                    ></GeneratedGraph>
+                    />
                   </v-col>
                 </div>
               </v-container>
@@ -153,14 +153,13 @@
         resetActiveTab()
       "
       @save="saveWs"
-    ></CreateWorkspaceDialog>
+    />
     <DeleteWorkspaceDialog
       :dialog="deleteWsDialog"
       :workspace="selectedWs"
       @close="deleteWsDialog = false"
       @delete="deleteWs"
-    >
-    </DeleteWorkspaceDialog>
+    />
   </div>
 </template>
 <script>
@@ -941,7 +940,7 @@ export default {
         number: counters[0]
       }
       for (let k = 0; k < values.length; k++) {
-        if (values[k] > mode.value) {
+        if (counters[k] > mode.number) {
           mode.value = values[k]
           mode.number = counters[k]
         }
