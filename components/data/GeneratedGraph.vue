@@ -5,7 +5,7 @@
         :id="'title-' + graph.id"
         v-text="graph.title"
         contenteditable
-      ></v-card-title>
+      />
       <div>
         <v-btn
           @click="swap(graph)"

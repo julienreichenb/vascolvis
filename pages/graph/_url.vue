@@ -2,47 +2,13 @@
   <div v-show="show">
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
-        <v-flex :class="annotating ? 'col-xl-9 col-md-8' : 'col-12'">
+        <v-flex>
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
                 <v-toolbar-title v-text="chart.name" class="white--text">
                 </v-toolbar-title>
-                <div>
-                  <v-btn
-                    v-clipboard:copy="getFullUrl()"
-                    v-clipboard:success="showCopySuccess"
-                    small
-                    icon
-                    depressed
-                    class="share ml-2 white indigo--text"
-                    ><v-icon color="black">mdi-link-variant</v-icon></v-btn
-                  >
-                  <v-btn
-                    @click="shareByMail()"
-                    small
-                    icon
-                    depressed
-                    class="share ml-2 white indigo--text"
-                    ><v-icon>mdi-email-outline</v-icon></v-btn
-                  >
-                  <v-btn
-                    @click="shareOnFacebook()"
-                    small
-                    icon
-                    depressed
-                    class="share ml-2 white indigo--text"
-                    ><v-icon color="#4267B2">mdi-facebook</v-icon></v-btn
-                  >
-                  <v-btn
-                    @click="shareOnTwitter()"
-                    small
-                    icon
-                    depressed
-                    class="share ml-2 white indigo--text"
-                    ><v-icon color="#55ACEE">mdi-twitter</v-icon></v-btn
-                  >
-                </div>
+                <SocialSharing v-if="chart" :chart="chart" />
               </v-layout>
             </v-toolbar>
             <v-card-text>
@@ -92,14 +58,15 @@
     <ColInputMain
       :annotating="annotating"
       :offsetTop="-65"
-      @close="toggleAnnotation"
-      @submittingAnnotation="alertAnnotation()"
+      @close="toggleAnnotation()"
+      @submittingAnnotation="submitAnnotation"
     />
   </div>
 </template>
 
 <script>
 import jwtDecode from 'jwt-decode'
+import SocialSharing from '~/components/url/SocialSharing'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -112,6 +79,9 @@ export default {
       ]
     }
   },
+  components: {
+    SocialSharing
+  },
   data() {
     return {
       init: false,
@@ -122,7 +92,41 @@ export default {
       annotations: [],
       annotating: false,
       isMyChart: true,
-      elements: []
+      elements: [],
+      colvisSpecs: {
+        visualization: {
+          container: '#vis'
+        },
+        natures: [
+          {
+            id: 'number',
+            annotable: {
+              selector: 'path',
+              filter: 'annotable',
+              title: []
+            }
+          },
+          {
+            id: 'position',
+            annotable: false
+          }
+        ],
+        combinations: [
+          {
+            first: 'number',
+            second: 'position',
+            products: [
+              {
+                id: 'sequence',
+                type: 'Number',
+                rangeType: 'linear',
+                range: [1, 10]
+              }
+            ]
+          }
+        ]
+      },
+      CircularJSON: require('circular-json')
     }
   },
   asyncData({ params, error }) {
@@ -152,35 +156,42 @@ export default {
   },
   mounted() {
     this.displayGraph()
+    this.getAnnotations()
   },
   methods: {
     displayGraph() {
       this.json.height = '400'
       this.json.width = 'container'
       window.vegaEmbed('#vis', this.json, { renderer: 'svg' }).then((view) => {
-        this.$colvis.initialize()
+        const headers = Object.keys(this.json.data.values[0])
+        for (let i = 0; i < headers.length; i++) {
+          this.colvisSpecs.natures[0].annotable.title.push(headers[i])
+        }
+        this.$colvis.initialize({ specs: this.colvisSpecs })
       })
     },
     toggleAnnotation() {
       this.annotating = !this.annotating
-      // Resize the graph
-      this.$nextTick(() => {
-        this.customizeButtons()
-        this.repositionButton()
-        window
-          .vegaEmbed('#vis', this.json, { renderer: 'svg' })
-          .then((view) => {
-            this.$colvis.initialize()
-          })
-      })
     },
-    alertAnnotation(annotation) {
-      console.log(annotation)
+    submitAnnotation(annotation) {
+      this.saveAnnotation(annotation)
+      this.toggleAnnotation()
     },
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data
       })
+    },
+    async getAnnotations() {
+      await axios
+        .get(`/annotations/chart?id_chart=${this.chart.id}`)
+        .then((res) => {
+          this.annotations = res.data
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error)
+        })
     },
     async updateChart(bool) {
       await axios
@@ -194,83 +205,22 @@ export default {
           this.$toast.success(msg)
         })
     },
-    getFullUrl() {
-      return 'http://localhost:3000/graph/' + this.chart.url
-    },
-    shareByMail() {
-      window.open(
-        `mailto:test@example.com?subject=${this.$t('url.mail_subject') +
-          this.chart.name}&body=${this.$t('url.mail_body') + this.getFullUrl()}`
-      )
-    },
-    shareOnFacebook() {
-      const facebookWindow = window.open(
-        'https://www.facebook.com/sharer/sharer.php?u=' + this.getFullUrl(),
-        'facebook-popup',
-        'height=350,width=600'
-      )
-      if (facebookWindow.focus) {
-        facebookWindow.focus()
-      }
-      return false
-    },
-    shareOnTwitter() {
-      const twitterWindow = window.open(
-        'https://twitter.com/share?url=' + this.getFullUrl(),
-        'twitter-popup',
-        'height=350,width=600'
-      )
-      if (twitterWindow.focus) {
-        twitterWindow.focus()
-      }
-      return false
-    },
-    showCopySuccess() {
-      this.$toast.info(this.$t('url.copied'), { position: 'top-right' })
-    },
-    customizeButtons() {
-      const cancelButton = document
-        .getElementsByClassName('col-input-overlay__drawer')[0]
-        .getElementsByTagName('button')[0]
-      const submitbutton = document
-        .getElementsByClassName('col-input-overlay__drawer')[0]
-        .getElementsByTagName('button')[1]
-      cancelButton.className = ''
-      cancelButton.classList.add(
-        'mb-2',
-        'mr-2',
-        'mt-5',
-        'v-btn',
-        'v-btn--depressed',
-        'v-btn--flat',
-        'v-btn--outlined',
-        'theme--dark',
-        'v-size--default',
-        'white--text'
-      )
-      submitbutton.className = ''
-      submitbutton.classList.add(
-        'mb-2',
-        'v-btn',
-        'v-btn--depressed',
-        'v-btn--flat',
-        'v-btn--outlined',
-        'theme--dark',
-        'v-size--default',
-        'blue--text'
-      )
-    },
-    repositionButton() {
-      const headerTitle = document
-        .getElementsByClassName('col-input-overlay__drawer')[0]
-        .getElementsByTagName('header')[0]
-        .getElementsByTagName('h3')[0]
-      try {
-        headerTitle.remove()
-      } catch (e) {
-        // eslint-disable-next-line
-        console.log()
-      }
+    async saveAnnotation(annotation) {
+      await axios
+        .post(`/annotations/`, {
+          data: annotation,
+          id_chart: this.chart.id,
+          id_user: this.user.id
+        })
+        .then((res) => {
+          this.$toast.success(this.$t('url.toast_annot_success'))
+          this.annotations.push(res.data)
+        })
+        .catch((error) => {
+          this.$toast.error(this.$t('url.toast_annot_error'))
+          // eslint-disable-next-line
+          console.log(error)
+        })
     },
     goToProfile(id) {
       this.$router.push({

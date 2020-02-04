@@ -150,7 +150,9 @@ export default {
     mail_body:
       'I would like to know your opinion about the chart, available here : ',
     copied: 'Copied !',
-    graph_of: 'Chart proposed by '
+    graph_of: 'Chart proposed by ',
+    toast_annot_success: 'Annotation successfully saved !',
+    toast_annot_error: "Error : the annotation couldn't be saved."
   },
   panel: {
     header: 'Welcome in your atelier, ',

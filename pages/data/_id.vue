@@ -90,7 +90,7 @@
                     :drawer="drawer.variables"
                     @open="drawer.variables = true"
                   />
-                  <h1 v-text="dataset.name" class="white--text"></h1>
+                  <h1 v-text="dataset.name" class="white--text" />
                   <GraphHelpDialog
                     :dialog="dialog"
                     :colors="colors"

@@ -11,7 +11,7 @@ process.env.SECRET_KEY = 'secret'
 /*
  ** SAVE ANNOTATION
  */
-annotations.post('/save', (req, res) => {
+annotations.post('/', (req, res) => {
   const annotationData = {
     data: req.body.data,
     id_chart: req.body.id_chart,

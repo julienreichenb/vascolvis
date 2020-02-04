@@ -153,7 +153,9 @@ export default {
     mail_subject: 'Analyse collaborative de graphique - ',
     mail_body: 'Je voudrais ton avis sur le graphique disponible ici : ',
     copied: 'Copié !',
-    graph_of: 'Graphique proposé par '
+    graph_of: 'Graphique proposé par ',
+    toast_annot_success: 'Annotation enregistrée avec succès !',
+    toast_annot_error: "Erreur : l'annotation n'a pas pu être enregistrée."
   },
   panel: {
     header: 'Bienvenue dans votre atelier, ',
