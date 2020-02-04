@@ -13,6 +13,14 @@ const Annotation = db.sequelize.define(
     data: {
       type: Sequelize.JSON
     },
+    parent_annotation: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: 'annotations',
+        key: 'id'
+      },
+      nullable: true
+    },
     id_user: {
       type: Sequelize.INTEGER,
       references: {

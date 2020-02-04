@@ -101,6 +101,23 @@ charts.get('/user', (req, res) => {
 })
 
 /*
+ ** GET CHART URL FROM ID
+ */
+charts.get('/url', (req, res) => {
+  Chart.findOne({
+    where: {
+      id: req.query.id
+    }
+  })
+    .then((chart) => {
+      res.status(200).json({ id: chart.id, url: chart.url, name: chart.name })
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
+})
+
+/*
  ** GET CHART NUMBER FOR A DATASET
  */
 charts.get('/nb', (req, res) => {

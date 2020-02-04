@@ -136,6 +136,7 @@
                       :graph="graph"
                       @save="saveGraph"
                       @swap="swapAxis"
+                      @colorshape="swapColorAndShape"
                     />
                   </v-col>
                 </div>
@@ -490,6 +491,18 @@ export default {
         data.encoding.y = tempX
       }
       this.graphs[id].data = data
+      this.renderSingleGraph(id)
+    },
+    swapColorAndShape(graph) {
+      const id = graph.id
+      const tempColor = graph.data.encoding.color
+      delete tempColor.scale
+      const tempShape = graph.data.encoding.shape
+
+      graph.data.encoding.shape = tempColor
+      graph.data.encoding.color = tempShape
+      graph.data.encoding.color.scale = { range: this.colors }
+
       this.renderSingleGraph(id)
     },
     isAnArray(v) {

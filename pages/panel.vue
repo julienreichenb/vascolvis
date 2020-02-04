@@ -40,6 +40,7 @@
                   :headers="menu.headers"
                   :data="menu.data"
                   :names="names"
+                  :urls="urls"
                   @refresh="refresh(menu.id)"
                 >
                 </PanelTable>
@@ -78,6 +79,7 @@ export default {
       show: false,
       user: Object,
       names: [],
+      urls: [],
       menus: [
         {
           id: 'datasets',
@@ -112,6 +114,11 @@ export default {
             { text: this.$t('panel.table.url'), value: 'url', sortable: false },
             { text: this.$t('panel.table.user'), value: 'id_user' },
             {
+              text: this.$t('panel.table.annotation'),
+              value: 'annotations',
+              sortable: false
+            },
+            {
               text: this.$t('panel.table.actions'),
               value: 'actions',
               sortable: false
@@ -122,7 +129,19 @@ export default {
         {
           id: 'annotations',
           icon: 'mdi-note-text-outline',
-          headers: [],
+          headers: [
+            { text: 'id', value: 'id', sortable: true },
+            {
+              text: this.$t('panel.table.graph_name'),
+              value: 'id_chart',
+              sortable: true
+            },
+            {
+              text: this.$t('panel.table.actions'),
+              value: 'actions',
+              sortable: false
+            }
+          ],
           data: []
         },
         {
@@ -204,9 +223,24 @@ export default {
     },
     async getAnnotations() {
       await axios
-        .get(`/annotations/user/?id_user=${this.user.id}`)
+        .get(`/annotations/user?id_user=${this.user.id}`)
         .then((res) => {
-          this.menu[2].data = res.data
+          this.menus[2].data = res.data
+          for (let i = 0; i < res.data.length; i++) {
+            const id = res.data[i].id_chart
+            this.getUrl(id)
+          }
+        })
+        .catch((err) => {
+          // eslint-disable-next-line
+          console.log(err)
+        })
+    },
+    async getUrl(id) {
+      await axios
+        .get(`/charts/url?id=${id}`)
+        .then((res) => {
+          this.urls.push(res.data)
         })
         .catch((err) => {
           // eslint-disable-next-line

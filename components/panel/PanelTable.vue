@@ -7,14 +7,14 @@
           :label="this.$t('panel.table.search')"
           single-line
           hide-details
-        ></v-text-field>
+        />
         <v-checkbox
           v-if="type === 'charts'"
           v-model="onlyMine"
           :label="this.$t('panel.table.mine_only')"
           flat
           color="blue lighten-2"
-        ></v-checkbox>
+        />
       </v-card-title>
       <v-card-subtitle
         v-if="type === 'charts' || type === 'datasets'"
@@ -43,10 +43,7 @@
           >
             {{ props.item.name }}
             <template v-slot:input>
-              <v-text-field
-                v-model="props.item.name"
-                label="Edit"
-              ></v-text-field>
+              <v-text-field v-model="props.item.name" label="Edit" />
             </template>
           </v-edit-dialog>
           <template v-else>
@@ -62,6 +59,11 @@
             ></span
           >
         </template>
+        <template v-slot:item.id_chart="{ item }">
+          <span
+            ><a @click="goToGraph(item)">{{ getChartName(item) }}</a></span
+          >
+        </template>
         <template v-slot:item.public="{ item }">
           <v-icon
             v-if="isOwner(item)"
@@ -75,7 +77,7 @@
         </template>
         <template v-slot:item.url="{ item }">
           <span>
-            <a @click="goToItem(item)" class="link">{{ item.url }}</a>
+            <a @click="goToItem(item)">{{ item.url }}</a>
           </span>
         </template>
         <template v-slot:item.workspaces="{ item }">
@@ -88,8 +90,16 @@
             {{ nbOfGraphs.filter((i) => i.id === item.id)[0].nb }}
           </span>
         </template>
+        <template v-slot:item.annotations="{ item }">
+          <span>
+            {{ nbOfAnnots.filter((i) => i.id === item.id)[0].nb }}
+          </span>
+        </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon @click="goToItem(item)">
+          <v-icon
+            v-if="type === 'charts' || type === 'datasets'"
+            @click="goToItem(item)"
+          >
             mdi-eye-outline
           </v-icon>
           <v-icon
@@ -111,7 +121,7 @@
           {{ $t('panel.table.delete_disclaimer') }}
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn @click="deleteDialog = false" color="grey lighten-3" outlined>
             {{ $t('panel.table.delete_cancel') }}
           </v-btn>
@@ -147,6 +157,11 @@ export default {
       optional: true,
       type: Array,
       default: null
+    },
+    urls: {
+      optional: true,
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -157,7 +172,8 @@ export default {
       selected: { name: '' },
       search: '',
       nbOfWorkspaces: [],
-      nbOfGraphs: []
+      nbOfGraphs: [],
+      nbOfAnnots: []
     }
   },
   computed: {
@@ -186,6 +202,22 @@ export default {
       }
       return this.$t('panel.deleted_account')
     },
+    getChartName(item) {
+      const id = item.id_chart
+      for (let i = 0; i < this.urls.length; i++) {
+        if (this.urls[i] && this.urls[i].id === id) {
+          return this.urls[i].name.substring(0, 30)
+        }
+      }
+    },
+    getUrl(item) {
+      const id = item.id_chart
+      for (let i = 0; i < this.urls.length; i++) {
+        if (this.urls[i] && this.urls[i].id === id) {
+          return this.urls[i].url
+        }
+      }
+    },
     setVisibilityIcon(item) {
       return item.public === 1
         ? 'mdi-lock-open-variant-outline'
@@ -206,16 +238,27 @@ export default {
       for (let i = 0; i < this.data.length; i++) {
         await this.getNbOfGraphs(this.data[i].id)
       }
-      this.show = true
     },
     async getNbOfGraphs(id) {
       await axios.get(`/charts/nb/?dataset=${id}`).then((res) => {
         this.nbOfGraphs.push({ id, nb: res.data })
       })
     },
+    async getNbsOfAnnots() {
+      for (let i = 0; i < this.data.length; i++) {
+        await this.getNbOfAnnots(this.data[i].id)
+      }
+    },
+    async getNbOfAnnots(id) {
+      await axios.get(`/annotations/nb?chart=${id}`).then((res) => {
+        this.nbOfAnnots.push({ id, nb: res.data })
+      })
+    },
     async getNumbers() {
       await this.getNbsOfWorkspaces()
       await this.getNbsOfGraphs()
+      await this.getNbsOfAnnots()
+      this.show = true
     },
     /* Buttons methods */
     goToItem(item) {
@@ -246,6 +289,13 @@ export default {
           params: { id }
         })
       }
+    },
+    goToGraph(item) {
+      const url = this.getUrl(item)
+      this.$router.push({
+        name: `graph-url___${this.$i18n.locale}`,
+        params: { url }
+      })
     },
     isOwner(item) {
       return item.id_user === this.user.id
@@ -297,7 +347,7 @@ export default {
 }
 </script>
 <style scoped>
-.link {
+a {
   color: cornflowerblue !important;
 }
 .deleted {

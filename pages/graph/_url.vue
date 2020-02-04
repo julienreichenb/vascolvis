@@ -40,7 +40,7 @@
             </v-card-text>
             <v-card-text>
               <v-btn
-                @click="toggleAnnotation()"
+                @click="toggleAnnotation(0)"
                 color="white"
                 class="mb-2"
                 depressed
@@ -55,18 +55,27 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <RootAnnotation
+      v-if="annotLoaded"
+      v-for="rootAnnotation in rootAnnotations"
+      :key="rootAnnotation.id"
+      :root-annotation="rootAnnotation"
+      @toggle="toggleAnnotation"
+      @profile="goToProfile"
+      @highlight="highlightChart"
+    />
     <ColInputMain
       :annotating="annotating"
       :offsetTop="-65"
-      @close="toggleAnnotation()"
+      @close="toggleAnnotation(0)"
       @submittingAnnotation="submitAnnotation"
     />
   </div>
 </template>
-
 <script>
 import jwtDecode from 'jwt-decode'
 import SocialSharing from '~/components/url/SocialSharing'
+import RootAnnotation from '~/components/url/RootAnnotation'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -80,16 +89,19 @@ export default {
     }
   },
   components: {
-    SocialSharing
+    SocialSharing,
+    RootAnnotation
   },
   data() {
     return {
       init: false,
       show: false,
+      annotLoaded: false,
       json: null,
       chart: null,
       currentUser: {},
-      annotations: [],
+      currentRoot: 0,
+      rootAnnotations: [],
       annotating: false,
       isMyChart: true,
       elements: [],
@@ -125,8 +137,7 @@ export default {
             ]
           }
         ]
-      },
-      CircularJSON: require('circular-json')
+      }
     }
   },
   asyncData({ params, error }) {
@@ -154,9 +165,9 @@ export default {
     }
     this.init = true
   },
-  mounted() {
+  async mounted() {
     this.displayGraph()
-    this.getAnnotations()
+    await this.getAnnotations()
   },
   methods: {
     displayGraph() {
@@ -170,10 +181,13 @@ export default {
         this.$colvis.initialize({ specs: this.colvisSpecs })
       })
     },
-    toggleAnnotation() {
+    toggleAnnotation(idRoot) {
+      this.currentRoot = idRoot
       this.annotating = !this.annotating
     },
+    highlightChart(id) {},
     submitAnnotation(annotation) {
+      annotation.parent_annotation = this.currentRoot
       this.saveAnnotation(annotation)
       this.toggleAnnotation()
     },
@@ -183,15 +197,34 @@ export default {
       })
     },
     async getAnnotations() {
+      await this.getRootAnnotations()
+      await this.getReplyAnnotations()
+      this.annotLoaded = true
+    },
+    async getRootAnnotations() {
       await axios
-        .get(`/annotations/chart?id_chart=${this.chart.id}`)
+        .get(`/annotations/roots?id_chart=${this.chart.id}`)
         .then((res) => {
-          this.annotations = res.data
+          this.rootAnnotations = res.data
+          this.getReplyAnnotations()
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.log(error)
         })
+    },
+    async getReplyAnnotations() {
+      for (let i = 0; i < this.rootAnnotations.length; i++) {
+        await axios
+          .get(`/annotations/replies?parent=${this.rootAnnotations[i].id}`)
+          .then((res) => {
+            this.rootAnnotations[i].replies = res.data
+          })
+          .catch((error) => {
+            // eslint-disable-next-line
+            console.log(error)
+          })
+      }
     },
     async updateChart(bool) {
       await axios
@@ -208,9 +241,10 @@ export default {
     async saveAnnotation(annotation) {
       await axios
         .post(`/annotations/`, {
-          data: annotation,
+          data: annotation.data,
           id_chart: this.chart.id,
-          id_user: this.user.id
+          id_user: this.user.id,
+          parent_annotation: annotation.parent_annotation
         })
         .then((res) => {
           this.$toast.success(this.$t('url.toast_annot_success'))

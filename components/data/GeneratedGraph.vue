@@ -13,8 +13,20 @@
           color="blue lighten-1"
           outlined
           depressed
+          small
           ><v-icon>mdi-autorenew</v-icon>
           {{ $t('graphs.switch_button') }}
+        </v-btn>
+        <v-btn
+          v-if="graph.data.encoding.color && graph.data.encoding.shape"
+          @click="swapColorShape(graph)"
+          class="mt-4"
+          color="red lighten-1"
+          outlined
+          depressed
+          small
+          ><v-icon>mdi-invert-colors</v-icon>
+          {{ $t('graphs.switch_colorshape') }}
         </v-btn>
         <v-btn
           @click="save(graph)"
@@ -22,6 +34,7 @@
           color="green"
           outlined
           depressed
+          small
           ><v-icon>mdi-content-save-outline</v-icon>
           {{ $t('graphs.save') }}
         </v-btn>
@@ -45,6 +58,9 @@ export default {
   methods: {
     swap() {
       this.$emit('swap', this.graph)
+    },
+    swapColorShape() {
+      this.$emit('colorshape', this.graph)
     },
     save() {
       this.$emit('save', this.graph)
