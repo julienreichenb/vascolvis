@@ -1,6 +1,5 @@
-const Sequelize = require('sequelize')
 const db = require('../database/db')
-const Comment = require('./Comment')
+const Sequelize = require('sequelize')
 
 const Annotation = db.sequelize.define(
   'annotations',
@@ -40,8 +39,5 @@ const Annotation = db.sequelize.define(
     timestamps: false
   }
 )
-// Associations
-Annotation.hasMany(Comment, { foreignKey: 'id_annotation' })
-Comment.belongsTo(Annotation, { foreignKey: 'id_annotation' })
 
 module.exports = Annotation

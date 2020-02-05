@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
 const db = require('../database/db')
+const Sequelize = require('sequelize')
 
 const WorkspaceVariable = db.sequelize.define(
   'workspace_variables',

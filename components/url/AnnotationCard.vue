@@ -1,0 +1,86 @@
+<template>
+  <v-card class="elevation-2 grey darken-3">
+    <v-card-title
+      @click="$root.$emit('highlight', annotation)"
+      class="headline blue"
+    >
+      <v-layout justify-space-between>
+        <h3>TITLE ANNOT</h3>
+        <v-btn
+          v-if="isUser"
+          @click="deleteAnnotation(annotation.id)"
+          icon
+          small
+          color="white"
+        >
+          <v-icon>
+            mdi-delete-circle-outline
+          </v-icon>
+        </v-btn>
+      </v-layout>
+    </v-card-title>
+    <v-card-text class="pt-2 white--text">
+      {{ JSON.parse(annotation.data).rawAnnotation.text }}
+      <div class="user-date col-12" style="text-align: right">
+        <a @click="annotation.user ? goToProfile(annotation.user.id) : ''">{{
+          annotation.user
+            ? annotation.user.username
+            : $t('panel.deleted_account')
+        }}</a>
+        <p>
+          {{ $t('url.posted_at') }}
+          {{ timeConverter(JSON.parse(annotation.data).meta.timestamp) }}
+        </p>
+      </div>
+    </v-card-text>
+  </v-card>
+</template>
+<script>
+import axios from '~/plugins/axios'
+export default {
+  props: {
+    annotation: { type: Object, required: true },
+    isUser: { type: Boolean, default: false }
+  },
+  methods: {
+    timeConverter(timestamp) {
+      const a = new Date(timestamp)
+      const year = a.getFullYear()
+      const month = a.getMonth() + 1
+      const date = a.getDate()
+      return date + '.' + month + '.' + year
+    },
+    goToProfile(id) {
+      this.$router.push({
+        name: `user-id___${this.$i18n.locale}`,
+        params: { id }
+      })
+    },
+    deleteAnnotation(id) {
+      axios
+        .delete(`/annotations?id=${id}`)
+        .then(() => {
+          this.$toast.success(this.$t('url.toast_annot_delete'))
+          this.$root.$emit('deleted')
+        })
+        .catch(() => {
+          this.$toast.error(this.$t('url.toast_annot_error'))
+        })
+    }
+  }
+}
+</script>
+<style scoped>
+.user-date {
+  font-size: 1em;
+}
+.user-date p {
+  margin: 0.3em;
+  line-height: 0.5em;
+  font-style: italic;
+  font-size: 0.9em;
+}
+.user-date a {
+  color: dodgerblue;
+}
+</style>

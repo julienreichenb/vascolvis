@@ -157,7 +157,9 @@ export default {
     copied: 'Copié !',
     graph_of: 'Graphique proposé par ',
     toast_annot_success: 'Annotation enregistrée avec succès !',
-    toast_annot_error: "Erreur : l'annotation n'a pas pu être enregistrée."
+    toast_annot_error: "Erreur : l'annotation n'a pas pu être enregistrée.",
+    toast_annot_delete: 'Annotation supprimée avec succès !',
+    posted_at: 'posté le'
   },
   panel: {
     header: 'Bienvenue dans votre atelier, ',

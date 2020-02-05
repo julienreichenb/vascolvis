@@ -154,7 +154,9 @@ export default {
     copied: 'Copied !',
     graph_of: 'Chart proposed by ',
     toast_annot_success: 'Annotation successfully saved !',
-    toast_annot_error: "Error : the annotation couldn't be saved."
+    toast_annot_error: "Error : the annotation couldn't be saved.",
+    toast_annot_delete: 'Annotation successfully deleted !',
+    posted_at: 'posted at'
   },
   panel: {
     header: 'Welcome in your atelier, ',

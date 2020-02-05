@@ -40,7 +40,7 @@
             </v-card-text>
             <v-card-text>
               <v-btn
-                @click="toggleAnnotation(0)"
+                @click="toggleAnnotation(0, true)"
                 color="white"
                 class="mb-2"
                 depressed
@@ -51,23 +51,22 @@
                 <div id="vis" class="resize-graph"></div>
               </div>
             </v-card-text>
+            <AnnotationTabs
+              ref="annotations"
+              :annotations="rootAnnotations"
+              :loaded="annotLoaded"
+              :user="user"
+              :graph-owner="currentUser"
+            >
+            </AnnotationTabs>
           </v-card>
         </v-flex>
       </v-layout>
     </v-container>
-    <RootAnnotation
-      v-if="annotLoaded"
-      v-for="rootAnnotation in rootAnnotations"
-      :key="rootAnnotation.id"
-      :root-annotation="rootAnnotation"
-      @toggle="toggleAnnotation"
-      @profile="goToProfile"
-      @highlight="highlightChart"
-    />
     <ColInputMain
       :annotating="annotating"
-      :offsetTop="-65"
-      @close="toggleAnnotation(0)"
+      :offsetTop="-42"
+      @close="toggleAnnotation(0, false)"
       @submittingAnnotation="submitAnnotation"
     />
   </div>
@@ -75,7 +74,7 @@
 <script>
 import jwtDecode from 'jwt-decode'
 import SocialSharing from '~/components/url/SocialSharing'
-import RootAnnotation from '~/components/url/RootAnnotation'
+import AnnotationTabs from '~/components/url/AnnotationTabs'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -90,7 +89,7 @@ export default {
   },
   components: {
     SocialSharing,
-    RootAnnotation
+    AnnotationTabs
   },
   data() {
     return {
@@ -168,6 +167,15 @@ export default {
   async mounted() {
     this.displayGraph()
     await this.getAnnotations()
+    this.$root.$on('highlight', (id) => {
+      this.highlightChart(id)
+    })
+    this.$root.$on('deleted', () => {
+      this.refreshAnnotations()
+    })
+    this.$root.$on('toggle', (id, top) => {
+      this.toggleAnnotation(id, top)
+    })
   },
   methods: {
     displayGraph() {
@@ -181,16 +189,18 @@ export default {
         this.$colvis.initialize({ specs: this.colvisSpecs })
       })
     },
-    toggleAnnotation(idRoot) {
+    toggleAnnotation(idRoot, scrollTop) {
       this.currentRoot = idRoot
+      if (scrollTop) {
+        window.scrollTo(0, 0)
+      }
       this.annotating = !this.annotating
     },
-    highlightChart(id) {},
-    submitAnnotation(annotation) {
-      annotation.parent_annotation = this.currentRoot
-      this.saveAnnotation(annotation)
-      this.toggleAnnotation()
+    highlightChart(annotation) {
+      window.scrollTo(0, 0)
+      this.displayHighlight(JSON.parse(annotation.data).dataUnits)
     },
+    displayHighlight(points) {},
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data
@@ -238,17 +248,22 @@ export default {
           this.$toast.success(msg)
         })
     },
+    submitAnnotation(annotation) {
+      annotation.parent_annotation = this.currentRoot
+      this.saveAnnotation(annotation)
+      this.toggleAnnotation(0, false)
+    },
     async saveAnnotation(annotation) {
       await axios
         .post(`/annotations/`, {
-          data: annotation.data,
+          data: annotation,
           id_chart: this.chart.id,
           id_user: this.user.id,
           parent_annotation: annotation.parent_annotation
         })
         .then((res) => {
           this.$toast.success(this.$t('url.toast_annot_success'))
-          this.annotations.push(res.data)
+          this.refreshAnnotations()
         })
         .catch((error) => {
           this.$toast.error(this.$t('url.toast_annot_error'))
@@ -256,11 +271,9 @@ export default {
           console.log(error)
         })
     },
-    goToProfile(id) {
-      this.$router.push({
-        name: `user-id___${this.$i18n.locale}`,
-        params: { id }
-      })
+    async refreshAnnotations() {
+      this.annotLoaded = false
+      await this.getAnnotations()
     }
   }
 }
@@ -302,5 +315,17 @@ header.toolbar {
 
 .container {
   max-width: 95% !important;
+}
+nav {
+  border: 1px solid white !important;
+  border-radius: 0 !important;
+}
+nav > header {
+  background: darkblue !important;
+}
+
+nav ul.list,
+nav input {
+  color: #666666;
 }
 </style>

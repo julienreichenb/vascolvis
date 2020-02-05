@@ -1,29 +1,51 @@
 <template>
-  <v-timeline-item>
-    <span slot="opposite"
-      ><a @click="$emit('profile', replyAnnotation.user.id)">{{
-        replyAnnotation.user.username
-      }}</a></span
-    >
-    <v-card class="elevation-2">
-      <v-card-title v-scroll class="headline"
-        ><a @click="$emit('highlight', replyAnnotation.id)"
-          >TITRE ANNOT REPLY</a
-        ></v-card-title
-      >
-      <v-card-text>
-        Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola
-        imperdiet nec ut, sed euismod convenire principes at. Est et nobis
-        iisque percipit, an vim zril disputando voluptatibus, vix an salutandi
-        sententiae.
-      </v-card-text>
-    </v-card>
+  <v-timeline-item
+    :icon="getIcon.icon"
+    :icon-color="getIcon.color"
+    color="white"
+  >
+    <AnnotationCard :annotation="replyAnnotation" :is-user="isUser" />
   </v-timeline-item>
 </template>
 <script>
+import AnnotationCard from './AnnotationCard'
 export default {
+  components: {
+    AnnotationCard
+  },
   props: {
-    replyAnnotation: { type: Object, required: true }
+    replyAnnotation: { type: Object, required: true },
+    // eslint-disable-next-line vue/require-prop-types
+    idUser: { required: true },
+    // eslint-disable-next-line vue/require-prop-types
+    idOwner: { required: true }
+  },
+  data() {
+    return {
+      isUser: false,
+      isGraphOwner: false
+    }
+  },
+  computed: {
+    getIcon() {
+      if (this.isGraphOwner) {
+        return { icon: 'mdi-crown', color: 'orange darken-3' }
+      }
+      if (this.isUser) {
+        return { icon: 'mdi-account', color: 'blue' }
+      }
+      return { icon: '', color: '' }
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.isUser = this.replyAnnotation.user
+        ? this.idUser === this.replyAnnotation.user.id
+        : false
+      this.isGraphOwner = this.replyAnnotation.user
+        ? this.idOwner === this.replyAnnotation.user.id
+        : false
+    })
   }
 }
 </script>

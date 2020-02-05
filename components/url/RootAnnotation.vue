@@ -1,33 +1,23 @@
 <template>
-  <v-timeline dense>
-    <v-timeline-item>
-      <span slot="opposite"
-        ><a @click="$emit('profile', rootAnnotation.user.id)">{{
-          rootAnnotation.user.username
-        }}</a></span
-      >
-      <v-card class="elevation-2">
-        <v-card-title class="headline"
-          ><a @click="$emit('highlight', rootAnnotation.id)"
-            >TITRE ANNOT ROOT</a
-          ></v-card-title
-        >
-        <v-card-text>
-          Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola
-          imperdiet nec ut, sed euismod convenire principes at. Est et nobis
-          iisque percipit, an vim zril disputando voluptatibus, vix an salutandi
-          sententiae.
-        </v-card-text>
-      </v-card>
+  <v-timeline align-top dense>
+    <v-timeline-item
+      :icon="getIcon.icon"
+      :icon-color="getIcon.color"
+      color="white"
+      large
+    >
+      <AnnotationCard :annotation="rootAnnotation" :is-user="isUser" />
     </v-timeline-item>
     <ReplyAnnotation
       v-for="annotation in rootAnnotation.replies"
       :key="annotation.id"
       :reply-annotation="annotation"
+      :id-user="user ? user.id : 0"
+      :id-owner="user ? graphOwner.id : 0"
     />
     <v-timeline-item hide-dot>
       <v-btn
-        @click="$emit('toggle', rootAnnotation.id)"
+        @click="$root.$emit('toggle', rootAnnotation.id, true)"
         color="green"
         depressed
       >
@@ -41,12 +31,43 @@
 </template>
 <script>
 import ReplyAnnotation from './ReplyAnnotation'
+import AnnotationCard from './AnnotationCard'
 export default {
   components: {
-    ReplyAnnotation
+    ReplyAnnotation,
+    AnnotationCard
   },
   props: {
-    rootAnnotation: { type: Object, required: true }
+    rootAnnotation: { type: Object, required: true },
+    user: { type: Object, default: null },
+    graphOwner: { type: Object, default: null }
+  },
+  data() {
+    return {
+      isUser: false,
+      isGraphOwner: false
+    }
+  },
+  computed: {
+    getIcon() {
+      if (this.isGraphOwner) {
+        return { icon: 'mdi-crown', color: 'orange darken-3' }
+      }
+      if (this.isUser) {
+        return { icon: 'mdi-account', color: 'blue' }
+      }
+      return { icon: '', color: '' }
+    }
+  },
+  mounted() {
+    this.isUser =
+      this.user && this.rootAnnotation.user
+        ? this.user.id === this.rootAnnotation.user.id
+        : false
+    this.isGraphOwner =
+      this.graphOwner && this.rootAnnotation.user
+        ? this.graphOwner.id === this.rootAnnotation.user.id
+        : false
   }
 }
 </script>

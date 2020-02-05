@@ -1,12 +1,11 @@
-const Sequelize = require('sequelize')
-const bcrypt = require('bcrypt')
 const db = require('../database/db')
 const Profile = require('./Profile')
 const DataSet = require('./DataSet')
 const Chart = require('./Chart')
 const Annotation = require('./Annotation')
-const Comment = require('./Comment')
 const Workspace = require('./Workspace')
+const bcrypt = require('bcrypt')
+const Sequelize = require('sequelize')
 
 const User = db.sequelize.define(
   'users',
@@ -47,8 +46,6 @@ User.hasMany(Chart, { foreignKey: 'id_user' })
 Chart.belongsTo(User, { foreignKey: 'id_user' })
 User.hasMany(Annotation, { foreignKey: 'id_user' })
 Annotation.belongsTo(User, { foreignKey: 'id_user' })
-User.hasMany(Comment, { foreignKey: 'id_user' })
-Comment.belongsTo(User, { foreignKey: 'id_user' })
 User.hasMany(Workspace, { foreignKey: 'id_user' })
 Workspace.belongsTo(User, { foreignKey: 'id_user' })
 

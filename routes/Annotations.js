@@ -3,7 +3,6 @@ const cors = require('cors')
 const annotations = express.Router()
 
 const Annotation = require('../models/Annotation')
-const Comment = require('../models/Comment')
 const Chart = require('../models/Chart')
 const User = require('../models/User')
 annotations.use(cors())
