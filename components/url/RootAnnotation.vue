@@ -18,8 +18,9 @@
     <v-timeline-item hide-dot>
       <v-btn
         @click="$root.$emit('toggle', rootAnnotation.id, true)"
-        color="green"
+        color="green lighten-2"
         depressed
+        outlined
       >
         <v-icon>
           mdi-plus-circle-outline
@@ -54,7 +55,7 @@ export default {
         return { icon: 'mdi-crown', color: 'orange darken-3' }
       }
       if (this.isUser) {
-        return { icon: 'mdi-account', color: 'blue' }
+        return { icon: 'mdi-account', color: 'grey darken-3' }
       }
       return { icon: '', color: '' }
     }

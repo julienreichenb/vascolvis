@@ -39,7 +39,7 @@ const Chart = db.sequelize.define(
     }
   },
   {
-    timestamps: false
+    timestamps: true
   }
 )
 // Associations

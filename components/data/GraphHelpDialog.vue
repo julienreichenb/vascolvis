@@ -49,7 +49,9 @@
           <v-icon :color="colors[2]">mdi-timer</v-icon>
           <span v-html="this.$t('graphs.info.temp2')"></span>
         </p>
-        <h2>{{ $t('graphs.info.yourturn') }}</h2>
+        <h2>{{ $t('graphs.info.workspaces_title') }}</h2>
+        <span v-html="this.$t('graphs.info.workspaces')"></span>
+        <h2 class="mt-6">{{ $t('graphs.info.yourturn') }}</h2>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -73,3 +75,13 @@ export default {
   }
 }
 </script>
+<style scoped>
+h2,
+h3 {
+  color: white;
+  margin-bottom: 0.5em;
+}
+p {
+  color: lightgrey;
+}
+</style>

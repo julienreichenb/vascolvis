@@ -7,7 +7,14 @@ const Workspace = require('../models/Workspace')
 const Variables = require('../models/WorkspaceVariable')
 datasets.use(cors())
 
-const limitedAttributes = ['id', 'name', 'size', 'id_user']
+const limitedAttributes = [
+  'id',
+  'name',
+  'size',
+  'id_user',
+  'createdAt',
+  'updatedAt'
+]
 
 process.env.SECRET_KEY = 'secret'
 

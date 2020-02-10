@@ -4,15 +4,14 @@
       <v-card-title>
         <v-text-field
           v-model="search"
-          :label="this.$t('panel.table.search')"
+          :label="$t('panel.table.search')"
           single-line
           hide-details
         />
         <v-checkbox
-          v-if="type === 'charts'"
+          v-show="type === 'charts'"
           v-model="onlyMine"
-          :label="this.$t('panel.table.mine_only')"
-          flat
+          :label="$t('panel.table.mine_only')"
           color="blue lighten-2"
         />
       </v-card-title>
@@ -31,6 +30,8 @@
           'items-per-page-options': [parseInt('5', 10)]
         }"
         :items-per-page="parseInt('5', 10)"
+        :sort-desc="true"
+        sort-by="updatedAt"
         item-key="id"
       >
         <template v-slot:item.name="props">
@@ -93,6 +94,11 @@
         <template v-slot:item.annotations="{ item }">
           <span>
             {{ nbOfAnnots.filter((i) => i.id === item.id)[0].nb }}
+          </span>
+        </template>
+        <template v-slot:item.updatedAt="{ item }">
+          <span>
+            {{ item.updatedAt ? formatDate(item.updatedAt) : '' }}
           </span>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -222,6 +228,11 @@ export default {
       return item.public === 1
         ? 'mdi-lock-open-variant-outline'
         : 'mdi-lock-outline'
+    },
+    formatDate(datetime) {
+      console.log(datetime)
+      const t = new Date(datetime)
+      return t.getDate() + '.' + (t.getMonth() + 1) + '.' + t.getFullYear()
     },
     /* Numbers for the Datasets */
     async getNbsOfWorkspaces() {

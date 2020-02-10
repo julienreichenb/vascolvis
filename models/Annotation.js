@@ -36,7 +36,7 @@ const Annotation = db.sequelize.define(
     }
   },
   {
-    timestamps: false
+    timestamps: true
   }
 )
 

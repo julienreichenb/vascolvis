@@ -32,7 +32,7 @@ export default {
         return { icon: 'mdi-crown', color: 'orange darken-3' }
       }
       if (this.isUser) {
-        return { icon: 'mdi-account', color: 'blue' }
+        return { icon: 'mdi-account', color: 'grey darken-3' }
       }
       return { icon: '', color: '' }
     }

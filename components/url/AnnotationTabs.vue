@@ -7,7 +7,14 @@
       color="blue"
     >
       <v-tab v-for="rootAnnotation in annotations" :key="rootAnnotation.id">
-        TITLE ROOT
+        {{ JSON.parse(rootAnnotation.data).rawAnnotation.meaning }} ({{
+          rootAnnotation.replies.length
+        }}
+        {{
+          rootAnnotation.replies.length > 1
+            ? $t('url.answers')
+            : $t('url.answer')
+        }})
       </v-tab>
       <v-tab-item
         v-for="rootAnnotation in annotations"
@@ -36,3 +43,11 @@ export default {
   }
 }
 </script>
+<style>
+.v-timeline-item__dot {
+  background: cornflowerblue !important;
+}
+.v-timeline::before {
+  background: cornflowerblue !important;
+}
+</style>

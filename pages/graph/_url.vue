@@ -65,7 +65,6 @@
     </v-container>
     <ColInputMain
       :annotating="annotating"
-      :offsetTop="-42"
       @close="toggleAnnotation(0, false)"
       @submittingAnnotation="submitAnnotation"
     />
@@ -186,7 +185,9 @@ export default {
         for (let i = 0; i < headers.length; i++) {
           this.colvisSpecs.natures[0].annotable.title.push(headers[i])
         }
-        this.$colvis.initialize({ specs: this.colvisSpecs })
+        this.$nextTick(() => {
+          this.$colvis.initialize({ specs: this.colvisSpecs })
+        })
       })
     },
     toggleAnnotation(idRoot, scrollTop) {
@@ -228,7 +229,12 @@ export default {
         await axios
           .get(`/annotations/replies?parent=${this.rootAnnotations[i].id}`)
           .then((res) => {
-            this.rootAnnotations[i].replies = res.data
+            this.rootAnnotations[i].replies = res.data.sort((a, b) => {
+              return (
+                new Date(JSON.parse(a.data).meta.timestamp) -
+                new Date(JSON.parse(b.data).meta.timestamp)
+              )
+            })
           })
           .catch((error) => {
             // eslint-disable-next-line

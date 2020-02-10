@@ -139,6 +139,9 @@ export default {
         "Vous ne pouvez sélectionner <b>qu'une seule</b> variable temporelle (",
       temp2:
         ") à la fois. De plus, elle bloquera la sélection d'une seconde variable quantitative. La variable temporelle prendra <b>toujours</b> place sur l'axe X, sauf si vous choisissez d'inverser les axes.",
+      workspaces_title: 'Workspaces',
+      workspaces:
+        "Vous pouvez sauvegarder une sélection des variables pour une utilisation ultérieure. Cette sélection s'appelle <b>Workspace</b> et est propre à celui qui la crée.",
       yourturn: 'Maintenant, à vous de jouer !',
       understood: "J'ai compris"
     }
@@ -159,7 +162,9 @@ export default {
     toast_annot_success: 'Annotation enregistrée avec succès !',
     toast_annot_error: "Erreur : l'annotation n'a pas pu être enregistrée.",
     toast_annot_delete: 'Annotation supprimée avec succès !',
-    posted_at: 'posté le'
+    posted_at: 'posté le',
+    answer: 'réponse',
+    answers: 'réponses'
   },
   panel: {
     header: 'Bienvenue dans votre atelier, ',
@@ -174,6 +179,7 @@ export default {
     table: {
       name: 'Nom',
       size: 'Taille(kb)',
+      date: 'Date',
       workspace: 'Nb de workspaces associés',
       graph: 'Nb de graphs associés',
       annotation: "Nb d'annotations associées",

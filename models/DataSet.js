@@ -29,7 +29,7 @@ const DataSet = db.sequelize.define(
     }
   },
   {
-    timestamps: false
+    timestamps: true
   }
 )
 // Associations

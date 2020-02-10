@@ -156,7 +156,9 @@ export default {
     toast_annot_success: 'Annotation successfully saved !',
     toast_annot_error: "Error : the annotation couldn't be saved.",
     toast_annot_delete: 'Annotation successfully deleted !',
-    posted_at: 'posted at'
+    posted_at: 'posted at',
+    answer: 'answer',
+    answers: 'answers'
   },
   panel: {
     header: 'Welcome in your atelier, ',
@@ -171,6 +173,7 @@ export default {
     table: {
       name: 'Name',
       size: 'Size(ko)',
+      date: 'Date',
       workspace: 'Nb of associated workspaces',
       graph: 'Nb of associated charts',
       annotation: 'Nb of associated annotations',

@@ -5,7 +5,7 @@
       class="headline blue"
     >
       <v-layout justify-space-between>
-        <h3>TITLE ANNOT</h3>
+        <h3>{{ JSON.parse(annotation.data).rawAnnotation.meaning }}</h3>
         <v-btn
           v-if="isUser"
           @click="deleteAnnotation(annotation.id)"

@@ -98,6 +98,11 @@ export default {
               sortable: false
             },
             {
+              text: this.$t('panel.table.date'),
+              value: 'updatedAt',
+              sortable: true
+            },
+            {
               text: this.$t('panel.table.actions'),
               value: 'actions',
               sortable: false
@@ -109,7 +114,7 @@ export default {
           id: 'charts',
           icon: 'mdi-chart-scatter-plot',
           headers: [
-            { text: '', value: 'public' },
+            { text: '', value: 'public', sortable: false },
             { text: this.$t('panel.table.name'), value: 'name' },
             { text: this.$t('panel.table.url'), value: 'url', sortable: false },
             { text: this.$t('panel.table.user'), value: 'id_user' },
@@ -117,6 +122,11 @@ export default {
               text: this.$t('panel.table.annotation'),
               value: 'annotations',
               sortable: false
+            },
+            {
+              text: this.$t('panel.table.date'),
+              value: 'updatedAt',
+              sortable: true
             },
             {
               text: this.$t('panel.table.actions'),
@@ -137,17 +147,16 @@ export default {
               sortable: true
             },
             {
+              text: this.$t('panel.table.date'),
+              value: 'updatedAt',
+              sortable: true
+            },
+            {
               text: this.$t('panel.table.actions'),
               value: 'actions',
               sortable: false
             }
           ],
-          data: []
-        },
-        {
-          id: 'comments',
-          icon: 'mdi-comment-processing-outline',
-          headers: [],
           data: []
         }
       ]
@@ -168,10 +177,9 @@ export default {
     },
     // Fetch data for the current user
     fetchAllData() {
-      this.getDatasets()
-      this.getCharts()
-      this.getAnnotations()
-      this.getComments()
+      this.getDatasets(false)
+      this.getCharts(false)
+      this.getAnnotations(false)
     },
     async getUserProfile() {
       await axios
@@ -184,18 +192,21 @@ export default {
           console.log(error)
         })
     },
-    async getDatasets() {
+    async getDatasets(reload) {
       await axios
         .get(`/datasets/user/?id_user=${this.user.id}`)
         .then((res) => {
           this.menus[0].data = res.data
+          if (reload) {
+            this.$forceUpdate()
+          }
         })
         .catch((err) => {
           // eslint-disable-next-line
           console.log(err)
         })
     },
-    async getCharts() {
+    async getCharts(reload) {
       await axios
         .get(`/charts/all`)
         .then((res) => {
@@ -203,6 +214,9 @@ export default {
           for (let i = 0; i < res.data.length; i++) {
             const id = res.data[i].id_user
             this.getName(id)
+          }
+          if (reload) {
+            this.$forceUpdate()
           }
         })
         .catch((err) => {
@@ -221,7 +235,7 @@ export default {
           console.log(err)
         })
     },
-    async getAnnotations() {
+    async getAnnotations(reload) {
       await axios
         .get(`/annotations/user?id_user=${this.user.id}`)
         .then((res) => {
@@ -229,6 +243,9 @@ export default {
           for (let i = 0; i < res.data.length; i++) {
             const id = res.data[i].id_chart
             this.getUrl(id)
+          }
+          if (reload) {
+            this.$forceUpdate()
           }
         })
         .catch((err) => {
@@ -247,30 +264,17 @@ export default {
           console.log(err)
         })
     },
-    async getComments() {
-      await axios
-        .get(`/comments/user/?id_user=${this.user.id}`)
-        .then((res) => {
-          this.menu[3].data = res.data
-        })
-        .catch((err) => {
-          // eslint-disable-next-line
-          console.log(err)
-        })
-    },
     refresh(type) {
       switch (type) {
         case 'datasets':
-          this.getDatasets()
+          this.getDatasets(true)
           break
         case 'charts':
-          this.getCharts()
+          this.getCharts(true)
           break
         case 'annotations':
-          this.getAnnotations()
+          this.getAnnotations(true)
           break
-        default:
-          this.getComments()
       }
     }
   }
