@@ -851,7 +851,8 @@ export default {
         },
         width: 'container',
         mark: {
-          type: selectedVar.length === 1 ? 'bar' : 'point'
+          type: selectedVar.length === 1 ? 'bar' : 'point',
+          tooltip: true
         },
         encoding
       }
