@@ -164,7 +164,21 @@ export default {
     toast_annot_delete: 'Annotation supprimée avec succès !',
     posted_at: 'posté le',
     answer: 'réponse',
-    answers: 'réponses'
+    answers: 'réponses',
+    info: {
+      title: 'Annotation du graphique',
+      intro:
+        'Vous pouvez faire part de vos observations en annotant le graphique. Le bouton ',
+      intro_2:
+        " permet de créer une nouvelle annotation, à laquelle d'autres utilisateurs pourront répondre, grâce au bouton ",
+      intro_3:
+        " , sous le fil de la discussion. Pensez à consulter les annotations existantes et à y répondre, afin d'éviter les doublons.",
+      module_title: "Module d'annotation",
+      module:
+        "Vous accédez au module en cliquant sur un des boutons cités ci-dessus. Il se décompose en <b>quatre étapes</b>, dont seules les deux premières sont obligatoires. À l'étape ①, un calque rouge sur le graphique vous permet de sélectionner le ou les éléments que vous souhaitez mettre en évidence. Vous pouvez également donner un nom explicite au groupe d'éléments. À l'étape ②, sélectionnez la raison qui vous pousse à mettre en évidence les éléments du graphique, en y ajoutant éventuellement un commentaire. L'étape ③ est facultative et permet de sélectionner un ou des éléments à comparer avec les premiers. Enfin, vous pouvez laisser une conclusion synthétique à l'étape ④, qui sera le titre de votre annotation.",
+      annotations_title: 'Consulter les annotations',
+      annotations: ''
+    }
   },
   panel: {
     header: 'Bienvenue dans votre atelier, ',

@@ -158,7 +158,20 @@ export default {
     toast_annot_delete: 'Annotation successfully deleted !',
     posted_at: 'posted at',
     answer: 'answer',
-    answers: 'answers'
+    answers: 'answers',
+    info: {
+      title: 'Chart annotation',
+      intro: 'You can share your views by annotating the chart. The button ',
+      intro_2:
+        ' allows you to create a new annotation, that can be discussed by other users, using the button ',
+      intro_3:
+        ' , under the thread of the root-annotation. Take care of answering the existing annotations before creating a new one, in order to avoid duplicates.',
+      module_title: 'Annotation module',
+      module:
+        'You can access the module by clicking one of the buttons quoted below. It is split in <b>four steps</b>, whose only first two are mandatory. At step ①, a red layer applied on the chart allows you to select one or more elements that deserve to be highlighted. You can also give a name to the group. At step ②, choose the reason why you highlighted the portion of the chart and eventually add a comment. The step ③ is optional and allows to choose one or more elements to compare with the first group. You can finally leave a synthetical conclusion at step ④, that will act as the title of your annotation.',
+      annotations_title: 'Look through annotations',
+      annotations: ''
+    }
   },
   panel: {
     header: 'Welcome in your atelier, ',

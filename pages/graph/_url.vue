@@ -6,8 +6,22 @@
           <v-card>
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
-                <v-toolbar-title v-text="chart.name" class="white--text">
-                </v-toolbar-title>
+                <v-layout row align-baseline>
+                  <div v-if="isMyChart">
+                    <div v-if="chart.public">
+                      <v-btn @click="updateChart(0)" icon color="green">
+                        <v-icon>mdi-lock-open-variant</v-icon>
+                      </v-btn>
+                    </div>
+                    <div v-else>
+                      <v-btn @click="updateChart(1)" icon color="red">
+                        <v-icon>mdi-lock</v-icon>
+                      </v-btn>
+                    </div>
+                    <div />
+                  </div>
+                  <v-toolbar-title v-text="chart.name" class="white--text" />
+                </v-layout>
                 <SocialSharing v-if="chart" :chart="chart" />
               </v-layout>
             </v-toolbar>
@@ -23,19 +37,10 @@
                     }}</a>
                   </h2>
                 </div>
-                <div v-if="isMyChart">
-                  <div v-if="chart.public">
-                    <v-btn @click="updateChart(0)" icon color="green">
-                      <v-icon>mdi-lock-open-variant</v-icon>
-                    </v-btn>
-                  </div>
-                  <div v-else>
-                    <v-btn @click="updateChart(1)" icon color="red">
-                      <v-icon>mdi-lock</v-icon>
-                    </v-btn>
-                  </div>
-                  <div />
-                </div>
+                <AnnotationHelpDialog
+                  :dialog="dialog"
+                  @close="dialog = false"
+                />
               </v-layout>
             </v-card-text>
             <v-card-text>
@@ -74,6 +79,7 @@
 import jwtDecode from 'jwt-decode'
 import SocialSharing from '~/components/url/SocialSharing'
 import AnnotationTabs from '~/components/url/AnnotationTabs'
+import AnnotationHelpDialog from '~/components/url/AnnotationHelpDialog'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -88,7 +94,8 @@ export default {
   },
   components: {
     SocialSharing,
-    AnnotationTabs
+    AnnotationTabs,
+    AnnotationHelpDialog
   },
   data() {
     return {

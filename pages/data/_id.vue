@@ -221,18 +221,28 @@ export default {
       graphs: [],
       isMoving: false,
       draggedId: null,
-      /* From Tableau 10 */
+      /* From Tableau 20 */
       colors: [
         '#4E79A7',
-        '#E15759',
         '#59A14F',
-        '#EDC948',
-        '#76B7B2',
+        '#E15759',
         '#F28E2B',
-        '#B07AA1',
-        '#9C755F',
+        '#499894',
+        '#B6992D',
+        '#FABFD2',
+        '#79706E',
+        '#A0CBE8',
+        '#FF9D9A',
+        '#F1CE63',
+        '#D37295',
+        '#FFBE7D',
         '#BAB0AC',
-        '#FF9DA7'
+        '#D4A6C8',
+        '#9D7660',
+        '#8CD17D',
+        '#86BCB6',
+        '#B07AA1',
+        '#D7B5A6'
       ],
       /* DATE FILTER */
       FREQUENT_DATE_LABELS: [
@@ -446,22 +456,25 @@ export default {
       firstGraph.id = 0
       firstGraph.title = this.getTitle(variables, null)
       firstGraph.data = this.getFirstGraph(variables)
-      this.graphs.push(firstGraph)
+      if (firstGraph.data.encoding) {
+        this.graphs.push(firstGraph)
+      }
       const combinationVariables = this.getCombinations()
       for (let i = 0; i < combinationVariables.length; i++) {
         const tempGraph = {}
         tempGraph.id = i + 1
         tempGraph.title = this.getTitle(variables, combinationVariables[i])
         tempGraph.data = this.getGraph(variables, combinationVariables[i])
-        this.graphs.push(tempGraph)
+        if (tempGraph.data.encoding) {
+          this.graphs.push(tempGraph)
+        }
       }
     },
     /* Graph computation helpers */
     fillGraphsArray(variables) {
       // Reset graphs
       this.graphs = []
-      const length = variables.length
-      if (length > 0) {
+      if (variables.length > 0) {
         this.getGraphs(variables)
       }
     },
@@ -593,7 +606,6 @@ export default {
             break
           case 'nominal':
             encoding.x = {
-              bin: true,
               field: selectedVars[0].name,
               type: 'ordinal'
             }
@@ -607,14 +619,21 @@ export default {
         const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
         const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
         const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
-        if (selectedQuant) {
+        if (selectedQuant.length >= 1) {
           switch (selectedQuant.length) {
             case 0:
               break
             case 1:
               encoding.x = {
                 field: selectedQuant[0].name,
-                type: selectedQuant[0].type
+                type: selectedQuant[0].type,
+                bin: true
+              }
+              if (selectedNom.length === 1) {
+                encoding.y = {
+                  aggregate: 'count',
+                  type: 'quantitative'
+                }
               }
               break
             case 2:
@@ -644,11 +663,125 @@ export default {
             default:
               break
           }
+          if (selectedNom) {
+            switch (selectedNom.length) {
+              case 0:
+                break
+              case 1:
+                encoding.color = {
+                  field: selectedNom[0].name,
+                  type: selectedNom[0].type,
+                  scale: { range: this.colors }
+                }
+                break
+              case 2:
+                encoding.color = {
+                  field: selectedNom[0].name,
+                  type: selectedNom[0].type,
+                  scale: { range: this.colors }
+                }
+                encoding.shape = {
+                  field: selectedNom[1].name,
+                  type: selectedNom[1].type
+                }
+                break
+              default:
+                break
+            }
+          }
+          if (selectedTemp) {
+            switch (selectedTemp.length) {
+              case 0:
+                break
+              case 1:
+                encoding.x = {
+                  field: selectedTemp[0].name,
+                  type: selectedTemp[0].type,
+                  timeUnit: 'year'
+                }
+                if (selectedQuant[0] !== undefined || selectedQuant[0]) {
+                  encoding.y = {
+                    field: selectedQuant[0].name,
+                    type: selectedQuant[0].type
+                  }
+                }
+                if (selectedQuant[1] !== undefined) {
+                  this.variables[selectedQuant[1].id].isUsed = false
+                  this.computeBigGraphs()
+                }
+                break
+              default:
+                break
+            }
+          }
+        } else if (
+          selectedNom.length === 1 &&
+          (selectedTemp.length === 1 || selectedQuant.length === 1)
+        ) {
+          encoding.x = {
+            field: selectedTemp[0].name,
+            type: 'ordinal',
+            timeUnit: 'year'
+          }
+          encoding.y = { aggregate: 'count', type: 'quantitative' }
+          encoding.color = {
+            field: selectedNom[0].name,
+            type: selectedNom[0].type,
+            scale: {
+              range: this.colors
+            }
+          }
+        }
+      }
+      if (encoding.x && encoding.y) {
+        return encoding
+      }
+      return null
+    },
+    getEncoding(selectedVars, combinationVar) {
+      const encoding = {}
+      const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
+      const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
+      const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
+      if (selectedQuant.length > 0) {
+        switch (selectedQuant.length) {
+          case 0:
+            encoding.x = {
+              field: combinationVar.name,
+              type: combinationVar.type
+            }
+            break
+          case 1:
+            encoding.x = {
+              field: selectedQuant[0].name,
+              type: selectedQuant[0].type
+            }
+            encoding.y = {
+              field: combinationVar.name,
+              type: combinationVar.type
+            }
+            break
+          case 2:
+            encoding.x = {
+              field: selectedQuant[0].name,
+              type: selectedQuant[0].type
+            }
+            encoding.y = {
+              field: selectedQuant[1].name,
+              type: selectedQuant[1].type
+            }
+            if (combinationVar) {
+              encoding.size = {
+                field: combinationVar.name,
+                type: combinationVar.type
+              }
+            }
+            break
+          default:
+            break
         }
         if (selectedNom) {
           switch (selectedNom.length) {
-            case 0:
-              break
             case 1:
               encoding.color = {
                 field: selectedNom[0].name,
@@ -686,6 +819,12 @@ export default {
                   field: selectedQuant[0].name,
                   type: selectedQuant[0].type
                 }
+                if (combinationVar) {
+                  encoding.size = {
+                    field: combinationVar.name,
+                    type: combinationVar.type
+                  }
+                }
               }
               if (selectedQuant[1] !== undefined) {
                 this.variables[selectedQuant[1].id].isUsed = false
@@ -696,106 +835,8 @@ export default {
               break
           }
         }
-      }
-      return encoding
-    },
-    getEncoding(selectedVars, combinationVar) {
-      const encoding = {}
-      const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
-      const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
-      const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
-      if (selectedQuant) {
-        switch (selectedQuant.length) {
-          case 0:
-            encoding.x = {
-              field: combinationVar.name,
-              type: combinationVar.type
-            }
-            break
-          case 1:
-            encoding.x = {
-              field: selectedQuant[0].name,
-              type: selectedQuant[0].type
-            }
-            encoding.y = {
-              field: combinationVar.name,
-              type: combinationVar.type
-            }
-            break
-          case 2:
-            encoding.x = {
-              field: selectedQuant[0].name,
-              type: selectedQuant[0].type
-            }
-            encoding.y = {
-              field: selectedQuant[1].name,
-              type: selectedQuant[1].type
-            }
-            if (combinationVar) {
-              encoding.size = {
-                field: combinationVar.name,
-                type: combinationVar.type
-              }
-            }
-            break
-          default:
-            break
-        }
-      }
-      if (selectedNom) {
-        switch (selectedNom.length) {
-          case 1:
-            encoding.color = {
-              field: selectedNom[0].name,
-              type: selectedNom[0].type,
-              scale: { range: this.colors }
-            }
-            break
-          case 2:
-            encoding.color = {
-              field: selectedNom[0].name,
-              type: selectedNom[0].type,
-              scale: { range: this.colors }
-            }
-            encoding.shape = {
-              field: selectedNom[1].name,
-              type: selectedNom[1].type
-            }
-            break
-          default:
-            break
-        }
-      }
-      if (selectedTemp) {
-        switch (selectedTemp.length) {
-          case 0:
-            break
-          case 1:
-            encoding.x = {
-              field: selectedTemp[0].name,
-              type: selectedTemp[0].type,
-              timeUnit: 'year'
-            }
-            if (selectedQuant[0] !== undefined || selectedQuant[0]) {
-              encoding.y = {
-                field: selectedQuant[0].name,
-                type: selectedQuant[0].type
-              }
-              if (combinationVar) {
-                encoding.size = {
-                  field: combinationVar.name,
-                  type: combinationVar.type
-                }
-              }
-            }
-            if (selectedQuant[1] !== undefined) {
-              this.variables[selectedQuant[1].id].isUsed = false
-              this.computeBigGraphs()
-            }
-            break
-          default:
-            break
-        }
+      } else {
+        return null
       }
       return encoding
     },
@@ -851,7 +892,11 @@ export default {
         },
         width: 'container',
         mark: {
-          type: selectedVar.length === 1 ? 'bar' : 'point',
+          type:
+            this.filterVariableTypes(selectedVar, null)[0].length === 2 &&
+            this.filterVariableTypes(selectedVar, null)[1].length === 2
+              ? 'point'
+              : 'bar',
           tooltip: true
         },
         encoding
@@ -867,7 +912,10 @@ export default {
           values: data
         },
         width: 'container',
-        mark: { type: 'point', tooltip: true },
+        mark: {
+          type: 'point',
+          tooltip: true
+        },
         encoding
       }
       return graph
