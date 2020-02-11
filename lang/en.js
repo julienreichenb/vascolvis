@@ -151,6 +151,8 @@ export default {
     mail_subject: 'Collaborative chart analysis - ',
     mail_body:
       'I would like to know your opinion about the chart, available here : ',
+    fb_body: 'What do you think about this chart ?',
+    twitter_body: 'What do you think about this chart ?',
     copied: 'Copied !',
     graph_of: 'Chart proposed by ',
     toast_annot_success: 'Annotation successfully saved !',

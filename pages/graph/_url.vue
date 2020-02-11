@@ -37,10 +37,7 @@
                     }}</a>
                   </h2>
                 </div>
-                <AnnotationHelpDialog
-                  :dialog="dialog"
-                  @close="dialog = false"
-                />
+                <AnnotationHelpDialog />
               </v-layout>
             </v-card-text>
             <v-card-text>
@@ -84,7 +81,7 @@ import axios from '~/plugins/axios'
 export default {
   head() {
     return {
-      title: this.$t('title.url'),
+      title: this.$t('title.url') + ' "' + this.chart.name + '"',
       meta: [
         {
           hid: 'url'
@@ -182,6 +179,10 @@ export default {
     this.$root.$on('toggle', (id, top) => {
       this.toggleAnnotation(id, top)
     })
+    this.$root.$on('profile', (id) => {
+      this.goToProfile(id)
+    })
+    setTimeout(() => {}, 1000)
   },
   methods: {
     displayGraph() {
@@ -287,6 +288,12 @@ export default {
     async refreshAnnotations() {
       this.annotLoaded = false
       await this.getAnnotations()
+    },
+    goToProfile(id) {
+      this.$router.push({
+        name: `user-id___${this.$i18n.locale}`,
+        params: { id }
+      })
     }
   }
 }

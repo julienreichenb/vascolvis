@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-btn
-      v-clipboard:copy="getFullUrl()"
+      v-clipboard:copy="url"
       v-clipboard:success="showCopySuccess"
       small
       icon
@@ -40,19 +40,27 @@ export default {
   props: {
     chart: { type: Object, required: true }
   },
+  data() {
+    return {
+      url: ''
+    }
+  },
+  mounted() {
+    this.url = window.location.href
+  },
   methods: {
-    getFullUrl() {
-      return 'http://localhost:3000/graph/' + this.chart.url
-    },
     shareByMail() {
       window.open(
         `mailto:test@example.com?subject=${this.$t('url.mail_subject') +
-          this.chart.name}&body=${this.$t('url.mail_body') + this.getFullUrl()}`
+          this.chart.name}&body=${this.$t('url.mail_body') + this.url}`
       )
     },
     shareOnFacebook() {
       const facebookWindow = window.open(
-        'https://www.facebook.com/sharer/sharer.php?u=' + this.getFullUrl(),
+        'https://www.facebook.com/sharer/sharer.php?u=' +
+          this.url +
+          '&quote=' +
+          this.$t('url.fb_body'),
         'facebook-popup',
         'height=350,width=600'
       )
@@ -63,7 +71,10 @@ export default {
     },
     shareOnTwitter() {
       const twitterWindow = window.open(
-        'https://twitter.com/share?url=' + this.getFullUrl(),
+        'https://twitter.com/share?url=' +
+          this.url +
+          '&text=' +
+          this.$t('url.twitter_body'),
         'twitter-popup',
         'height=350,width=600'
       )

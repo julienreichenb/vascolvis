@@ -157,6 +157,8 @@ export default {
     msg_private: 'Le graphique est maintenant privé.',
     mail_subject: 'Analyse collaborative de graphique - ',
     mail_body: 'Je voudrais ton avis sur le graphique disponible ici : ',
+    fb_body: 'Que pensez-vous de ce graphique ?',
+    twitter_body: 'Que pensez-vous de ce graphique ?',
     copied: 'Copié !',
     graph_of: 'Graphique proposé par ',
     toast_annot_success: 'Annotation enregistrée avec succès !',

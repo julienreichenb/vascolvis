@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="85%">
+  <v-dialog width="85%">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" x-large icon color="white" dark>
         <v-icon>mdi-help-circle-outline</v-icon>
@@ -33,19 +33,7 @@
   </v-dialog>
 </template>
 <script>
-export default {
-  props: {
-    dialog: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    closeDialog() {
-      this.$emit('close')
-    }
-  }
-}
+export default {}
 </script>
 <style scoped>
 h2,

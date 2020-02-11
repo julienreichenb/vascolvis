@@ -22,11 +22,16 @@
     <v-card-text class="pt-2 white--text">
       {{ JSON.parse(annotation.data).rawAnnotation.text }}
       <div class="user-date col-12" style="text-align: right">
-        <a @click="annotation.user ? goToProfile(annotation.user.id) : ''">{{
-          annotation.user
-            ? annotation.user.username
-            : $t('panel.deleted_account')
-        }}</a>
+        <a
+          @click="
+            annotation.user ? $root.$emit('profile', annotation.user.id) : ''
+          "
+          >{{
+            annotation.user
+              ? annotation.user.username
+              : $t('panel.deleted_account')
+          }}</a
+        >
         <p>
           {{ $t('url.posted_at') }}
           {{ timeConverter(JSON.parse(annotation.data).meta.timestamp) }}
@@ -49,12 +54,6 @@ export default {
       const month = a.getMonth() + 1
       const date = a.getDate()
       return date + '.' + month + '.' + year
-    },
-    goToProfile(id) {
-      this.$router.push({
-        name: `user-id___${this.$i18n.locale}`,
-        params: { id }
-      })
     },
     deleteAnnotation(id) {
       axios
