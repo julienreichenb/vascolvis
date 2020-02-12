@@ -142,11 +142,11 @@ export default {
       quant_title: 'Variables quantitatives',
       quant: 'Vous pouvez sélectionner <b>deux</b> variables quantitatives (',
       quant2:
-        '). Celles-ci se combineront automatiquement avec <b>toutes les autres variables quantitatives</b> encore disponibles. Les variables sélectionnées seront sur les <b>axes</b> et la troisième déterminera la <b>taille</b> des marqueurs sur le graphique.',
+        '). Celles-ci se combineront automatiquement avec <b>toutes les autres variables quantitatives</b> encore disponibles. Les variables sélectionnées seront sur les <b>axes</b> et la troisième déterminera la <b>taille</b> des marqueurs sur le graphique. Vous pouvez échanger les axes en cliquant sur ',
       nom_title: 'Variables nominales',
       nom: 'Vous pouvez sélectionner <b>deux</b> variables nominales (',
       nom2:
-        '). Les variables nominales ajouteront respectivement une <b>couleur</b> et une <b>forme</b> aux points sur le graphique.',
+        '). Les variables nominales ajouteront respectivement une <b>couleur</b> et une <b>forme</b> aux points sur le graphique. Vous pouvez échanger les assignations de couleurs et de formes en cliquant sur ',
       temp_title: 'Variables temporelles',
       temp:
         "Vous ne pouvez sélectionner <b>qu'une seule</b> variable temporelle (",

@@ -20,14 +20,18 @@
         <h3>{{ $t('graphs.info.single_title') }}</h3>
         <p v-html="this.$t('graphs.info.single')"></p>
         <h3>
-          <v-icon :color="colors[1]" large>mdi-numeric</v-icon>
+          <v-icon :color="colors[2]" large>mdi-numeric</v-icon>
           -
           {{ $t('graphs.info.quant_title') }}
         </h3>
         <p>
           <span v-html="this.$t('graphs.info.quant')"></span>
-          <v-icon :color="colors[1]">mdi-numeric</v-icon>
+          <v-icon :color="colors[2]">mdi-numeric</v-icon>
           <span v-html="this.$t('graphs.info.quant2')"></span>
+          <v-btn color="red lighten-1" outlined depressed x-small
+            ><v-icon x-small>mdi-autorenew</v-icon>
+            {{ $t('graphs.switch_button') }} </v-btn
+          >.
         </p>
         <h3>
           <v-icon :color="colors[0]" large>mdi-alphabetical</v-icon>
@@ -37,16 +41,20 @@
         <p>
           <span v-html="this.$t('graphs.info.nom')"></span>
           <v-icon :color="colors[0]">mdi-alphabetical</v-icon>
-          <span v-html="this.$t('graphs.info.nom2')"></span>
+          <span v-html="this.$t('graphs.info.nom2')"></span
+          ><v-btn color="blue lighten-1" outlined depressed x-small
+            ><v-icon x-small>mdi-invert-colors</v-icon>
+            {{ $t('graphs.switch_colorshape') }} </v-btn
+          >.
         </p>
         <h3>
-          <v-icon :color="colors[2]" large>mdi-timer</v-icon>
+          <v-icon :color="colors[1]" large>mdi-timer</v-icon>
           -
           {{ $t('graphs.info.temp_title') }}
         </h3>
         <p>
           <span v-html="this.$t('graphs.info.temp')"></span>
-          <v-icon :color="colors[2]">mdi-timer</v-icon>
+          <v-icon :color="colors[1]">mdi-timer</v-icon>
           <span v-html="this.$t('graphs.info.temp2')"></span>
         </p>
         <h2>{{ $t('graphs.info.workspaces_title') }}</h2>

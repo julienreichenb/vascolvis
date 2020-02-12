@@ -141,11 +141,11 @@ export default {
       quant_title: 'Quantitative variables',
       quant: 'You can choose <b>two</b> quantitative variables (',
       quant2:
-        '). Those will be combined with <b>all the other quantitative variables</b> remaining. The selected variables will be on the <b>axes</b> and the third one will vary the <b>size</b> of the chart marks.',
+        '). Those will be combined with <b>all the other quantitative variables</b> remaining. The selected variables will be on the <b>axes</b> and the third one will vary the <b>size</b> of the chart marks. You can switch the axis by clicking ',
       nom_title: 'Variables nominales',
       nom: 'You can choose <b>two</b> nominal variables (',
       nom2:
-        '). The nominal variables will respectively give a <b>color</b> and a <b>shape</b> to the points on the chart.',
+        '). The nominal variables will respectively give a <b>color</b> and a <b>shape</b> to the points on the chart. You can swap the color and the shape assignations by clicking ',
       temp_title: 'Temporal variables',
       temp: 'You can choose <b>only one</b> temporal variable (',
       temp2:

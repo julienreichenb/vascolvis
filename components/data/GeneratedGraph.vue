@@ -14,7 +14,7 @@
             <v-btn
               @click="swap(graph)"
               class="mt-4"
-              color="blue lighten-1"
+              color="red lighten-1"
               outlined
               depressed
               small
@@ -29,7 +29,7 @@
               "
               @click="swapColorShape(graph)"
               class="mt-4"
-              color="red lighten-1"
+              color="blue lighten-1"
               outlined
               depressed
               small
