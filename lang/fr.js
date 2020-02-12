@@ -111,6 +111,19 @@ export default {
     new_ws: 'Nouveau Workspace',
     cancel: 'Annuler',
     delete: 'Supprimer',
+    timeunitlabel: 'Unité temporelle',
+    type: {
+      quantitative: 'Quantitatif',
+      nominal: 'Nominal',
+      temporal: 'Temporel'
+    },
+    timeunits: {
+      yearmonth: 'Par mois',
+      yearquarter: 'Par saison',
+      year: 'Par an',
+      day: 'Par jour',
+      hours: 'Par heure'
+    },
     info: {
       button: "Plus d'informations",
       title: 'Combinaison de variables',

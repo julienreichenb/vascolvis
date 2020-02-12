@@ -22,7 +22,11 @@
               {{ $t('graphs.switch_button') }}
             </v-btn>
             <v-btn
-              v-if="graph.data.encoding.color && graph.data.encoding.shape"
+              v-if="
+                graph.data.encoding &&
+                  graph.data.encoding.color &&
+                  graph.data.encoding.shape
+              "
               @click="swapColorShape(graph)"
               class="mt-4"
               color="red lighten-1"
@@ -61,13 +65,13 @@ export default {
   },
   methods: {
     swap() {
-      this.$emit('swap', this.graph)
+      this.$emit('swap', this.graph.id)
     },
     swapColorShape() {
-      this.$emit('colorshape', this.graph)
+      this.$emit('colorshape', this.graph.id)
     },
     save() {
-      this.$emit('save', this.graph)
+      this.$emit('save', this.graph.id)
     }
   }
 }

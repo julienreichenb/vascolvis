@@ -27,8 +27,8 @@
             </v-toolbar>
             <v-card-text>
               <v-layout justify-space-between>
-                <div v-if="currentUser && currentUser.profile !== undefined">
-                  <h2>
+                <div>
+                  <h2 v-if="currentUser && currentUser.profile !== undefined">
                     {{ $t('url.graph_of')
                     }}<a @click="goToProfile(currentUser.profile.id_user)">{{
                       currentUser.profile.publicname

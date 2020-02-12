@@ -14,10 +14,23 @@
         v-model="variable.type"
         :items="types"
         @change="(selected) => changeType(variable.id, selected)"
+        :item-text="types.text"
+        :item-value="types.value"
         label="Type"
-        item-value="types"
         dense
-      ></v-select>
+      >
+      </v-select>
+      <v-select
+        v-if="variable.type === 'temporal'"
+        v-model="variable.timeUnit"
+        :items="timeUnits"
+        @change="() => changeTimeUnit(variable.id)"
+        :item-text="timeUnits.text"
+        :item-value="timeUnits.value"
+        :label="$t('graphs.timeunitlabel')"
+        dense
+      >
+      </v-select>
       <v-layout justify-space-around align-center>
         <div :id="'sparkline-' + variable.id"></div>
       </v-layout>
@@ -62,12 +75,37 @@ export default {
   },
   data() {
     return {
-      types: ['quantitative', 'nominal', 'temporal']
+      types: [
+        { text: '', value: 'quantitative' },
+        { text: '', value: 'nominal' },
+        { text: '', value: 'temporal' }
+      ],
+      timeUnits: [
+        { text: '', value: 'year' },
+        { text: '', value: 'yearquarter' },
+        { text: '', value: 'yearmonth' },
+        { text: '', value: 'day' },
+        { text: '', value: 'hours' }
+      ]
+    }
+  },
+  created() {
+    for (let i = 0; i < this.types.length; i++) {
+      this.types[i].text = this.$t('graphs.type.' + this.types[i].value)
+    }
+    for (let i = 0; i < this.timeUnits.length; i++) {
+      this.timeUnits[i].text = this.$t(
+        'graphs.timeunits.' + this.timeUnits[i].value
+      )
     }
   },
   methods: {
     changeType(id, selected) {
       this.$emit('change-type', id, selected)
+      this.$forceUpdate()
+    },
+    changeTimeUnit(id, selected) {
+      this.$emit('change-time', id, selected)
       this.$forceUpdate()
     }
   }

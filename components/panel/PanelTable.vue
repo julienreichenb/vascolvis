@@ -31,6 +31,7 @@
         }"
         :items-per-page="parseInt('5', 10)"
         :sort-desc="true"
+        @click:row="handleClicks"
         sort-by="updatedAt"
         item-key="id"
       >
@@ -179,7 +180,10 @@ export default {
       search: '',
       nbOfWorkspaces: [],
       nbOfGraphs: [],
-      nbOfAnnots: []
+      nbOfAnnots: [],
+      /* Double click handling */
+      clicks: 0,
+      lastItemClicked: null
     }
   },
   computed: {
@@ -230,7 +234,6 @@ export default {
         : 'mdi-lock-outline'
     },
     formatDate(datetime) {
-      console.log(datetime)
       const t = new Date(datetime)
       return t.getDate() + '.' + (t.getMonth() + 1) + '.' + t.getFullYear()
     },
@@ -353,6 +356,16 @@ export default {
         .catch((err) => {
           alert(err)
         })
+    },
+    handleClicks(item) {
+      if (this.clicks === 1 && item.id === this.lastItemClicked) {
+        this.goToItem(item)
+      }
+      this.lastItemClicked = item.id
+      this.clicks++
+      setTimeout(() => {
+        this.clicks = 0
+      }, 250)
     }
   }
 }

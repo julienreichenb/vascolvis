@@ -37,6 +37,7 @@
                 <VariableDetails
                   :variable="variable"
                   @change-type="attributeSingleVariableType"
+                  @change-time="changeTimeUnit"
                 />
               </v-expansion-panel>
             </draggable>
@@ -347,6 +348,12 @@ export default {
         this.computeBigGraphs()
       }
     },
+    changeTimeUnit(id) {
+      this.variables[id].isUsed = false
+      this.variables[id].warn = false
+      this.$forceUpdate()
+      this.computeBigGraphs()
+    },
     setDimension(i, type) {
       // Set dimension for each variable
       this.variables[i].type = type
@@ -369,6 +376,7 @@ export default {
           this.variables[i].color = '#4daf4a'
           this.variables[i].icon = 'mdi-timer'
           this.variables[i].warn = !this.isDate(i)
+          this.variables[i].timeUnit = 'year'
           break
       }
       this.computeSparklines()
@@ -460,12 +468,14 @@ export default {
         this.graphs.push(firstGraph)
       }
       const combinationVariables = this.getCombinations()
+      let id = this.graphs.length > 0 ? 1 : 0
       for (let i = 0; i < combinationVariables.length; i++) {
         const tempGraph = {}
-        tempGraph.id = i + 1
+        tempGraph.id = id
         tempGraph.title = this.getTitle(variables, combinationVariables[i])
         tempGraph.data = this.getGraph(variables, combinationVariables[i])
         if (tempGraph.data.encoding) {
+          id++
           this.graphs.push(tempGraph)
         }
       }
@@ -490,9 +500,8 @@ export default {
       }
       return unusedVariables
     },
-    swapAxis(graph) {
-      const id = graph.id
-      const data = graph.data
+    swapAxis(id) {
+      const data = this.graphs[id].data
       let tempX = {}
       if (data.layer) {
         tempX = data.layer[0].encoding.x
@@ -506,15 +515,14 @@ export default {
       this.graphs[id].data = data
       this.renderSingleGraph(id)
     },
-    swapColorAndShape(graph) {
-      const id = graph.id
-      const tempColor = graph.data.encoding.color
+    swapColorAndShape(id) {
+      const tempColor = this.graphs[id].data.encoding.color
       delete tempColor.scale
-      const tempShape = graph.data.encoding.shape
+      const tempShape = this.graphs[id].data.encoding.shape
 
-      graph.data.encoding.shape = tempColor
-      graph.data.encoding.color = tempShape
-      graph.data.encoding.color.scale = { range: this.colors }
+      this.graphs[id].data.encoding.shape = tempColor
+      this.graphs[id].data.encoding.color = tempShape
+      this.graphs[id].data.encoding.color.scale = { range: this.colors }
 
       this.renderSingleGraph(id)
     },
@@ -586,7 +594,8 @@ export default {
           case 'quantitative':
             encoding.x = {
               field: selectedVars[0].name,
-              type: selectedVars[0].type
+              type: selectedVars[0].type,
+              bin: true
             }
             encoding.y = {
               aggregate: 'count',
@@ -595,7 +604,7 @@ export default {
             break
           case 'temporal':
             encoding.x = {
-              timeUnit: 'year',
+              timeUnit: selectedVars[0].timeUnit,
               field: selectedVars[0].name,
               type: selectedVars[0].type
             }
@@ -619,124 +628,107 @@ export default {
         const selectedQuant = this.filterVariableTypes(selectedVars, null)[0]
         const selectedNom = this.filterVariableTypes(selectedVars, null)[1]
         const selectedTemp = this.filterVariableTypes(selectedVars, null)[2]
-        if (selectedQuant.length >= 1) {
-          switch (selectedQuant.length) {
-            case 0:
-              break
-            case 1:
-              encoding.x = {
-                field: selectedQuant[0].name,
-                type: selectedQuant[0].type,
-                bin: true
-              }
-              if (selectedNom.length === 1) {
-                encoding.y = {
-                  aggregate: 'count',
-                  type: 'quantitative'
-                }
-              }
-              break
-            case 2:
-              encoding.x = {
-                field: selectedQuant[0].name,
-                type: selectedQuant[0].type
-              }
-              encoding.y = {
-                field: selectedQuant[1].name,
-                type: selectedQuant[1].type
-              }
-              break
-            case 3:
-              encoding.x = {
-                field: selectedQuant[0].name,
-                type: selectedQuant[0].type
-              }
-              encoding.y = {
-                field: selectedQuant[1].name,
-                type: selectedQuant[1].type
-              }
-              encoding.size = {
-                field: selectedQuant[2].name,
-                type: selectedQuant[2].type
-              }
-              break
-            default:
-              break
+        if (selectedQuant.length === 1) {
+          encoding.x = {
+            field: selectedQuant[0].name,
+            type: selectedQuant[0].type
           }
-          if (selectedNom) {
-            switch (selectedNom.length) {
-              case 0:
-                break
-              case 1:
-                encoding.color = {
-                  field: selectedNom[0].name,
-                  type: selectedNom[0].type,
-                  scale: { range: this.colors }
-                }
-                break
-              case 2:
-                encoding.color = {
-                  field: selectedNom[0].name,
-                  type: selectedNom[0].type,
-                  scale: { range: this.colors }
-                }
-                encoding.shape = {
-                  field: selectedNom[1].name,
-                  type: selectedNom[1].type
-                }
-                break
-              default:
-                break
+          if (selectedNom.length >= 1) {
+            encoding.x.bin = true
+            encoding.y = {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+            encoding.color = {
+              field: selectedNom[0].name,
+              type: selectedNom[0].type,
+              scale: { range: this.colors }
             }
           }
-          if (selectedTemp) {
-            switch (selectedTemp.length) {
-              case 0:
-                break
-              case 1:
-                encoding.x = {
-                  field: selectedTemp[0].name,
-                  type: selectedTemp[0].type,
-                  timeUnit: 'year'
-                }
-                if (selectedQuant[0] !== undefined || selectedQuant[0]) {
-                  encoding.y = {
-                    field: selectedQuant[0].name,
-                    type: selectedQuant[0].type
-                  }
-                }
-                if (selectedQuant[1] !== undefined) {
-                  this.variables[selectedQuant[1].id].isUsed = false
-                  this.computeBigGraphs()
-                }
-                break
-              default:
-                break
+          if (selectedNom.length === 2) {
+            encoding.shape = {
+              field: selectedNom[1].name,
+              type: selectedNom[1].type
             }
           }
-        } else if (
-          selectedNom.length === 1 &&
-          (selectedTemp.length === 1 || selectedQuant.length === 1)
-        ) {
+          if (selectedTemp.length === 1) {
+            encoding.y = encoding.x
+            encoding.x = {
+              field: selectedTemp[0].name,
+              type: selectedTemp[0].type,
+              timeUnit: selectedTemp[0].timeUnit
+            }
+            if (selectedNom.length >= 1) {
+              encoding.color = {
+                field: selectedNom[0].name,
+                type: selectedNom[0].type,
+                scale: { range: this.colors }
+              }
+            }
+            if (selectedNom.length === 2) {
+              encoding.shape = {
+                field: selectedNom[1].name,
+                type: selectedNom[1].type
+              }
+            }
+          }
+        } else if (selectedQuant.length > 1) {
+          encoding.x = {
+            field: selectedQuant[0].name,
+            type: selectedQuant[0].type
+          }
+          encoding.y = {
+            field: selectedQuant[1].name,
+            type: selectedQuant[1].type
+          }
+          if (selectedQuant.length === 3) {
+            encoding.size = {
+              field: selectedQuant[2].name,
+              type: selectedQuant[2].type
+            }
+          }
+          if (selectedNom.length >= 1) {
+            encoding.color = {
+              field: selectedNom[0].name,
+              type: selectedNom[0].type,
+              scale: { range: this.colors }
+            }
+          }
+          if (selectedNom.length === 2) {
+            encoding.shape = {
+              field: selectedNom[1].name,
+              type: selectedNom[1].type
+            }
+          }
+          if (selectedTemp.length === 1) {
+            encoding.y = encoding.x
+            encoding.x = {
+              field: selectedTemp[0].name,
+              type: selectedTemp[0].type,
+              timeUnit: selectedTemp[0].timeUnit
+            }
+            this.variables[selectedQuant[1].id].isUsed = false
+          }
+        } else if (selectedTemp.length > 0 && selectedQuant.length < 1) {
           encoding.x = {
             field: selectedTemp[0].name,
-            type: 'ordinal',
-            timeUnit: 'year'
+            type: selectedTemp[0].type,
+            timeUnit: selectedTemp[0].timeUnit
           }
-          encoding.y = { aggregate: 'count', type: 'quantitative' }
+          encoding.y = {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
           encoding.color = {
             field: selectedNom[0].name,
             type: selectedNom[0].type,
-            scale: {
-              range: this.colors
-            }
+            scale: { range: this.colors }
           }
+        } else {
+          return null
         }
       }
-      if (encoding.x && encoding.y) {
-        return encoding
-      }
-      return null
+      return encoding
     },
     getEncoding(selectedVars, combinationVar) {
       const encoding = {}
@@ -778,7 +770,7 @@ export default {
             }
             break
           default:
-            break
+            return null
         }
         if (selectedNom) {
           switch (selectedNom.length) {
@@ -804,35 +796,27 @@ export default {
               break
           }
         }
-        if (selectedTemp) {
-          switch (selectedTemp.length) {
-            case 0:
-              break
-            case 1:
-              encoding.x = {
-                field: selectedTemp[0].name,
-                type: selectedTemp[0].type,
-                timeUnit: 'year'
+        if (selectedTemp.length) {
+          encoding.x = {
+            field: selectedTemp[0].name,
+            type: selectedTemp[0].type,
+            timeUnit: selectedTemp[0].timeUnit
+          }
+          if (selectedQuant[0] !== undefined || selectedQuant[0]) {
+            encoding.y = {
+              field: selectedQuant[0].name,
+              type: selectedQuant[0].type
+            }
+            if (combinationVar) {
+              encoding.size = {
+                field: combinationVar.name,
+                type: combinationVar.type
               }
-              if (selectedQuant[0] !== undefined || selectedQuant[0]) {
-                encoding.y = {
-                  field: selectedQuant[0].name,
-                  type: selectedQuant[0].type
-                }
-                if (combinationVar) {
-                  encoding.size = {
-                    field: combinationVar.name,
-                    type: combinationVar.type
-                  }
-                }
-              }
-              if (selectedQuant[1] !== undefined) {
-                this.variables[selectedQuant[1].id].isUsed = false
-                this.computeBigGraphs()
-              }
-              break
-            default:
-              break
+            }
+            if (selectedQuant[1] !== undefined) {
+              this.variables[selectedQuant[1].id].isUsed = false
+              this.computeBigGraphs()
+            }
           }
         }
       } else {
@@ -867,7 +851,7 @@ export default {
       } else if (type === 'temporal') {
         return {
           x: {
-            timeUnit: 'year',
+            timeUnit: this.variables[id].timeUnit,
             field: this.variables[id].name,
             type
           },
@@ -893,8 +877,9 @@ export default {
         width: 'container',
         mark: {
           type:
-            this.filterVariableTypes(selectedVar, null)[0].length === 2 &&
-            this.filterVariableTypes(selectedVar, null)[1].length === 2
+            this.filterVariableTypes(selectedVar, null)[0].length > 1 ||
+            (this.filterVariableTypes(selectedVar, null)[0].length === 1 &&
+              this.filterVariableTypes(selectedVar, null)[2].length === 1)
               ? 'point'
               : 'bar',
           tooltip: true
@@ -921,11 +906,11 @@ export default {
       return graph
     },
     /* Saving + Routing */
-    async saveGraph(graph) {
+    async saveGraph(id) {
       await axios
         .post('/charts/save', {
-          name: document.getElementById('title-' + graph.id).innerHTML,
-          data: graph.data,
+          name: document.getElementById('title-' + id).innerHTML,
+          data: this.graphs[id].data,
           public: this.user.defaultpublic,
           id_dataset: this.dataset.id,
           id_user: this.user.id
