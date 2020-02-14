@@ -212,6 +212,7 @@ export default {
       workspace: 'Nb de workspaces associés',
       graph: 'Nb de graphs associés',
       annotation: "Nb d'annotations associées",
+      replies: 'Nb de réponses',
       graph_url: 'Lien vers le graph',
       graph_name: 'Nom du graph',
       actions: 'Actions',

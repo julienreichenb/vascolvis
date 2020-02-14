@@ -124,6 +124,7 @@ datasets.delete('/', (req, res) => {
               })
             }
           }
+          res.send('Success')
         })
       }
     })

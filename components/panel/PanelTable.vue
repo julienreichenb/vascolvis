@@ -97,6 +97,11 @@
             {{ nbOfAnnots.filter((i) => i.id === item.id)[0].nb }}
           </span>
         </template>
+        <template v-slot:item.replies="{ item }">
+          <span>
+            {{ nbOfReplies.filter((i) => i.id === item.id)[0].nb }}
+          </span>
+        </template>
         <template v-slot:item.updatedAt="{ item }">
           <span>
             {{ item.updatedAt ? formatDate(item.updatedAt) : '' }}
@@ -132,7 +137,7 @@
           <v-btn @click="deleteDialog = false" color="grey lighten-3" outlined>
             {{ $t('panel.table.delete_cancel') }}
           </v-btn>
-          <v-btn @click="deleteItem()" color="red darken-2" outlined>
+          <v-btn @click="deleteItem" color="red darken-2" outlined>
             {{ $t('panel.table.delete_ok') }}
           </v-btn>
         </v-card-actions>
@@ -181,6 +186,7 @@ export default {
       nbOfWorkspaces: [],
       nbOfGraphs: [],
       nbOfAnnots: [],
+      nbOfReplies: [],
       /* Double click handling */
       clicks: 0,
       lastItemClicked: null
@@ -268,10 +274,23 @@ export default {
         this.nbOfAnnots.push({ id, nb: res.data })
       })
     },
+    async getNbsOfReplies() {
+      for (let i = 0; i < this.data.length; i++) {
+        await this.getNbOfReplies(this.data[i].id)
+      }
+    },
+    async getNbOfReplies(id) {
+      await axios.get(`/annotations/nbreplies?id=${id}`).then((res) => {
+        this.nbOfReplies.push({ id, nb: res.data })
+      })
+    },
     async getNumbers() {
       await this.getNbsOfWorkspaces()
       await this.getNbsOfGraphs()
       await this.getNbsOfAnnots()
+      if (this.type === 'annotations') {
+        await this.getNbsOfReplies()
+      }
       this.show = true
     },
     /* Buttons methods */
@@ -324,10 +343,15 @@ export default {
     async deleteItem() {
       const item = this.selected
       this.deleteDialog = false
-      await axios.delete(`/${this.type}?id=${item.id}`).then((res) => {
-        this.$toast.success(item.name + this.$t('panel.table.toast_deleted'))
-        this.$emit('refresh')
-      })
+      await axios
+        .delete(`/${this.type}?id=${item.id}`)
+        .then((res) => {
+          this.$toast.success(item.name + this.$t('panel.table.toast_deleted'))
+          this.$emit('refresh', this.type)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     async updatePrivacy(item, bool) {
       await axios

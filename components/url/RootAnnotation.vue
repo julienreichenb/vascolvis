@@ -6,7 +6,11 @@
       color="white"
       large
     >
-      <AnnotationCard :annotation="rootAnnotation" :is-user="isUser" />
+      <AnnotationCard
+        :annotation="rootAnnotation"
+        :is-user="isUser"
+        :id-highlight="idHighlight"
+      />
     </v-timeline-item>
     <ReplyAnnotation
       v-for="annotation in rootAnnotation.replies"
@@ -14,6 +18,7 @@
       :reply-annotation="annotation"
       :id-user="user ? user.id : 0"
       :id-owner="user ? graphOwner.id : 0"
+      :id-highlight="idHighlight"
     />
     <v-timeline-item hide-dot>
       <v-btn
@@ -41,7 +46,8 @@ export default {
   props: {
     rootAnnotation: { type: Object, required: true },
     user: { type: Object, default: null },
-    graphOwner: { type: Object, default: null }
+    graphOwner: { type: Object, default: null },
+    idHighlight: { type: Number, required: false, default: null }
   },
   data() {
     return {

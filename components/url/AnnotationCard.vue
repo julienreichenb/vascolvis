@@ -1,11 +1,21 @@
 <template>
-  <v-card class="elevation-2 grey darken-3">
+  <v-card
+    @click="$root.$emit('highlight', annotation)"
+    class="elevation-2 grey darken-3"
+  >
     <v-card-title
-      @click="$root.$emit('highlight', annotation)"
-      class="headline blue"
+      :class="isHighlighted ? 'blue' : 'indigo'"
+      :style="
+        isHighlighted
+          ? 'border: 1px solid white !important; border-bottom: none'
+          : ''
+      "
+      class="headline"
     >
       <v-layout justify-space-between>
-        <h3>{{ JSON.parse(annotation.data).rawAnnotation.meaning }}</h3>
+        <h3>
+          {{ JSON.parse(annotation.data).rawAnnotation.meaning }}
+        </h3>
         <v-btn
           v-if="isUser"
           @click="deleteAnnotation(annotation.id)"
@@ -19,7 +29,10 @@
         </v-btn>
       </v-layout>
     </v-card-title>
-    <v-card-text class="pt-2 white--text">
+    <v-card-text
+      :style="isHighlighted ? 'border: 1px solid white; border-top: none;' : ''"
+      class="pt-2 white--text"
+    >
       {{ JSON.parse(annotation.data).rawAnnotation.text }}
       <div class="user-date col-12" style="text-align: right">
         <a
@@ -45,7 +58,16 @@ import axios from '~/plugins/axios'
 export default {
   props: {
     annotation: { type: Object, required: true },
-    isUser: { type: Boolean, default: false }
+    isUser: { type: Boolean, default: false },
+    idHighlight: { type: Number, required: false, default: null }
+  },
+  computed: {
+    isHighlighted() {
+      if (this.idHighlight) {
+        return this.idHighlight === this.annotation.id
+      }
+      return false
+    }
   },
   methods: {
     timeConverter(timestamp) {

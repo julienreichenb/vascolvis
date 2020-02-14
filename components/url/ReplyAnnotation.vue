@@ -4,7 +4,11 @@
     :icon-color="getIcon.color"
     color="white"
   >
-    <AnnotationCard :annotation="replyAnnotation" :is-user="isUser" />
+    <AnnotationCard
+      :annotation="replyAnnotation"
+      :is-user="isUser"
+      :id-highlight="idHighlight"
+    />
   </v-timeline-item>
 </template>
 <script>
@@ -18,7 +22,8 @@ export default {
     // eslint-disable-next-line vue/require-prop-types
     idUser: { required: true },
     // eslint-disable-next-line vue/require-prop-types
-    idOwner: { required: true }
+    idOwner: { required: true },
+    idHighlight: { type: Number, required: false, default: null }
   },
   data() {
     return {

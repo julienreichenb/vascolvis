@@ -41,7 +41,7 @@
                   :data="menu.data"
                   :names="names"
                   :urls="urls"
-                  @refresh="refresh(menu.id)"
+                  @refresh="refresh"
                 >
                 </PanelTable>
                 <v-card v-else>
@@ -140,11 +140,15 @@ export default {
           id: 'annotations',
           icon: 'mdi-note-text-outline',
           headers: [
-            { text: 'id', value: 'id', sortable: true },
             {
               text: this.$t('panel.table.graph_name'),
               value: 'id_chart',
               sortable: true
+            },
+            {
+              text: this.$t('panel.table.replies'),
+              value: 'replies',
+              sortable: false
             },
             {
               text: this.$t('panel.table.date'),
@@ -265,17 +269,21 @@ export default {
         })
     },
     refresh(type) {
+      console.log(type)
       switch (type) {
         case 'datasets':
           this.getDatasets(true)
           break
         case 'charts':
           this.getCharts(true)
+          this.getAnnotations(true)
           break
         case 'annotations':
+          this.getCharts(true)
           this.getAnnotations(true)
           break
       }
+      this.$forceUpdate()
     }
   }
 }

@@ -20,7 +20,10 @@
                     </div>
                     <div />
                   </div>
-                  <v-toolbar-title v-text="chart.name" class="white--text" />
+                  <v-toolbar-title
+                    v-text="chart.name"
+                    class="white--text ml-3"
+                  />
                 </v-layout>
                 <SocialSharing v-if="chart" :chart="chart" />
               </v-layout>
@@ -59,6 +62,7 @@
               :loaded="annotLoaded"
               :user="user"
               :graph-owner="currentUser"
+              :id-highlight="annotHighlighted ? annotHighlighted.id : null"
             >
             </AnnotationTabs>
           </v-card>
@@ -107,6 +111,9 @@ export default {
       annotating: false,
       isMyChart: true,
       elements: [],
+      annotHighlighted: null,
+      originGraphDomColors: [],
+      graphClass: '',
       colvisSpecs: {
         visualization: {
           container: '#vis'
@@ -142,6 +149,14 @@ export default {
       }
     }
   },
+  computed: {
+    pluginIsLoaded() {
+      return !(
+        document.getElementsByClassName('col-input-selector')[0].style
+          .height === '0px'
+      )
+    }
+  },
   asyncData({ params, error }) {
     return axios
       .get(`/charts/?url=${params.url}`)
@@ -168,10 +183,11 @@ export default {
     this.init = true
   },
   async mounted() {
-    this.displayGraph()
+    await this.displayGraph()
     await this.getAnnotations()
-    this.$root.$on('highlight', (id) => {
-      this.highlightChart(id)
+    this.getOriginalDomGraph()
+    this.$root.$on('highlight', (annotation) => {
+      this.highlightChart(annotation)
     })
     this.$root.$on('deleted', () => {
       this.refreshAnnotations()
@@ -182,7 +198,10 @@ export default {
     this.$root.$on('profile', (id) => {
       this.goToProfile(id)
     })
-    setTimeout(() => {}, 1000)
+    // Workaround the plugin loading
+    if (!this.pluginIsLoaded) {
+      this.$router.go()
+    }
   },
   methods: {
     displayGraph() {
@@ -193,23 +212,53 @@ export default {
         for (let i = 0; i < headers.length; i++) {
           this.colvisSpecs.natures[0].annotable.title.push(headers[i])
         }
-        this.$nextTick(() => {
-          this.$colvis.initialize({ specs: this.colvisSpecs })
-        })
+        console.log(this.colvisSpecs.natures[0].annotable.title)
+        this.$colvis.initialize({ specs: this.colvisSpecs })
       })
     },
     toggleAnnotation(idRoot, scrollTop) {
+      this.resetHighlights()
       this.currentRoot = idRoot
       if (scrollTop) {
-        window.scrollTo(0, 0)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
       this.annotating = !this.annotating
     },
-    highlightChart(annotation) {
-      window.scrollTo(0, 0)
-      this.displayHighlight(JSON.parse(annotation.data).dataUnits)
+    async highlightChart(annotation) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      this.resetHighlights()
+      this.annotHighlighted = annotation
+      await this.displayHighlight(
+        this.$colvis.getAnnotationDataBinders(JSON.parse(annotation.data)),
+        this.$colvis.getAnnotationDataBinders(
+          JSON.parse(annotation.data),
+          'complement'
+        )
+      )
     },
-    displayHighlight(points) {},
+    displayHighlight(subjects, complements) {
+      for (let i = 0; i < subjects.length; i++) {
+        subjects[i].domElement.style.fill = '#ff0000'
+        subjects[i].domElement.style.stroke = '#ff0000'
+      }
+      for (let i = 0; i < complements.length; i++) {
+        complements[i].domElement.style.fill = '#00ff00'
+        complements[i].domElement.style.stroke = '#00ff00'
+      }
+    },
+    resetHighlights() {
+      this.annotHighlighted = null
+      for (let i = 0; i < this.originGraphDomColors.length; i++) {
+        // eslint-disable-next-line standard/computed-property-even-spacing
+        document.getElementsByClassName(this.graphClass)[0].children[
+          i
+        ].style.fill = this.originGraphDomColors[i].fill
+        // eslint-disable-next-line standard/computed-property-even-spacing
+        document.getElementsByClassName(this.graphClass)[0].children[
+          i
+        ].style.stroke = this.originGraphDomColors[i].stroke
+      }
+    },
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
         this.currentUser = res.data
@@ -231,6 +280,25 @@ export default {
           // eslint-disable-next-line
           console.log(error)
         })
+    },
+    getOriginalDomGraph() {
+      this.graphClass =
+        document.getElementsByClassName('mark-rect role-mark marks')[0] !==
+        undefined
+          ? 'mark-rect role-mark marks'
+          : 'mark-symbol role-mark marks'
+      const domLength = document.getElementsByClassName(this.graphClass)[0]
+        .children.length
+      for (let i = 0; i < domLength; i++) {
+        this.originGraphDomColors.push({
+          fill: document.getElementsByClassName(this.graphClass)[0].children[i]
+            .style.fill,
+          // eslint-disable-next-line standard/computed-property-even-spacing
+          stroke: document.getElementsByClassName(this.graphClass)[0].children[
+            i
+          ].style.stroke
+        })
+      }
     },
     async getReplyAnnotations() {
       for (let i = 0; i < this.rootAnnotations.length; i++) {
@@ -288,6 +356,7 @@ export default {
     async refreshAnnotations() {
       this.annotLoaded = false
       await this.getAnnotations()
+      this.resetHighlights()
     },
     goToProfile(id) {
       this.$router.push({

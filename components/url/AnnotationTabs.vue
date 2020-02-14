@@ -6,7 +6,11 @@
       slider-color="white"
       color="blue"
     >
-      <v-tab v-for="rootAnnotation in annotations" :key="rootAnnotation.id">
+      <v-tab
+        @click="$root.$emit('highlight', rootAnnotation)"
+        v-for="rootAnnotation in annotations"
+        :key="rootAnnotation.id"
+      >
         {{ JSON.parse(rootAnnotation.data).rawAnnotation.meaning }} ({{
           rootAnnotation.replies.length
         }}
@@ -24,6 +28,7 @@
           :root-annotation="rootAnnotation"
           :user="user"
           :graph-owner="graphOwner"
+          :id-highlight="idHighlight"
         />
       </v-tab-item>
     </v-tabs>
@@ -39,7 +44,8 @@ export default {
     annotations: { type: Array, required: true },
     loaded: { type: Boolean, default: false },
     user: { type: Object, required: true },
-    graphOwner: { type: Object, required: true }
+    graphOwner: { type: Object, required: true },
+    idHighlight: { type: Number, required: false, default: null }
   }
 }
 </script>

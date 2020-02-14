@@ -205,6 +205,7 @@ export default {
       workspace: 'Nb of associated workspaces',
       graph: 'Nb of associated charts',
       annotation: 'Nb of associated annotations',
+      replies: 'Nb of replies',
       graph_url: 'Chart link',
       graph_name: 'Chart name',
       actions: 'Actions',

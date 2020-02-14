@@ -157,7 +157,56 @@ annotations.get('/nb', (req, res) => {
 })
 
 /*
- ** DELETE A ANNOTATION WITH ID
+ ** GET NB OF REPLIES
+ */
+annotations.get('/nbreplies', (req, res) => {
+  Annotation.findOne({
+    where: {
+      id: req.query.id
+    }
+  })
+    .then((annotation) => {
+      if (annotation.parent_annotation !== 0) {
+        Annotation.findAll({
+          where: {
+            parent_annotation: annotation.parent_annotation
+          }
+        })
+          .then((replies) => {
+            if (replies) {
+              res.status(200).json(replies.length)
+            } else {
+              res.status(200).json(null)
+            }
+          })
+          .catch((error) => {
+            res.status(400).json({ error })
+          })
+      } else {
+        Annotation.findAll({
+          where: {
+            parent_annotation: annotation.id
+          }
+        })
+          .then((replies) => {
+            if (replies) {
+              res.status(200).json(replies.length)
+            } else {
+              res.status(200).json(null)
+            }
+          })
+          .catch((error) => {
+            res.status(400).json({ error })
+          })
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error })
+    })
+})
+
+/*
+ ** DELETE AN ANNOTATION WITH ID
  */
 annotations.delete('/', (req, res) => {
   Annotation.destroy({
