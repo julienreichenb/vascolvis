@@ -8,7 +8,8 @@
     >
       <AnnotationCard
         :annotation="rootAnnotation"
-        :is-user="isUser"
+        :id-user="user.id"
+        :id-owner="graphOwner.id"
         :id-highlight="idHighlight"
       />
     </v-timeline-item>
@@ -27,7 +28,7 @@
         depressed
         outlined
       >
-        <v-icon>
+        <v-icon class="mr-1">
           mdi-plus-circle-outline
         </v-icon>
         {{ $t('url.reply_annot') }}

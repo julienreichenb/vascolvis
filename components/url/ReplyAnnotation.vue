@@ -6,7 +6,8 @@
   >
     <AnnotationCard
       :annotation="replyAnnotation"
-      :is-user="isUser"
+      :id-user="idUser"
+      :id-owner="idOwner"
       :id-highlight="idHighlight"
     />
   </v-timeline-item>

@@ -44,14 +44,27 @@
               </v-layout>
             </v-card-text>
             <v-card-text>
-              <v-btn
-                @click="toggleAnnotation(0, true)"
-                color="white"
-                class="mb-2"
-                depressed
-                outlined
-                >{{ $t('url.add_annot') }}</v-btn
-              >
+              <v-layout class="mb-2">
+                <v-btn
+                  @click="toggleAnnotation(0, true)"
+                  color="white"
+                  depressed
+                  outlined
+                >
+                  <v-icon class="mr-1"> mdi-plus-circle-outline </v-icon>
+                  {{ $t('url.add_annot') }}</v-btn
+                >
+                <v-btn
+                  v-if="annotHighlighted"
+                  @click="resetHighlights"
+                  class="ml-2"
+                  color="yellow darken-2"
+                  depressed
+                  outlined
+                >
+                  <v-icon>mdi-broom</v-icon> {{ $t('url.clean_annot') }}
+                </v-btn>
+              </v-layout>
               <div id="vis-container" style="width: 100%; text-align: center;">
                 <div id="vis" class="resize-graph"></div>
               </div>
@@ -209,12 +222,82 @@ export default {
       this.json.width = 'container'
       window.vegaEmbed('#vis', this.json, { renderer: 'svg' }).then((view) => {
         const headers = Object.keys(this.json.data.values[0])
-        for (let i = 0; i < headers.length; i++) {
-          this.colvisSpecs.natures[0].annotable.title.push(headers[i])
-        }
-        console.log(this.colvisSpecs.natures[0].annotable.title)
+        this.fillNatures(headers)
         this.$colvis.initialize({ specs: this.colvisSpecs })
       })
+    },
+    fillNatures(headers) {
+      if (!this.isBinned()) {
+        if (this.isUsingDate()) {
+          this.computeDateHeaders(headers)
+        } else {
+          for (let i = 0; i < headers.length; i++) {
+            this.colvisSpecs.natures[0].annotable.title.push(headers[i])
+          }
+        }
+      } else {
+        this.computeBinnedHeaders(headers)
+      }
+    },
+    computeDateHeaders(headers) {
+      const tempVar = this.isUsingDate()
+      for (let i = 0; i < headers.length; i++) {
+        if (tempVar.field === headers[i]) {
+          this.colvisSpecs.natures[0].annotable.title.push(
+            tempVar.timeUnit + '_' + tempVar.field
+          )
+          this.colvisSpecs.natures[0].annotable.title.push(
+            tempVar.timeUnit + '_' + tempVar.field + '_end'
+          )
+        } else {
+          this.colvisSpecs.natures[0].annotable.title.push(headers[i])
+        }
+      }
+    },
+    computeBinnedHeaders(headers) {
+      const binnedVar = this.isBinned()
+      for (let i = 0; i < headers.length; i++) {
+        if (binnedVar.field === headers[i]) {
+          this.colvisSpecs.natures[0].annotable.title.push(
+            'bin_maxbins_10_' + binnedVar.field
+          )
+          this.colvisSpecs.natures[0].annotable.title.push(
+            'bin_maxbins_10_' + binnedVar.field + '_end'
+          )
+        } else {
+          this.colvisSpecs.natures[0].annotable.title.push(headers[i])
+        }
+      }
+    },
+    isUsingDate() {
+      if (this.json.encoding.x.type === 'temporal') {
+        return {
+          field: this.json.encoding.x.field,
+          type: this.json.encoding.x.type,
+          timeUnit: this.json.encoding.x.timeUnit
+        }
+      } else if (this.json.encoding.y.type === 'temporal') {
+        return {
+          field: this.json.encoding.y.field,
+          type: this.json.encoding.y.type,
+          timeUnit: this.json.encoding.y.timeUnit
+        }
+      }
+      return false
+    },
+    isBinned() {
+      if (this.json.encoding.x.bin) {
+        return {
+          field: this.json.encoding.x.field,
+          type: this.json.encoding.x.type
+        }
+      } else if (this.json.encoding.y.bin) {
+        return {
+          field: this.json.encoding.y.field,
+          type: this.json.encoding.y.type
+        }
+      }
+      return false
     },
     toggleAnnotation(idRoot, scrollTop) {
       this.resetHighlights()
@@ -237,13 +320,26 @@ export default {
       )
     },
     displayHighlight(subjects, complements) {
+      this.greyNotSelectedObjects()
       for (let i = 0; i < subjects.length; i++) {
-        subjects[i].domElement.style.fill = '#ff0000'
-        subjects[i].domElement.style.stroke = '#ff0000'
+        subjects[i].domElement.style.fill = 'rgba(255, 0, 0, 0.3)'
+        subjects[i].domElement.style.stroke = 'rgba(255, 0, 0, 0.8)'
       }
       for (let i = 0; i < complements.length; i++) {
-        complements[i].domElement.style.fill = '#00ff00'
-        complements[i].domElement.style.stroke = '#00ff00'
+        complements[i].domElement.style.fill = 'rgba(0, 255, 0, 0.3)'
+        complements[i].domElement.style.stroke = 'rgba(0, 255, 0, 0.8)'
+      }
+    },
+    greyNotSelectedObjects() {
+      for (let i = 0; i < this.originGraphDomColors.length; i++) {
+        // eslint-disable-next-line standard/computed-property-even-spacing
+        document.getElementsByClassName(this.graphClass)[0].children[
+          i
+        ].style.fill = 'rgba(100, 100, 100, 0.3)'
+        // eslint-disable-next-line standard/computed-property-even-spacing
+        document.getElementsByClassName(this.graphClass)[0].children[
+          i
+        ].style.stroke = 'rgba(100, 100, 100, 0.8)'
       }
     },
     resetHighlights() {

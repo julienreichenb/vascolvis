@@ -269,7 +269,6 @@ export default {
         })
     },
     refresh(type) {
-      console.log(type)
       switch (type) {
         case 'datasets':
           this.getDatasets(true)

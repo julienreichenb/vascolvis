@@ -158,6 +158,7 @@ export default {
     public: 'Public',
     private: 'Private',
     add_annot: 'Add an annotation',
+    clean_annot: 'Remove the annotation',
     reply_annot: 'Reply',
     msg_public: 'The chart is now public.',
     msg_private: 'The chart is now private.',

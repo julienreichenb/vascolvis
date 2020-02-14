@@ -11,9 +11,15 @@
         v-for="rootAnnotation in annotations"
         :key="rootAnnotation.id"
       >
-        {{ JSON.parse(rootAnnotation.data).rawAnnotation.meaning }} ({{
-          rootAnnotation.replies.length
+        {{
+          JSON.parse(rootAnnotation.data).rawAnnotation.meaning.length > 18
+            ? JSON.parse(rootAnnotation.data).rawAnnotation.meaning.substring(
+                0,
+                15
+              ) + '...'
+            : JSON.parse(rootAnnotation.data).rawAnnotation.meaning
         }}
+        ({{ rootAnnotation.replies.length }}
         {{
           rootAnnotation.replies.length > 1
             ? $t('url.answers')

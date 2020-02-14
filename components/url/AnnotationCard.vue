@@ -17,7 +17,7 @@
           {{ JSON.parse(annotation.data).rawAnnotation.meaning }}
         </h3>
         <v-btn
-          v-if="isUser"
+          v-if="annotation.user.id === idUser"
           @click="deleteAnnotation(annotation.id)"
           icon
           small
@@ -39,11 +39,7 @@
           @click="
             annotation.user ? $root.$emit('profile', annotation.user.id) : ''
           "
-          >{{
-            annotation.user
-              ? annotation.user.username
-              : $t('panel.deleted_account')
-          }}</a
+          >{{ annotation.user ? username : $t('panel.deleted_account') }}</a
         >
         <p>
           {{ $t('url.posted_at') }}
@@ -58,8 +54,17 @@ import axios from '~/plugins/axios'
 export default {
   props: {
     annotation: { type: Object, required: true },
-    isUser: { type: Boolean, default: false },
+    // eslint-disable-next-line vue/require-prop-types
+    idUser: { required: true },
+    // eslint-disable-next-line vue/require-prop-types
+    idOwner: { required: true },
     idHighlight: { type: Number, required: false, default: null }
+  },
+  data() {
+    return {
+      isUser: false,
+      username: ''
+    }
   },
   computed: {
     isHighlighted() {
@@ -68,6 +73,13 @@ export default {
       }
       return false
     }
+  },
+  mounted() {
+    this.isUser =
+      this.user && this.rootAnnotation.user
+        ? this.user.id === this.rootAnnotation.user.id
+        : false
+    this.getUsername()
   },
   methods: {
     timeConverter(timestamp) {
@@ -86,6 +98,19 @@ export default {
         })
         .catch(() => {
           this.$toast.error(this.$t('url.toast_annot_error'))
+        })
+    },
+    async getUsername() {
+      await axios
+        .get(`/users/names?id=${this.idUser}`)
+        .then((res) => {
+          this.username = res.data.publicname
+            ? res.data.publicname
+            : res.data.username
+        })
+        .catch((error) => {
+          console.log(error)
+          this.username = ''
         })
     }
   }

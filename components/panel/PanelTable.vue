@@ -222,7 +222,9 @@ export default {
       const id = item.id_chart
       for (let i = 0; i < this.urls.length; i++) {
         if (this.urls[i] && this.urls[i].id === id) {
-          return this.urls[i].name.substring(0, 30)
+          return this.urls[i].name.length > 45
+            ? this.urls[i].name.substring(0, 45) + '...'
+            : this.urls[i].name
         }
       }
     },

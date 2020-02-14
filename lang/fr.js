@@ -163,6 +163,7 @@ export default {
     public: 'Public',
     private: 'Privé',
     add_annot: 'Ajouter une annotation',
+    clean_annot: "Retirer l'annotation",
     reply_annot: 'Répondre',
     msg_name: 'Votre ',
     msg_name2: ' a été renommé avec succès !',
