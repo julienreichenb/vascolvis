@@ -44,30 +44,123 @@
               </v-layout>
             </v-card-text>
             <v-card-text>
-              <v-layout class="mb-2">
-                <v-btn
-                  @click="toggleAnnotation(0, true)"
-                  color="white"
-                  depressed
-                  outlined
-                >
-                  <v-icon class="mr-1"> mdi-plus-circle-outline </v-icon>
-                  {{ $t('url.add_annot') }}</v-btn
-                >
-                <v-btn
-                  v-if="annotHighlighted"
-                  @click="resetHighlights"
-                  class="ml-2"
-                  color="yellow darken-2"
-                  depressed
-                  outlined
-                >
-                  <v-icon>mdi-broom</v-icon> {{ $t('url.clean_annot') }}
-                </v-btn>
+              <v-layout class="mb-2" justify-space-between>
+                <div>
+                  <v-btn
+                    @click="toggleAnnotation(0, true)"
+                    color="white"
+                    depressed
+                    outlined
+                  >
+                    <v-icon class="mr-1"> mdi-plus-circle-outline </v-icon>
+                    {{ $t('url.add_annot') }}</v-btn
+                  >
+                  <v-btn
+                    v-if="annotHighlighted"
+                    @click="
+                      resetHighlights()
+                      resetBooleans()
+                    "
+                    class="ml-2"
+                    color="yellow darken-2"
+                    depressed
+                    outlined
+                  >
+                    <v-icon>mdi-broom</v-icon> {{ $t('url.clean_annot') }}
+                  </v-btn>
+                </div>
+                <div v-if="hasComplement">
+                  <v-btn
+                    v-if="subjectHighlighted || complementHighlighted"
+                    @click="
+                      unhighlightSubject()
+                      unhighlightComplement()
+                    "
+                    class="mb-1"
+                    color="white"
+                    icon
+                    small
+                  >
+                    <v-icon>mdi-restore</v-icon>
+                  </v-btn>
+                  <v-btn
+                    :color="
+                      subjectHighlighted ? 'blue darken-1' : 'grey darken-1'
+                    "
+                    @click="toggleSubjectButton"
+                    style="margin-right: -4px; border-right: 1px solid #aaa !important;"
+                    depressed
+                    tile
+                  >
+                    <v-icon class="mr-1">{{
+                      subjectHighlighted
+                        ? 'mdi-lightbulb-on-outline'
+                        : 'mdi-lightbulb-outline'
+                    }}</v-icon>
+                    {{ $t('url.subject') }}
+                  </v-btn>
+                  <v-btn
+                    :color="
+                      complementHighlighted ? 'blue darken-1' : 'grey darken-1'
+                    "
+                    @click="toggleComplementButton"
+                    depressed
+                    tile
+                  >
+                    <v-icon class="mr-1">{{
+                      complementHighlighted
+                        ? 'mdi-lightbulb-on-outline'
+                        : 'mdi-lightbulb-outline'
+                    }}</v-icon>
+                    {{ $t('url.complement') }}
+                  </v-btn>
+                </div>
               </v-layout>
               <div id="vis-container" style="width: 100%; text-align: center;">
                 <div id="vis" class="resize-graph"></div>
               </div>
+              <v-layout
+                v-if="hasComplement"
+                class="annot-legend"
+                justify-space-around
+              >
+                <div class="subject">
+                  <div
+                    :class="
+                      subjectHighlighted || complementHighlighted
+                        ? 'mute-rectangle'
+                        : ''
+                    "
+                    class="rectangle"
+                  ></div>
+                  <span
+                    :class="
+                      subjectHighlighted || complementHighlighted
+                        ? 'mute-legend'
+                        : ''
+                    "
+                    >{{ computeLegend('subject') }}</span
+                  >
+                </div>
+                <div class="complement">
+                  <div
+                    :class="
+                      subjectHighlighted || complementHighlighted
+                        ? 'mute-rectangle'
+                        : ''
+                    "
+                    class="rectangle"
+                  ></div>
+                  <span
+                    :class="
+                      subjectHighlighted || complementHighlighted
+                        ? 'mute-legend'
+                        : ''
+                    "
+                    >{{ computeLegend('complement') }}</span
+                  >
+                </div>
+              </v-layout>
             </v-card-text>
             <AnnotationTabs
               ref="annotations"
@@ -125,6 +218,9 @@ export default {
       isMyChart: true,
       elements: [],
       annotHighlighted: null,
+      hasComplement: false,
+      subjectHighlighted: false,
+      complementHighlighted: false,
       originGraphDomColors: [],
       graphClass: '',
       colvisSpecs: {
@@ -201,6 +297,8 @@ export default {
     this.getOriginalDomGraph()
     this.$root.$on('highlight', (annotation) => {
       this.highlightChart(annotation)
+      this.subjectHighlighted = false
+      this.complementHighlighted = false
     })
     this.$root.$on('deleted', () => {
       this.refreshAnnotations()
@@ -301,6 +399,7 @@ export default {
     },
     toggleAnnotation(idRoot, scrollTop) {
       this.resetHighlights()
+      this.resetBooleans()
       this.currentRoot = idRoot
       if (scrollTop) {
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -312,7 +411,9 @@ export default {
       this.resetHighlights()
       this.annotHighlighted = annotation
       await this.displayHighlight(
-        this.$colvis.getAnnotationDataBinders(JSON.parse(annotation.data)),
+        this.$colvis.getAnnotationDataBinders(
+          JSON.parse(this.annotHighlighted.data)
+        ),
         this.$colvis.getAnnotationDataBinders(
           JSON.parse(annotation.data),
           'complement'
@@ -320,26 +421,111 @@ export default {
       )
     },
     displayHighlight(subjects, complements) {
-      this.greyNotSelectedObjects()
+      this.hasComplement = complements.length > 0
+      this.greyNotSelectedObjects(subjects, complements, null)
       for (let i = 0; i < subjects.length; i++) {
-        subjects[i].domElement.style.fill = 'rgba(255, 0, 0, 0.3)'
-        subjects[i].domElement.style.stroke = 'rgba(255, 0, 0, 0.8)'
+        subjects[i].domElement.style.fill = 'rgba(0, 136, 55, 0.3)'
+        subjects[i].domElement.style.stroke = 'rgba(0, 136, 55, 0.8)'
       }
       for (let i = 0; i < complements.length; i++) {
-        complements[i].domElement.style.fill = 'rgba(0, 255, 0, 0.3)'
-        complements[i].domElement.style.stroke = 'rgba(0, 255, 0, 0.8)'
+        complements[i].domElement.style.fill = 'rgba(123, 50, 148, 0.3)'
+        complements[i].domElement.style.stroke = 'rgba(123, 50, 148, 0.8)'
       }
     },
-    greyNotSelectedObjects() {
+    toggleSubjectButton() {
+      if (this.subjectHighlighted) {
+        this.unhighlightSubject()
+      } else {
+        this.subjectOnly()
+      }
+    },
+    subjectOnly() {
+      this.subjectHighlighted = true
+      this.unhighlightComplement()
+      const subjects = this.$colvis.getAnnotationDataBinders(
+        JSON.parse(this.annotHighlighted.data)
+      )
+      this.greyNotSelectedObjects(subjects, [])
+      this.reapplyOriginalColors(subjects)
+    },
+    unhighlightSubject() {
+      this.subjectHighlighted = false
+      this.highlightChart(this.annotHighlighted)
+    },
+    toggleComplementButton() {
+      if (this.complementHighlighted) {
+        this.unhighlightComplement()
+      } else {
+        this.complementOnly()
+      }
+    },
+    complementOnly() {
+      this.complementHighlighted = true
+      this.unhighlightSubject()
+      const complements = this.$colvis.getAnnotationDataBinders(
+        JSON.parse(this.annotHighlighted.data),
+        'complement'
+      )
+      this.greyNotSelectedObjects(complements, [])
+      this.reapplyOriginalColors(complements)
+    },
+    unhighlightComplement() {
+      this.complementHighlighted = false
+      this.highlightChart(this.annotHighlighted)
+    },
+    greyNotSelectedObjects(subjects, complements) {
       for (let i = 0; i < this.originGraphDomColors.length; i++) {
         // eslint-disable-next-line standard/computed-property-even-spacing
         document.getElementsByClassName(this.graphClass)[0].children[
           i
-        ].style.fill = 'rgba(100, 100, 100, 0.3)'
+        ].style.fill = 'rgba(100, 100, 100, 0.1)'
         // eslint-disable-next-line standard/computed-property-even-spacing
         document.getElementsByClassName(this.graphClass)[0].children[
           i
-        ].style.stroke = 'rgba(100, 100, 100, 0.8)'
+        ].style.stroke = 'rgba(100, 100, 100, 0.3)'
+      }
+      if (complements.length < 1) {
+        this.$nextTick(() => {
+          this.reapplyOriginalColors(subjects)
+        })
+      }
+    },
+    reapplyOriginalColors(selected) {
+      for (
+        let i = 0;
+        i < document.getElementsByClassName(this.graphClass)[0].children.length;
+        i++
+      ) {
+        for (let j = 0; j < selected.length; j++) {
+          if (this.isSamePoint(selected[j], i)) {
+            // eslint-disable-next-line standard/computed-property-even-spacing
+            selected[j].domElement.style.fill = this.originGraphDomColors[
+              i
+            ].fill
+            // eslint-disable-next-line standard/computed-property-even-spacing
+            selected[j].domElement.style.stroke = this.originGraphDomColors[
+              i
+            ].stroke
+          }
+        }
+      }
+    },
+    isSamePoint(selected, i) {
+      if (this.graphClass === 'mark-rect role-mark marks') {
+        return (
+          selected.domElement.attributes[0].value ===
+          document.getElementsByClassName(this.graphClass)[0].children[i]
+            .attributes[0].value
+        )
+      } else if (this.graphClass === 'mark-symbol role-mark marks') {
+        return (
+          selected.domElement.transform.baseVal[0].matrix.e ===
+            document.getElementsByClassName(this.graphClass)[0].children[i]
+              .transform.baseVal[0].matrix.e &&
+          selected.domElement.transform.baseVal[0].matrix.f ===
+            document.getElementsByClassName(this.graphClass)[0].children[i]
+              .transform.baseVal[0].matrix.f
+        )
       }
     },
     resetHighlights() {
@@ -354,6 +540,11 @@ export default {
           i
         ].style.stroke = this.originGraphDomColors[i].stroke
       }
+    },
+    resetBooleans() {
+      this.hasComplement = false
+      this.subjectHighlighted = false
+      this.complementHighlighted = false
     },
     async getUser() {
       await axios.get(`/users/?id=${this.chart.id_user}`).then((res) => {
@@ -453,6 +644,33 @@ export default {
       this.annotLoaded = false
       await this.getAnnotations()
       this.resetHighlights()
+      this.resetBooleans()
+    },
+    computeLegend(type) {
+      if (type === 'subject') {
+        return (
+          ' - ' +
+          (JSON.parse(this.annotHighlighted.data).rawAnnotation.subjectName !==
+          undefined
+            ? JSON.parse(this.annotHighlighted.data).rawAnnotation.subjectName +
+              ' (' +
+              this.$t('url.subject') +
+              ')'
+            : this.$t('url.subject'))
+        )
+      } else {
+        return (
+          ' - ' +
+          (JSON.parse(this.annotHighlighted.data).rawAnnotation
+            .complementName !== undefined
+            ? JSON.parse(this.annotHighlighted.data).rawAnnotation
+                .complementName +
+              ' (' +
+              this.$t('url.complement') +
+              ')'
+            : this.$t('url.complement'))
+        )
+      }
     },
     goToProfile(id) {
       this.$router.push({
@@ -465,6 +683,46 @@ export default {
 </script>
 
 <style>
+.annot-legend {
+  color: black;
+  margin-top: -0.5em;
+  padding: 1.5em 0;
+  background-color: white;
+}
+
+.rectangle {
+  width: 4em;
+  height: 2em;
+  margin-bottom: 0.3em;
+  margin-right: 0.5em;
+}
+
+.subject .rectangle {
+  background-color: rgba(0, 136, 55, 0.3);
+  border: 2px solid rgba(0, 136, 55, 0.8);
+}
+
+.complement .rectangle {
+  background-color: rgba(123, 50, 148, 0.3);
+  border: 2px solid rgba(123, 50, 148, 0.8);
+}
+
+.mute-legend {
+  color: #7f828b;
+}
+
+.mute-rectangle {
+  background-color: rgba(100, 100, 100, 0.3) !important;
+  border: 2px solid rgba(100, 100, 100, 0.8) !important;
+}
+
+.subject,
+.complement {
+  display: flex;
+  line-height: 2em;
+  font-weight: bold;
+}
+
 .resize-graph {
   width: 100%;
   overflow: auto;

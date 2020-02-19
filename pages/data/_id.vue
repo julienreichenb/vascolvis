@@ -225,24 +225,20 @@ export default {
       /* From Tableau 20 */
       colors: [
         '#4E79A7',
-        '#59A14F',
         '#E15759',
         '#F28E2B',
         '#499894',
-        '#B6992D',
         '#FABFD2',
         '#79706E',
         '#A0CBE8',
+        '#B6992D',
         '#FF9D9A',
-        '#F1CE63',
         '#D37295',
         '#FFBE7D',
         '#BAB0AC',
-        '#D4A6C8',
         '#9D7660',
-        '#8CD17D',
         '#86BCB6',
-        '#B07AA1',
+        '#F1CE63',
         '#D7B5A6'
       ],
       /* DATE FILTER */

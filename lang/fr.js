@@ -181,6 +181,8 @@ export default {
     posted_at: 'posté le',
     answer: 'réponse',
     answers: 'réponses',
+    subject: 'Sujet',
+    complement: 'Complément',
     info: {
       title: 'Annotation du graphique',
       intro:

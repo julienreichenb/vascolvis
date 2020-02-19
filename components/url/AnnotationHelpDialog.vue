@@ -12,12 +12,13 @@
       <v-card-text>
         <p>
           {{ $t('url.info.intro') }}
-          <v-btn depressed outlined x-small color="white">{{
-            $t('url.add_annot')
-          }}</v-btn>
+          <v-btn depressed outlined x-small color="white">
+            <v-icon x-small class="mr-1"> mdi-plus-circle-outline </v-icon
+            >{{ $t('url.add_annot') }}</v-btn
+          >
           {{ $t('url.info.intro_2') }}
           <v-btn color="green lighten-2" depressed outlined x-small>
-            <v-icon x-small>
+            <v-icon x-small class="mr-1">
               mdi-plus-circle-outline
             </v-icon>
             {{ $t('url.reply_annot') }}

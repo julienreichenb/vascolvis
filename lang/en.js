@@ -175,6 +175,8 @@ export default {
     posted_at: 'posted at',
     answer: 'answer',
     answers: 'answers',
+    subject: 'Subject',
+    complement: 'Complement',
     info: {
       title: 'Chart annotation',
       intro: 'You can share your views by annotating the chart. The button ',
