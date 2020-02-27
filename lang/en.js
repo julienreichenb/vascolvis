@@ -177,6 +177,7 @@ export default {
     answers: 'answers',
     subject: 'Subject',
     complement: 'Complement',
+    by: 'By',
     info: {
       title: 'Chart annotation',
       intro: 'You can share your views by annotating the chart. The button ',

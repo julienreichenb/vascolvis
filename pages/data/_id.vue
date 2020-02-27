@@ -1,5 +1,6 @@
 <template>
   <div v-if="dataset" v-show="show">
+    <DrawerButton :drawer="drawer.variables" @open="drawer.variables = true" />
     <v-container fluid fill-height>
       <v-layout flex align-center justify-space-around>
         <v-navigation-drawer
@@ -87,10 +88,6 @@
                   </v-tabs>
                 </template>
                 <v-layout justify-space-between>
-                  <DrawerButton
-                    :drawer="drawer.variables"
-                    @open="drawer.variables = true"
-                  />
                   <h1 v-text="dataset.name" class="white--text" />
                   <GraphHelpDialog
                     :dialog="dialog"
@@ -347,8 +344,10 @@ export default {
     changeTimeUnit(id) {
       this.variables[id].isUsed = false
       this.variables[id].warn = false
-      this.$forceUpdate()
+      this.computeSparkline(id)
+      this.renderSingleSparkline(id)
       this.computeBigGraphs()
+      this.$forceUpdate()
     },
     setDimension(i, type) {
       // Set dimension for each variable
@@ -820,7 +819,6 @@ export default {
       }
       return encoding
     },
-
     getSparklineData(id) {
       const data = []
       for (let i = 0; i < this.json.length; i++) {
@@ -872,12 +870,7 @@ export default {
         },
         width: 'container',
         mark: {
-          type:
-            this.filterVariableTypes(selectedVar, null)[0].length > 1 ||
-            (this.filterVariableTypes(selectedVar, null)[0].length === 1 &&
-              this.filterVariableTypes(selectedVar, null)[2].length === 1)
-              ? 'point'
-              : 'bar',
+          type: this.getGraphMark(selectedVar, null),
           tooltip: true
         },
         encoding
@@ -894,7 +887,7 @@ export default {
         },
         width: 'container',
         mark: {
-          type: 'point',
+          type: this.getGraphMark(variables, combinationVar),
           tooltip: true
         },
         encoding
@@ -925,6 +918,33 @@ export default {
       })
     },
     /* Utils */
+    getGraphMark(selected, combination) {
+      const nbQuant = this.filterVariableTypes(selected, combination)[0].length
+      const nbNom = this.filterVariableTypes(selected, combination)[1].length
+      const nbTemp = this.filterVariableTypes(selected, combination)[2].length
+      if (nbQuant === 1 && nbNom === 0 && nbTemp === 0) {
+        return 'bar'
+      }
+      if (nbQuant === 0 && nbNom === 1 && nbTemp === 0) {
+        return 'bar'
+      }
+      if (nbQuant === 0 && nbNom === 0 && nbTemp === 1) {
+        return 'bar'
+      }
+      if (nbQuant === 1 && nbNom === 0 && nbTemp === 1) {
+        return 'bar'
+      }
+      if (nbQuant === 1 && nbNom >= 1 && nbTemp === 0) {
+        return 'bar'
+      }
+      if (nbQuant === 0 && nbNom >= 1 && nbTemp === 1) {
+        return 'bar'
+      }
+      if (nbQuant === 1 && nbNom === 1 && nbTemp === 1) {
+        return 'bar'
+      }
+      return 'point'
+    },
     fetchUsedVariables() {
       const usedVariables = []
       for (let i = 0; i < this.variables.length; i++) {

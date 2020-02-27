@@ -1,6 +1,6 @@
 <template>
   <div class="blue">
-    <v-btn @click="closeDrawer" width="100%" text>
+    <v-btn @click="closeDrawer" text width="100%">
       {{ $t('graphs.hide') }}
     </v-btn>
   </div>
@@ -11,6 +11,10 @@ export default {
     drawer: {
       type: Boolean,
       default: true
+    },
+    showIcon: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

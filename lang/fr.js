@@ -183,6 +183,7 @@ export default {
     answers: 'réponses',
     subject: 'Sujet',
     complement: 'Complément',
+    by: 'Par',
     info: {
       title: 'Annotation du graphique',
       intro:

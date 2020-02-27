@@ -1,5 +1,12 @@
 <template>
   <div v-show="show">
+    <DrawerButton
+      :drawer="drawer"
+      @open="drawer = true"
+      :right="true"
+      :point-left="true"
+      style=""
+    />
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
         <v-flex>
@@ -31,14 +38,14 @@
             <v-card-text>
               <v-layout justify-space-between>
                 <div>
-                  <h2 v-if="currentUser && currentUser.profile !== undefined">
+                  <h3 v-if="currentUser && currentUser.profile !== undefined">
                     {{ $t('url.graph_of')
                     }}<a @click="goToProfile(currentUser.profile.id_user)">{{
                       currentUser.profile.publicname
                         ? currentUser.profile.publicname
                         : currentUser.username
                     }}</a>
-                  </h2>
+                  </h3>
                 </div>
                 <AnnotationHelpDialog />
               </v-layout>
@@ -84,9 +91,7 @@
                     <v-icon>mdi-restore</v-icon>
                   </v-btn>
                   <v-btn
-                    :color="
-                      subjectHighlighted ? 'blue darken-1' : 'grey darken-1'
-                    "
+                    :color="subjectHighlighted ? 'green' : 'grey darken-1'"
                     @click="toggleSubjectButton"
                     style="margin-right: -4px; border-right: 1px solid #aaa !important;"
                     depressed
@@ -100,9 +105,7 @@
                     {{ $t('url.subject') }}
                   </v-btn>
                   <v-btn
-                    :color="
-                      complementHighlighted ? 'blue darken-1' : 'grey darken-1'
-                    "
+                    :color="complementHighlighted ? 'purple' : 'grey darken-1'"
                     @click="toggleComplementButton"
                     depressed
                     tile
@@ -161,20 +164,33 @@
                   >
                 </div>
               </v-layout>
+              <v-layout
+                v-if="annotHighlighted"
+                :class="hasComplement ? 'mt-0' : ''"
+                class="annot-legend pr-5 pl-5"
+                style="border: 1px solid #cccccc;"
+                justify-space-around
+              >
+                <h3>
+                  {{ JSON.parse(annotHighlighted.data).rawAnnotation.text }}
+                </h3>
+              </v-layout>
             </v-card-text>
-            <AnnotationTabs
-              ref="annotations"
-              :annotations="rootAnnotations"
-              :loaded="annotLoaded"
-              :user="user"
-              :graph-owner="currentUser"
-              :id-highlight="annotHighlighted ? annotHighlighted.id : null"
-            >
-            </AnnotationTabs>
           </v-card>
         </v-flex>
       </v-layout>
     </v-container>
+    <AnnotationTabs
+      ref="annotations"
+      :drawer="drawer"
+      :annotations="rootAnnotations"
+      :loaded="annotLoaded"
+      :user="user"
+      :graph-owner="currentUser"
+      :id-highlight="annotHighlighted ? annotHighlighted.id : null"
+      @close="drawer = false"
+    >
+    </AnnotationTabs>
     <ColInputMain
       :annotating="annotating"
       @close="toggleAnnotation(0, false)"
@@ -187,6 +203,7 @@ import jwtDecode from 'jwt-decode'
 import SocialSharing from '~/components/url/SocialSharing'
 import AnnotationTabs from '~/components/url/AnnotationTabs'
 import AnnotationHelpDialog from '~/components/url/AnnotationHelpDialog'
+import DrawerButton from '~/components/data/DrawerButton'
 import axios from '~/plugins/axios'
 export default {
   head() {
@@ -202,12 +219,14 @@ export default {
   components: {
     SocialSharing,
     AnnotationTabs,
-    AnnotationHelpDialog
+    AnnotationHelpDialog,
+    DrawerButton
   },
   data() {
     return {
       init: false,
       show: false,
+      drawer: false,
       annotLoaded: false,
       json: null,
       chart: null,
@@ -299,6 +318,7 @@ export default {
       this.highlightChart(annotation)
       this.subjectHighlighted = false
       this.complementHighlighted = false
+      this.drawer = false
     })
     this.$root.$on('deleted', () => {
       this.refreshAnnotations()
@@ -313,6 +333,9 @@ export default {
     if (!this.pluginIsLoaded) {
       this.$router.go()
     }
+    setTimeout(() => {
+      this.drawer = this.rootAnnotations.length > 0
+    }, 500)
   },
   methods: {
     displayGraph() {
@@ -405,6 +428,7 @@ export default {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
       this.annotating = !this.annotating
+      this.drawer = !this.annotating
     },
     async highlightChart(annotation) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -685,7 +709,7 @@ export default {
 <style>
 .annot-legend {
   color: black;
-  margin-top: -0.5em;
+  margin-top: -1em;
   padding: 1.5em 0;
   background-color: white;
 }

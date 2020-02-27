@@ -1,57 +1,96 @@
 <template>
   <div v-if="loaded">
-    <v-tabs
-      slot="extension"
-      style="padding: 0 0.5em"
-      slider-color="white"
-      color="blue"
+    <v-navigation-drawer
+      v-model="drawer"
+      right
+      hide-overlay
+      absolute
+      dense
+      color="grey darken-2"
+      width="600"
     >
-      <v-tab
-        @click="$root.$emit('highlight', rootAnnotation)"
-        v-for="rootAnnotation in annotations"
-        :key="rootAnnotation.id"
+      <DrawerHideButton
+        :drawer="drawer"
+        :show-icon="true"
+        @close="$emit('close')"
+      />
+      <v-expansion-panels
+        v-model="panel"
+        accordion
+        focusable
+        style="width: 100%"
       >
-        {{
-          JSON.parse(rootAnnotation.data).rawAnnotation.meaning.length > 18
-            ? JSON.parse(rootAnnotation.data).rawAnnotation.meaning.substring(
-                0,
-                15
-              ) + '...'
-            : JSON.parse(rootAnnotation.data).rawAnnotation.meaning
-        }}
-        ({{ rootAnnotation.replies.length }}
-        {{
-          rootAnnotation.replies.length > 1
-            ? $t('url.answers')
-            : $t('url.answer')
-        }})
-      </v-tab>
-      <v-tab-item
-        v-for="rootAnnotation in annotations"
-        :key="rootAnnotation.id"
-      >
-        <RootAnnotation
-          :root-annotation="rootAnnotation"
-          :user="user"
-          :graph-owner="graphOwner"
-          :id-highlight="idHighlight"
-        />
-      </v-tab-item>
-    </v-tabs>
+        <v-expansion-panel
+          v-for="rootAnnotation in annotations"
+          :key="rootAnnotation.id"
+        >
+          <v-expansion-panel-header disable-icon-rotate>
+            {{ $t('url.by') }}
+            {{
+              rootAnnotation.user
+                ? rootAnnotation.user.username
+                : $t('panel.deleted_account')
+            }}
+            {{
+              '(' +
+                rootAnnotation.replies.length +
+                ' ' +
+                (rootAnnotation.replies.length > 1
+                  ? $t('url.answers')
+                  : $t('url.answer')) +
+                ')'
+            }}
+            <v-icon
+              slot="actions"
+              :color="
+                graphOwner.id === rootAnnotation.user.id
+                  ? 'amber'
+                  : user.id === rootAnnotation.user.id
+                  ? 'blue'
+                  : ''
+              "
+              >{{
+                graphOwner.id === rootAnnotation.user.id
+                  ? 'mdi-crown-outline'
+                  : user.id === rootAnnotation.user.id
+                  ? 'mdi-account-outline'
+                  : ''
+              }}</v-icon
+            >
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="mt-4">
+            <RootAnnotation
+              :root-annotation="rootAnnotation"
+              :user="user"
+              :graph-owner="graphOwner"
+              :id-highlight="idHighlight"
+            />
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-navigation-drawer>
   </div>
 </template>
 <script>
 import RootAnnotation from './RootAnnotation'
+import DrawerHideButton from '~/components/data/DrawerHideButton'
 export default {
-  components: {
-    RootAnnotation
-  },
+  components: { RootAnnotation, DrawerHideButton },
   props: {
+    drawer: { type: Boolean, default: false },
     annotations: { type: Array, required: true },
     loaded: { type: Boolean, default: false },
     user: { type: Object, required: true },
     graphOwner: { type: Object, required: true },
     idHighlight: { type: Number, required: false, default: null }
+  },
+  data() {
+    return {
+      panel: []
+    }
+  },
+  mounted() {
+    this.panel = [...Array(this.annotations.length).keys()].map((k, i) => i)
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <v-card
     @click="$root.$emit('highlight', annotation)"
-    class="elevation-2 grey darken-3"
+    class="elevation-2 grey darken-2"
   >
     <v-card-title
       :class="isHighlighted ? 'blue' : 'indigo'"
@@ -13,9 +13,9 @@
       class="headline"
     >
       <v-layout justify-space-between>
-        <h3>
+        <h4>
           {{ JSON.parse(annotation.data).rawAnnotation.meaning }}
-        </h3>
+        </h4>
         <v-btn
           v-if="annotation.user.id === idUser"
           @click="deleteAnnotation(annotation.id)"
@@ -34,12 +34,16 @@
       class="pt-2 white--text"
     >
       {{ JSON.parse(annotation.data).rawAnnotation.text }}
-      <div class="user-date col-12" style="text-align: right">
+      <div class="user-date col-12">
         <a
           @click="
             annotation.user ? $root.$emit('profile', annotation.user.id) : ''
           "
-          >{{ annotation.user ? username : $t('panel.deleted_account') }}</a
+          >{{
+            annotation.user
+              ? annotation.user.username
+              : $t('panel.deleted_account')
+          }}</a
         >
         <p>
           {{ $t('url.posted_at') }}
@@ -62,8 +66,7 @@ export default {
   },
   data() {
     return {
-      isUser: false,
-      username: ''
+      isUser: false
     }
   },
   computed: {
@@ -79,7 +82,6 @@ export default {
       this.user && this.rootAnnotation.user
         ? this.user.id === this.rootAnnotation.user.id
         : false
-    this.getUsername()
   },
   methods: {
     timeConverter(timestamp) {
@@ -99,19 +101,6 @@ export default {
         .catch(() => {
           this.$toast.error(this.$t('url.toast_annot_error'))
         })
-    },
-    async getUsername() {
-      await axios
-        .get(`/users/names?id=${this.idUser}`)
-        .then((res) => {
-          this.username = res.data.publicname
-            ? res.data.publicname
-            : res.data.username
-        })
-        .catch((error) => {
-          console.log(error)
-          this.username = ''
-        })
     }
   }
 }
@@ -119,6 +108,7 @@ export default {
 <style scoped>
 .user-date {
   font-size: 1em;
+  text-align: right;
 }
 .user-date p {
   margin: 0.3em;
