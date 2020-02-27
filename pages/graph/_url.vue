@@ -335,7 +335,7 @@ export default {
     }
     setTimeout(() => {
       this.drawer = this.rootAnnotations.length > 0
-    }, 500)
+    }, 200)
   },
   methods: {
     displayGraph() {
@@ -346,6 +346,7 @@ export default {
         this.fillNatures(headers)
         this.$colvis.initialize({ specs: this.colvisSpecs })
       })
+      window.vegaEmbed('#visPng', this.json, { renderer: 'png' })
     },
     fillNatures(headers) {
       if (!this.isBinned()) {

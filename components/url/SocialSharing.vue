@@ -37,6 +37,16 @@
 </template>
 <script>
 export default {
+  head() {
+    return {
+      title: this.$t('title.url') + ' ' + this.chart.name,
+      meta: [
+        {
+          'og:title': this.$t('url.fb_body')
+        }
+      ]
+    }
+  },
   props: {
     chart: { type: Object, required: true }
   },
@@ -59,9 +69,7 @@ export default {
       const facebookWindow = window.open(
         'https://www.facebook.com/sharer/sharer.php?u=' +
           this.url +
-          '&quote=' +
-          this.$t('url.fb_body'),
-        'facebook-popup',
+          'facebook-popup',
         'height=350,width=600'
       )
       if (facebookWindow.focus) {

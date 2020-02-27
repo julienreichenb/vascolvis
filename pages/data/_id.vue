@@ -719,6 +719,12 @@ export default {
             type: selectedNom[0].type,
             scale: { range: this.colors }
           }
+          if (selectedNom.length === 2) {
+            encoding.shape = {
+              field: selectedNom[1].name,
+              type: selectedNom[1].type
+            }
+          }
         } else {
           return null
         }
@@ -880,6 +886,7 @@ export default {
     getGraph(variables, combinationVar) {
       const data = this.getData(variables, combinationVar)
       const encoding = this.getEncoding(variables, combinationVar)
+      const graphMark = this.getGraphMark(variables, combinationVar)
       const graph = {
         $schema: 'https://vega.github.io/schema/vega-lite/v4.json',
         data: {
@@ -887,7 +894,10 @@ export default {
         },
         width: 'container',
         mark: {
-          type: this.getGraphMark(variables, combinationVar),
+          type: graphMark,
+          opacity: graphMark === 'circle' ? 0.6 : null,
+          stroke: graphMark === 'circle' ? 'black' : null,
+          strokeWidth: graphMark === 'circle' ? 1 : null,
           tooltip: true
         },
         encoding
@@ -928,10 +938,10 @@ export default {
       if (nbQuant === 0 && nbNom === 1 && nbTemp === 0) {
         return 'bar'
       }
-      if (nbQuant === 0 && nbNom === 0 && nbTemp === 1) {
+      if (nbQuant === 0 && nbNom === 0 && nbTemp > 0) {
         return 'bar'
       }
-      if (nbQuant === 1 && nbNom === 0 && nbTemp === 1) {
+      if (nbQuant === 1 && nbNom === 0 && nbTemp > 0) {
         return 'bar'
       }
       if (nbQuant === 1 && nbNom >= 1 && nbTemp === 0) {
@@ -940,8 +950,14 @@ export default {
       if (nbQuant === 0 && nbNom >= 1 && nbTemp === 1) {
         return 'bar'
       }
-      if (nbQuant === 1 && nbNom === 1 && nbTemp === 1) {
-        return 'bar'
+      if (nbQuant === 0 && nbNom > 0 && nbTemp > 0) {
+        return 'circle'
+      }
+      if (nbQuant >= 1 && nbNom === 1 && nbTemp > 0) {
+        return 'circle'
+      }
+      if (nbQuant >= 1 && nbNom === 0 && nbTemp > 0) {
+        return 'circle'
       }
       return 'point'
     },
