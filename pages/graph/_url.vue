@@ -784,6 +784,7 @@ header.toolbar {
 .container {
   max-width: 95% !important;
 }
+
 nav {
   border: 1px solid white !important;
   border-radius: 0 !important;

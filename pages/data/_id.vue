@@ -44,7 +44,7 @@
             </draggable>
           </v-expansion-panels>
         </v-navigation-drawer>
-        <v-flex lg12 xl9 elevation-6>
+        <v-flex lg12 xl10 elevation-6>
           <draggable
             v-model="droppedVars"
             :options="{ group: 'vars' }"

@@ -1,9 +1,9 @@
 <template v-slot:extension>
   <v-btn
+    id="btn-drawer"
     :disabled="drawer"
     :style="right ? 'right: 0; float: right' : 'left: 0; float: left'"
     @click="openDrawer()"
-    style="position: absolute; height: 100%; border-radius: 0; margin-top: -1em;"
     color="blue lighten-2"
     small
     left
@@ -37,3 +37,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+#btn-drawer {
+  position: sticky;
+  top: 15%;
+  margin-top: -1em;
+}
+</style>
