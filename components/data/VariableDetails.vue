@@ -36,6 +36,23 @@
           dense
         >
         </v-select>
+        <v-tooltip v-if="variable.type === 'temporal'" bottom>
+          <template v-slot:activator="{ on }">
+            <div v-on="on">
+              <v-layout justify-space-around>
+                <v-switch
+                  @change="() => changeTimeFormat(variable.id)"
+                  :color="variable.color"
+                  class="caption"
+                />
+                <span class="caption pt-5">{{
+                  $t('graphs.timeformatLabel')
+                }}</span>
+              </v-layout>
+            </div>
+          </template>
+          <span>{{ $t('graphs.timeformatTooltip') }}</span>
+        </v-tooltip>
         <v-layout justify-space-around align-center>
           <div :id="'sparkline-' + variable.id"></div>
         </v-layout>
@@ -88,13 +105,17 @@ export default {
         { text: '', value: 'temporal' }
       ],
       timeUnits: [
-        { text: '', value: 'year' },
-        { text: '', value: 'yearquarter' },
-        { text: '', value: 'yearmonth' },
-        { text: '', value: 'day' },
-        { text: '', value: 'hours' },
-        { text: '', value: 'hoursminutes' },
-        { text: '', value: 'hoursminutesseconds' }
+        { base: 'year', value: 'year', text: '' },
+        { base: 'yearquarter', value: 'yearquarter', text: '' },
+        { base: 'yearmonth', value: 'yearmonth', text: '' },
+        { base: 'day', value: 'day', text: '' },
+        { base: 'hours', value: 'hours', text: '' },
+        { base: 'hoursminutes', value: 'hoursminutes', text: '' },
+        {
+          base: 'hoursminutesseconds',
+          value: 'hoursminutesseconds',
+          text: ''
+        }
       ]
     }
   },
@@ -104,7 +125,7 @@ export default {
     }
     for (let i = 0; i < this.timeUnits.length; i++) {
       this.timeUnits[i].text = this.$t(
-        'graphs.timeunits.' + this.timeUnits[i].value
+        'graphs.timeunits.' + this.timeUnits[i].base
       )
     }
   },
@@ -115,6 +136,10 @@ export default {
     },
     changeTimeUnit(id, selected) {
       this.$emit('change-time', id, selected)
+      this.$forceUpdate()
+    },
+    changeTimeFormat(id, selected) {
+      this.$emit('swap-timeformat', id, selected)
       this.$forceUpdate()
     }
   }

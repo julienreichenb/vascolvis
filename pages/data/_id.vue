@@ -39,6 +39,7 @@
                   :variable="variable"
                   @change-type="attributeSingleVariableType"
                   @change-time="changeTimeUnit"
+                  @swap-timeformat="changeTimeFormat"
                 />
               </v-expansion-panel>
             </draggable>
@@ -344,6 +345,32 @@ export default {
     changeTimeUnit(id) {
       this.variables[id].isUsed = false
       this.variables[id].warn = false
+      this.computeSparkline(id)
+      this.renderSingleSparkline(id)
+      this.computeBigGraphs()
+      this.$forceUpdate()
+    },
+    changeTimeFormat(id) {
+      this.variables[id].isUsed = false
+      const key = Object.keys(this.variables[id].data.data.values[0])[0]
+      for (let i = 0; i < this.variables[id].data.data.values.length; i++) {
+        const value = Object.values(this.variables[id].data.data.values[i])[0]
+        const separator = this.getSeparator(value)
+        if (separator) {
+          const first = value
+            .substring(0, value.indexOf(separator))
+            .replace(separator, '')
+          console.log(first)
+          const second = value.substring(first.length, 5).replace(separator, '')
+          console.log(second)
+          const rest = value
+            .substring(first.length + second.length + 2, value.length)
+            .replace(separator, '')
+          console.log(rest)
+          console.log(second + separator + first + separator + rest)
+          this.json[i][key] = second + separator + first + separator + rest
+        }
+      }
       this.computeSparkline(id)
       this.renderSingleSparkline(id)
       this.computeBigGraphs()
@@ -895,12 +922,14 @@ export default {
         width: 'container',
         mark: {
           type: graphMark,
-          opacity: graphMark === 'circle' ? 0.6 : null,
-          stroke: graphMark === 'circle' ? 'black' : null,
-          strokeWidth: graphMark === 'circle' ? 1 : null,
           tooltip: true
         },
         encoding
+      }
+      if (graphMark === 'circle') {
+        graph.mark.opacity = 0.6
+        graph.mark.stroke = 'black'
+        graph.mark.strokeWidth = 1
       }
       return graph
     },
@@ -989,6 +1018,15 @@ export default {
         console.log(e)
         return false
       }
+    },
+    getSeparator(value) {
+      return value.includes('.')
+        ? '.'
+        : value.includes('/')
+        ? '/'
+        : value.includes('-')
+        ? '-'
+        : null
     },
     cleanTitle(string) {
       string = string.replace('"', '')

@@ -112,6 +112,9 @@ export default {
     cancel: 'Annuler',
     delete: 'Supprimer',
     timeunitlabel: 'Unité temporelle',
+    timeformatLabel: 'Inverser format US/EU',
+    timeformatTooltip:
+      'Si le mois et le jour sont inversés, vous pouvez essayer de les inverser. Veuillez toutefois favoriser un format de date de type "Mois-Jour-Année".',
     type: {
       quantitative: 'Quantitatif',
       nominal: 'Nominal',

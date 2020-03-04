@@ -111,6 +111,9 @@ export default {
     cancel: 'Cancel',
     delete: 'Delete',
     timeunitlabel: 'Time unit',
+    timeformatLabel: 'Invert US/EU format',
+    timeformatTooltip:
+      'If the month and the day are revsersed, you can try to invert them. Please try as much as possible to have a date format like "Month-Day-Year".',
     type: {
       quantitative: 'Quantitative',
       nominal: 'Nominal',
