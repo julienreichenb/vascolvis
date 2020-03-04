@@ -121,7 +121,9 @@ export default {
       yearquarter: 'By season',
       year: 'By year',
       day: 'By day',
-      hours: 'By hour'
+      hours: 'By hour',
+      hoursminutes: 'By minutes',
+      hoursminutesseconds: 'By seconds'
     },
     info: {
       button: 'More informations',
@@ -288,7 +290,8 @@ export default {
     website: 'Website : ',
     no_bio: 'has not yep filled his bio.',
     no_graphs: 'has not yet generated charts.',
-    edit_profile: 'Edit my profile'
+    edit_profile: 'Edit my profile',
+    isAdmin: 'The user is an administrator'
   },
   about: {
     header: 'The VASCO Project',

@@ -8,6 +8,7 @@
     >
       <AnnotationCard
         :annotation="rootAnnotation"
+        :user="user"
         :id-user="user.id"
         :id-owner="graphOwner.id"
         :id-highlight="idHighlight"
@@ -17,6 +18,7 @@
       v-for="annotation in rootAnnotation.replies"
       :key="annotation.id"
       :reply-annotation="annotation"
+      :user="user"
       :id-user="user ? user.id : 0"
       :id-owner="user ? graphOwner.id : 0"
       :id-highlight="idHighlight"

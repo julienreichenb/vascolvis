@@ -92,7 +92,9 @@ export default {
         { text: '', value: 'yearquarter' },
         { text: '', value: 'yearmonth' },
         { text: '', value: 'day' },
-        { text: '', value: 'hours' }
+        { text: '', value: 'hours' },
+        { text: '', value: 'hoursminutes' },
+        { text: '', value: 'hoursminutesseconds' }
       ]
     }
   },

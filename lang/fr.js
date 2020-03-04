@@ -122,7 +122,9 @@ export default {
       yearquarter: 'Par saison',
       year: 'Par an',
       day: 'Par jour',
-      hours: 'Par heure'
+      hours: 'Par heure',
+      hoursminutes: 'Par minute',
+      hoursminutesseconds: 'Par seconde'
     },
     info: {
       button: "Plus d'informations",
@@ -295,7 +297,8 @@ export default {
     website: 'Site internet : ',
     no_bio: "n'a pas encore rempli sa description.",
     no_graphs: "n'a pas encore proposé de graphiques.",
-    edit_profile: 'Modifier mon profil'
+    edit_profile: 'Modifier mon profil',
+    isAdmin: "L'utilisateur est administrateur"
   },
   about: {
     header: 'Le projet VASCO',

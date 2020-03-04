@@ -10,7 +10,7 @@ const Workspace = require('../models/Workspace')
 const Variables = require('../models/WorkspaceVariable')
 users.use(cors())
 
-const limitedAttributes = ['id', 'username']
+const limitedAttributes = ['id', 'username', 'isAdmin']
 
 process.env.SECRET_KEY = 'secret'
 

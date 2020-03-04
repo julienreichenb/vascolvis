@@ -17,7 +17,13 @@
           {{ JSON.parse(annotation.data).rawAnnotation.meaning }}
         </h4>
         <v-btn
-          v-if="annotation.user.id === idUser"
+          v-if="
+            annotation.user
+              ? annotation.user.id === idUser
+              : isAdmin(user)
+              ? true
+              : false
+          "
           @click="deleteAnnotation(annotation.id)"
           icon
           small
@@ -58,16 +64,12 @@ import axios from '~/plugins/axios'
 export default {
   props: {
     annotation: { type: Object, required: true },
+    user: { type: Object, required: true },
     // eslint-disable-next-line vue/require-prop-types
     idUser: { required: true },
     // eslint-disable-next-line vue/require-prop-types
     idOwner: { required: true },
     idHighlight: { type: Number, required: false, default: null }
-  },
-  data() {
-    return {
-      isUser: false
-    }
   },
   computed: {
     isHighlighted() {
@@ -76,12 +78,6 @@ export default {
       }
       return false
     }
-  },
-  mounted() {
-    this.isUser =
-      this.user && this.rootAnnotation.user
-        ? this.user.id === this.rootAnnotation.user.id
-        : false
   },
   methods: {
     timeConverter(timestamp) {
@@ -101,6 +97,9 @@ export default {
         .catch(() => {
           this.$toast.error(this.$t('url.toast_annot_error'))
         })
+    },
+    isAdmin(user) {
+      return user.isAdmin
     }
   }
 }

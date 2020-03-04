@@ -37,7 +37,7 @@
       >
         <template v-slot:item.name="props">
           <v-edit-dialog
-            v-if="isOwner(props.item)"
+            v-if="isOwner(props.item) || isAdmin(user)"
             :return-value.sync="props.item.name"
             @save="updateName(props.item)"
             persistent
@@ -115,7 +115,7 @@
             mdi-eye-outline
           </v-icon>
           <v-icon
-            v-if="isOwner(item)"
+            v-if="isOwner(item) || isAdmin(user)"
             @click="toggleDeleteDialog(item)"
             color="red"
           >
@@ -179,7 +179,7 @@ export default {
   data() {
     return {
       show: false,
-      onlyMine: false,
+      onlyMine: true,
       deleteDialog: false,
       selected: { name: '' },
       search: '',
@@ -198,7 +198,10 @@ export default {
         return this.data.filter((entry) => entry.id_user === this.user.id)
       } else {
         return this.data.filter(
-          (entry) => entry.public === 1 || entry.id_user === this.user.id
+          (entry) =>
+            entry.public === 1 ||
+            entry.id_user === this.user.id ||
+            this.isAdmin(this.user)
         )
       }
     }
@@ -239,7 +242,7 @@ export default {
     setVisibilityIcon(item) {
       return item.public === 1
         ? 'mdi-lock-open-variant-outline'
-        : 'mdi-lock-outline'
+        : 'mdi-lock-outline' || this.isAdmin(this.user)
     },
     formatDate(datetime) {
       const t = new Date(datetime)
@@ -334,6 +337,9 @@ export default {
     },
     isOwner(item) {
       return item.id_user === this.user.id
+    },
+    isAdmin(user) {
+      return user.isAdmin
     },
     isDeleted(item) {
       return this.getUsername(item) === this.$t('panel.deleted_account')

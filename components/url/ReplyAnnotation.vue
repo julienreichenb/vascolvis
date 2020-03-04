@@ -6,6 +6,7 @@
   >
     <AnnotationCard
       :annotation="replyAnnotation"
+      :user="user"
       :id-user="idUser"
       :id-owner="idOwner"
       :id-highlight="idHighlight"
@@ -20,6 +21,7 @@ export default {
   },
   props: {
     replyAnnotation: { type: Object, required: true },
+    user: { type: Object, required: true },
     // eslint-disable-next-line vue/require-prop-types
     idUser: { required: true },
     // eslint-disable-next-line vue/require-prop-types

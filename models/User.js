@@ -26,6 +26,9 @@ const User = db.sequelize.define(
     },
     password: {
       type: Sequelize.STRING
+    },
+    isAdmin: {
+      type: Sequelize.TINYINT
     }
   },
   {

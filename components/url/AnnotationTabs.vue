@@ -43,17 +43,21 @@
             <v-icon
               slot="actions"
               :color="
-                graphOwner.id === rootAnnotation.user.id
-                  ? 'amber'
-                  : user.id === rootAnnotation.user.id
-                  ? 'blue'
+                graphOwner && rootAnnotation.user
+                  ? graphOwner.id === rootAnnotation.user.id
+                    ? 'amber'
+                    : user.id === rootAnnotation.user.id
+                    ? 'blue'
+                    : ''
                   : ''
               "
               >{{
-                graphOwner.id === rootAnnotation.user.id
-                  ? 'mdi-crown-outline'
-                  : user.id === rootAnnotation.user.id
-                  ? 'mdi-account-outline'
+                graphOwner && rootAnnotation.user
+                  ? graphOwner.id === rootAnnotation.user.id
+                    ? 'mdi-crown-outline'
+                    : user.id === rootAnnotation.user.id
+                    ? 'mdi-account-outline'
+                    : ''
                   : ''
               }}</v-icon
             >

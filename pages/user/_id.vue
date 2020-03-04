@@ -5,12 +5,22 @@
         <v-flex elevation-6>
           <v-card>
             <v-toolbar class="indigo darken-3">
-              <v-layout justify-space-between>
-                <v-toolbar-title>{{
-                  currentUser.profile.publicname
-                    ? currentUser.profile.publicname
-                    : currentUser.username
-                }}</v-toolbar-title>
+              <v-layout>
+                <v-toolbar-title>
+                  <v-tooltip v-if="isAdmin(currentUser)" color="green" bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-icon v-on="on" class="mr-3 pb-1"
+                        >mdi-account-tie-outline</v-icon
+                      >
+                    </template>
+                    <span>{{ $t('user.isAdmin') }}</span>
+                  </v-tooltip>
+                  {{
+                    currentUser.profile.publicname
+                      ? currentUser.profile.publicname
+                      : currentUser.username
+                  }}</v-toolbar-title
+                >
               </v-layout>
               <v-btn
                 v-if="user.id === currentUser.id"
@@ -159,6 +169,9 @@ export default {
       url = url.replace('://', '')
       url = url.replace('www.', '')
       return url
+    },
+    isAdmin(user) {
+      return user.isAdmin
     }
   }
 }
@@ -180,5 +193,10 @@ export default {
 }
 .link {
   color: cornflowerblue !important;
+}
+
+.v-tooltip__content {
+  border: 1px solid white !important;
+  opacity: 1 !important;
 }
 </style>

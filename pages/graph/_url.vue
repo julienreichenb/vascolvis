@@ -300,7 +300,7 @@ export default {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
       this.getUser()
       this.isMyChart = this.chart.id_user === this.user.id
-      if (!this.isMyChart && !this.chart.public) {
+      if (!this.isMyChart && !this.chart.public & !this.isAdmin(this.user)) {
         this.$router.push(this.localePath({ name: 'import' }))
       } else {
         this.show = true
@@ -702,6 +702,9 @@ export default {
         name: `user-id___${this.$i18n.locale}`,
         params: { id }
       })
+    },
+    isAdmin(user) {
+      return user.isAdmin
     }
   }
 }
