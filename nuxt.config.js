@@ -7,13 +7,13 @@ module.exports = {
   head: {
     script: [
       {
-        src: 'https://cdn.jsdelivr.net/npm/vega@5.7.2'
+        src: 'https://cdn.jsdelivr.net/npm/vega@5'
       },
       {
-        src: 'https://cdn.jsdelivr.net/npm/vega-lite@4.0.0-beta.10'
+        src: 'https://cdn.jsdelivr.net/npm/vega-lite@4'
       },
       {
-        src: 'https://cdn.jsdelivr.net/npm/vega-embed@5.1.3'
+        src: 'https://cdn.jsdelivr.net/npm/vega-embed@6'
       }
     ],
     titleTemplate: '%s - VASCO',

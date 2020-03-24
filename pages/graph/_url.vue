@@ -300,7 +300,7 @@ export default {
       this.user = jwtDecode(localStorage.getItem('usertoken'))
       this.getUser()
       this.isMyChart = this.chart.id_user === this.user.id
-      if (!this.isMyChart && !this.chart.public & !this.isAdmin(this.user)) {
+      if (!this.isMyChart && !this.chart.public && !this.isAdmin(this.user)) {
         this.$router.push(this.localePath({ name: 'import' }))
       } else {
         this.show = true
@@ -339,14 +339,22 @@ export default {
   },
   methods: {
     displayGraph() {
-      this.json.height = '400'
-      this.json.width = 'container'
-      window.vegaEmbed('#vis', this.json, { renderer: 'svg' }).then((view) => {
-        const headers = Object.keys(this.json.data.values[0])
-        this.fillNatures(headers)
-        this.$colvis.initialize({ specs: this.colvisSpecs })
-      })
-      window.vegaEmbed('#visPng', this.json, { renderer: 'png' })
+      this.json.height = '700'
+      this.json.width =
+        document.getElementById('vis-container').offsetWidth - 65
+      window
+        .vegaEmbed('#vis', this.json, {
+          renderer: 'svg',
+          tooltip: { theme: 'dark' }
+        })
+        .then((view) => {
+          // const headers = Object.keys(this.json.data[0].values[0])
+          // this.fillNatures(headers)
+          this.colvisSpecs.natures[0].annotable.title = [
+            'Score1, Score2, TumourStatus'
+          ]
+          this.$colvis.initialize({ specs: this.colvisSpecs })
+        })
     },
     fillNatures(headers) {
       if (!this.isBinned()) {
@@ -598,7 +606,7 @@ export default {
         document.getElementsByClassName('mark-rect role-mark marks')[0] !==
         undefined
           ? 'mark-rect role-mark marks'
-          : 'mark-symbol role-mark marks'
+          : 'mark-symbol role-mark mark'
       const domLength = document.getElementsByClassName(this.graphClass)[0]
         .children.length
       for (let i = 0; i < domLength; i++) {
