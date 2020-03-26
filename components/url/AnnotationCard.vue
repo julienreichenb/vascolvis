@@ -13,9 +13,9 @@
       class="headline"
     >
       <v-layout justify-space-between>
-        <h4>
+        <h6>
           {{ JSON.parse(annotation.data).rawAnnotation.meaning }}
-        </h4>
+        </h6>
         <v-btn
           v-if="
             annotation.user
@@ -24,10 +24,10 @@
               ? true
               : false
           "
-          @click="deleteAnnotation(annotation.id)"
+          @click="$root.$emit('attemptdeletion', annotation.id)"
           icon
           small
-          color="white"
+          color="red"
         >
           <v-icon>
             mdi-delete-circle-outline
@@ -60,7 +60,6 @@
   </v-card>
 </template>
 <script>
-import axios from '~/plugins/axios'
 export default {
   props: {
     annotation: { type: Object, required: true },
@@ -86,17 +85,6 @@ export default {
       const month = a.getMonth() + 1
       const date = a.getDate()
       return date + '.' + month + '.' + year
-    },
-    deleteAnnotation(id) {
-      axios
-        .delete(`/annotations?id=${id}`)
-        .then(() => {
-          this.$toast.success(this.$t('url.toast_annot_delete'))
-          this.$root.$emit('deleted')
-        })
-        .catch(() => {
-          this.$toast.error(this.$t('url.toast_annot_error'))
-        })
     },
     isAdmin(user) {
       return user.isAdmin

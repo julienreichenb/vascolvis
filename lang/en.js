@@ -51,7 +51,7 @@ export default {
       convert: 'If needed, to convert your files in .csv, ',
       click_here: 'click here',
       disclaimer:
-        'Your file must contain the headers and cannot be larger than 1.5MB.',
+        'To avoid overloading the website, your file cannot exceed <b>1.5MB</b>. Please ensure that the files has <b>headers</b>.',
       file_label: 'Browse...',
       error: 'The dataset cannot be larger than 1.5MB.',
       error_format: 'The file seems wrongly formatted. Please check.',
@@ -88,11 +88,7 @@ export default {
     help: 'You can click on the name of the charts to modify it.',
     warn: 'This variable combination is not allowed.',
     choose_type: 'Select the type',
-    tip_1: 'Choose ',
-    tip_2: 'one',
-    tip_3: ' or ',
-    tip_4: 'two',
-    tip_5: ' variables in the panel on the left.',
+    tip_1: 'Choose interesting variables in the left drawer',
     save: 'Save',
     switch_button: 'Switch axis',
     switch_colorshape: 'Switch color/shape',
@@ -113,7 +109,7 @@ export default {
     timeunitlabel: 'Time unit',
     timeformatLabel: 'Invert US/EU format',
     timeformatTooltip:
-      'If the month and the day are revsersed, you can try to invert them. Please try as much as possible to have a date format like "Month-Day-Year".',
+      'If the month and the day are reversed, you can try to invert them. Please try as much as possible to have a date format like "Month-Day-Year".',
     type: {
       quantitative: 'Quantitative',
       nominal: 'Nominal',
@@ -123,7 +119,8 @@ export default {
       yearmonth: 'By month',
       yearquarter: 'By season',
       year: 'By year',
-      day: 'By day',
+      day: 'By day of the week',
+      date: 'By day',
       hours: 'By hour',
       hoursminutes: 'By minutes',
       hoursminutesseconds: 'By seconds'
@@ -155,6 +152,13 @@ export default {
       temp: 'You can choose <b>only one</b> temporal variable (',
       temp2:
         ') at the time. Furthermore, it will restrict the selection of another quantitative variable. The temporal variable will <b>always</b> take place on the X axe, except if you choose to switch the axes.',
+      workspaces_title: 'Workspaces',
+      workspaces:
+        'You can save an interesting variables selection for a further use. This selection is called <b>Workspace</b> and is bound to the user that created it. By clicking ',
+      workspaces2:
+        ', the currently selected variables are saved. You can delete a Workspace by clicking on ',
+      workspaces3: '. ',
+      workspaces4: ' allows to clear the variable selection in one click.',
       yourturn: "Now, it's your turn !",
       understood: 'Understood'
     }
@@ -182,6 +186,9 @@ export default {
     answers: 'answers',
     subject: 'Subject',
     complement: 'Complement',
+    'stand out': ' stand out ',
+    'is similar to': ' is similar to ',
+    comparedto: ' compared to ',
     by: 'By',
     info: {
       title: 'Chart annotation',

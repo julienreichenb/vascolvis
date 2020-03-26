@@ -12,7 +12,7 @@
       </div>
       <div class="help">
         <v-icon color="red" small>mdi-alert-outline</v-icon>
-        {{ $t('import.own.disclaimer') }}
+        <span v-html="$t('import.own.disclaimer')" />
       </div>
       <div class="form-group">
         <div class="col-sm-9">

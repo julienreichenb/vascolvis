@@ -108,6 +108,7 @@ export default {
         { base: 'year', value: 'year', text: '' },
         { base: 'yearquarter', value: 'yearquarter', text: '' },
         { base: 'yearmonth', value: 'yearmonth', text: '' },
+        { base: 'date', value: 'date', text: '' },
         { base: 'day', value: 'day', text: '' },
         { base: 'hours', value: 'hours', text: '' },
         { base: 'hoursminutes', value: 'hoursminutes', text: '' },

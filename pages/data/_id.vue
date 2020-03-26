@@ -62,9 +62,6 @@
                     color="white"
                     background-color="blue darken-3"
                   >
-                    <v-tab @click="resetVariableSelection"
-                      ><v-icon color="white">mdi-moon-new</v-icon></v-tab
-                    >
                     <v-tab
                       @click="loadWs(item.id)"
                       v-for="item in workspaces"
@@ -83,8 +80,14 @@
                       @click="createWsDialog = true"
                     >
                       <v-icon color="green lighten-2"
-                        >mdi-plus-circle-outline</v-icon
+                        >mdi-bookmark-plus-outline</v-icon
                       >
+                    </v-tab>
+                    <v-tab
+                      v-if="countVariables > 0"
+                      @click="resetVariableSelection"
+                    >
+                      <v-icon color="white">mdi-broom</v-icon>
                     </v-tab>
                   </v-tabs>
                 </template>
@@ -92,7 +95,7 @@
                   <h1 v-text="dataset.name" class="white--text" />
                   <GraphHelpDialog
                     :dialog="dialog"
-                    :colors="colors"
+                    :colors="variableColors"
                     @close="dialog = false"
                   />
                 </v-layout>
@@ -179,7 +182,7 @@ import axios from '~/plugins/axios'
 export default {
   head() {
     return {
-      title: this.$t('title.graphs'),
+      title: this.dataset.name,
       meta: [
         {
           hid: 'graphs'
@@ -220,6 +223,7 @@ export default {
       graphs: [],
       isMoving: false,
       draggedId: null,
+      variableColors: ['#e41a1c', '#377eb8', '#4daf4a'],
       /* From Tableau 20 */
       colors: [
         '#4E79A7',
@@ -360,14 +364,10 @@ export default {
           const first = value
             .substring(0, value.indexOf(separator))
             .replace(separator, '')
-          console.log(first)
           const second = value.substring(first.length, 5).replace(separator, '')
-          console.log(second)
           const rest = value
             .substring(first.length + second.length + 2, value.length)
             .replace(separator, '')
-          console.log(rest)
-          console.log(second + separator + first + separator + rest)
           this.json[i][key] = second + separator + first + separator + rest
         }
       }
@@ -383,19 +383,19 @@ export default {
       this.variables[i].warn = false
       switch (type) {
         case 'quantitative':
-          this.variables[i].color = '#e41a1c'
+          this.variables[i].color = this.variableColors[0]
           this.variables[i].icon = 'mdi-numeric'
           this.variables[i].max = this.getMaxValue(this.variables[i])
           this.variables[i].min = this.getMinValue(this.variables[i])
           this.variables[i].mean = this.getMeanValue(this.variables[i])
           break
         case 'nominal':
-          this.variables[i].color = '#377eb8'
+          this.variables[i].color = this.variableColors[1]
           this.variables[i].icon = 'mdi-alphabetical'
           this.variables[i].mode = this.getMode(this.variables[i])
           break
         default:
-          this.variables[i].color = '#4daf4a'
+          this.variables[i].color = this.variableColors[2]
           this.variables[i].icon = 'mdi-timer'
           this.variables[i].warn = !this.isDate(i)
           this.variables[i].timeUnit = 'year'
@@ -964,6 +964,9 @@ export default {
       if (nbQuant === 1 && nbNom === 0 && nbTemp === 0) {
         return 'bar'
       }
+      if (nbQuant === 1 && nbNom === 1 && nbTemp === 1) {
+        return 'bar'
+      }
       if (nbQuant === 0 && nbNom === 1 && nbTemp === 0) {
         return 'bar'
       }
@@ -1178,6 +1181,7 @@ export default {
           this.$toast.success(this.$t('graphs.toast_deleted'))
           this.fetchWorkspaces()
           this.resetActiveTab()
+          this.resetVariableSelection()
         })
         .catch((err) => {
           // eslint-disable-next-line

@@ -52,7 +52,7 @@ export default {
       convert: 'Si besoin, pour convertir un fichier en .csv, ',
       click_here: 'cliquez ici',
       disclaimer:
-        'Votre fichier doit contenir les entêtes et ne peut pas excéder 1.5MB.',
+        'Pour éviter de surcharger le site, votre fichier ne peut pas excéder <b>1.5MB</b>. Veillez à ce que le fichier contienne des <b>entêtes</b>.',
       file_label: 'Parcourir...',
       error: 'Le jeu de données ne peut pas excéder 1.5MB.',
       error_format: 'Le fichier semble mal formaté. Veuillez vérifier.',
@@ -89,11 +89,7 @@ export default {
     help: 'Vous pouvez cliquer sur le nom des graphiques pour le modifier.',
     warn: "Cette combinaison de variables n'est pas autorisée.",
     choose_type: 'Choix du type',
-    tip_1: 'Choisissez ',
-    tip_2: 'une',
-    tip_3: ' ou ',
-    tip_4: 'deux',
-    tip_5: ' variables dans le panel à gauche.',
+    tip_1: 'Sélectionnez des variables intéressantes dans le panel de gauche',
     save: 'Enregistrer',
     switch_button: 'Échanger les axes',
     switch_colorshape: 'Échanger couleur/forme',
@@ -124,7 +120,8 @@ export default {
       yearmonth: 'Par mois',
       yearquarter: 'Par saison',
       year: 'Par an',
-      day: 'Par jour',
+      day: 'Par jour de la semaine',
+      date: 'Par jour',
       hours: 'Par heure',
       hoursminutes: 'Par minute',
       hoursminutesseconds: 'Par seconde'
@@ -159,7 +156,12 @@ export default {
         ") à la fois. De plus, elle bloquera la sélection d'une seconde variable quantitative. La variable temporelle prendra <b>toujours</b> place sur l'axe X, sauf si vous choisissez d'inverser les axes.",
       workspaces_title: 'Workspaces',
       workspaces:
-        "Vous pouvez sauvegarder une sélection des variables pour une utilisation ultérieure. Cette sélection s'appelle <b>Workspace</b> et est propre à celui qui la crée.",
+        "Vous pouvez sauvegarder une sélection des variables intéressantes pour une utilisation ultérieure. Cette sélection s'appelle <b>Workspace</b> et est propre à celui qui la crée. En cliquant sur ",
+      workspaces2:
+        ', les variables actuellement sélectionnées sont sauvegardées. Vous pouvez supprimer un Workspace en cliquant sur ',
+      workspaces3: '. ',
+      workspaces4:
+        ' vous permet de nettoyer la sélection de variables en un seul clic.',
       yourturn: 'Maintenant, à vous de jouer !',
       understood: "J'ai compris"
     }
@@ -188,6 +190,9 @@ export default {
     answers: 'réponses',
     subject: 'Sujet',
     complement: 'Complément',
+    'stand out': ' se démarque de ',
+    'is similar to': ' est similaire à ',
+    comparedto: ' en comparaison de ',
     by: 'Par',
     info: {
       title: 'Annotation du graphique',

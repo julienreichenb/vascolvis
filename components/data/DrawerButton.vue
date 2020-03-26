@@ -4,14 +4,12 @@
     :disabled="drawer"
     :style="right ? 'right: 0; float: right' : 'left: 0; float: left'"
     @click="openDrawer()"
+    :small="small"
     color="blue lighten-2"
-    small
     left
     fab
   >
-    <v-icon>{{
-      pointLeft ? 'mdi-arrow-collapse-left' : 'mdi-arrow-collapse-right'
-    }}</v-icon>
+    <v-icon>{{ pointLeft ? icon + ' mdi-flip-h' : icon }}</v-icon>
   </v-btn>
 </template>
 <script>
@@ -28,6 +26,14 @@ export default {
     pointLeft: {
       type: Boolean,
       default: false
+    },
+    icon: {
+      type: String,
+      default: 'mdi-arrow-collapse-right'
+    },
+    small: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {

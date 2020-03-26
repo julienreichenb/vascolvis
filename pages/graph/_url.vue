@@ -4,8 +4,8 @@
       :drawer="drawer"
       @open="drawer = true"
       :right="true"
-      :point-left="true"
-      style=""
+      :icon="'mdi-note-text-outline'"
+      :small="false"
     />
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex>
@@ -119,62 +119,53 @@
                   </v-btn>
                 </div>
               </v-layout>
-              <div id="vis-container" style="width: 100%; text-align: center;">
-                <div id="vis" class="resize-graph"></div>
-              </div>
-              <v-layout
-                v-if="hasComplement"
-                class="annot-legend"
-                justify-space-around
-              >
-                <div class="subject">
-                  <div
-                    :class="
-                      subjectHighlighted || complementHighlighted
-                        ? 'mute-rectangle'
-                        : ''
-                    "
-                    class="rectangle"
-                  ></div>
-                  <span
-                    :class="
-                      subjectHighlighted || complementHighlighted
-                        ? 'mute-legend'
-                        : ''
-                    "
-                    >{{ computeLegend('subject') }}</span
-                  >
-                </div>
-                <div class="complement">
-                  <div
-                    :class="
-                      subjectHighlighted || complementHighlighted
-                        ? 'mute-rectangle'
-                        : ''
-                    "
-                    class="rectangle"
-                  ></div>
-                  <span
-                    :class="
-                      subjectHighlighted || complementHighlighted
-                        ? 'mute-legend'
-                        : ''
-                    "
-                    >{{ computeLegend('complement') }}</span
-                  >
-                </div>
-              </v-layout>
               <v-layout
                 v-if="annotHighlighted"
-                :class="hasComplement ? 'mt-0' : ''"
-                class="annot-legend pr-5 pl-5"
-                style="border: 1px solid #cccccc;"
-                justify-space-around
+                justify-center
+                class="mt-5 annot-legend pr-3 pl-3"
               >
                 <h3>
-                  {{ JSON.parse(annotHighlighted.data).rawAnnotation.text }}
+                  <span
+                    :class="
+                      !complementHighlighted && hasComplement ? 'subject' : ''
+                    "
+                    >{{
+                      JSON.parse(annotHighlighted.data).rawAnnotation
+                        .subjectName
+                    }}</span
+                  >
+                  <span>{{
+                    $t(
+                      'url.' +
+                        JSON.parse(annotHighlighted.data).rawAnnotation.reason
+                          .verb
+                    )
+                  }}</span>
+                  <span v-if="hasComplement">
+                    <span :class="!subjectHighlighted ? 'complement' : ''">{{
+                      JSON.parse(annotHighlighted.data).rawAnnotation
+                        .complementName
+                    }}</span>
+                    <span>{{
+                      JSON.parse(annotHighlighted.data).rawAnnotation.reason
+                        .details
+                    }}</span>
+                  </span>
+                  <span>
+                    :
+                    {{
+                      JSON.parse(annotHighlighted.data).rawAnnotation.meaning
+                    }}</span
+                  >
                 </h3>
               </v-layout>
+              <div
+                id="vis-container"
+                :style="!annotHighlighted ? 'margin-top: 5em;' : ''"
+                style="width: 100%; text-align: center;"
+              >
+                <div id="vis" class="resize-graph"></div>
+              </div>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -196,6 +187,25 @@
       @close="toggleAnnotation(0, false)"
       @submittingAnnotation="submitAnnotation"
     />
+    <v-dialog v-model="deleteDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline"
+          >{{ $t('panel.table.delete') }} ?</v-card-title
+        >
+        <v-card-text>
+          {{ $t('panel.table.delete_disclaimer') }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn @click="deleteDialog = false" color="grey lighten-3" outlined>
+            {{ $t('panel.table.delete_cancel') }}
+          </v-btn>
+          <v-btn @click="deleteAnnotation" color="red darken-2" outlined>
+            {{ $t('panel.table.delete_ok') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -242,6 +252,8 @@ export default {
       complementHighlighted: false,
       originGraphDomColors: [],
       graphClass: '',
+      deleteDialog: false,
+      selectedId: null,
       colvisSpecs: {
         visualization: {
           container: '#vis'
@@ -314,14 +326,14 @@ export default {
     await this.displayGraph()
     await this.getAnnotations()
     this.getOriginalDomGraph()
+    this.$root.$on('attemptdeletion', (id) => {
+      this.deleteDialog = true
+      this.selectedId = id
+    })
     this.$root.$on('highlight', (annotation) => {
       this.highlightChart(annotation)
       this.subjectHighlighted = false
       this.complementHighlighted = false
-      this.drawer = false
-    })
-    this.$root.$on('deleted', () => {
-      this.refreshAnnotations()
     })
     this.$root.$on('toggle', (id, top) => {
       this.toggleAnnotation(id, top)
@@ -697,6 +709,21 @@ export default {
         )
       }
     },
+    deleteAnnotation() {
+      axios
+        .delete(`/annotations?id=${this.selectedId}`)
+        .then(() => {
+          this.deleteDialog = false
+          this.resetHighlights()
+          this.$nextTick(() => {
+            this.refreshAnnotations()
+            this.$toast.success(this.$t('url.toast_annot_delete'))
+          })
+        })
+        .catch(() => {
+          this.$toast.error(this.$t('url.toast_annot_error'))
+        })
+    },
     goToProfile(id) {
       this.$router.push({
         name: `user-id___${this.$i18n.locale}`,
@@ -709,46 +736,24 @@ export default {
   }
 }
 </script>
-
 <style>
 .annot-legend {
   color: black;
-  margin-top: -1em;
   padding: 1.5em 0;
   background-color: white;
+  line-height: 2em;
 }
 
-.rectangle {
-  width: 4em;
-  height: 2em;
-  margin-bottom: 0.3em;
-  margin-right: 0.5em;
-}
-
-.subject .rectangle {
+.subject {
+  padding: 0.3em;
   background-color: rgba(0, 136, 55, 0.3);
   border: 2px solid rgba(0, 136, 55, 0.8);
 }
 
-.complement .rectangle {
+.complement {
+  padding: 0.3em;
   background-color: rgba(123, 50, 148, 0.3);
   border: 2px solid rgba(123, 50, 148, 0.8);
-}
-
-.mute-legend {
-  color: #7f828b;
-}
-
-.mute-rectangle {
-  background-color: rgba(100, 100, 100, 0.3) !important;
-  border: 2px solid rgba(100, 100, 100, 0.8) !important;
-}
-
-.subject,
-.complement {
-  display: flex;
-  line-height: 2em;
-  font-weight: bold;
 }
 
 .resize-graph {
