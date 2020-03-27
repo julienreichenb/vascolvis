@@ -313,7 +313,7 @@ export default {
   async mounted() {
     await this.displayGraph()
     await this.getAnnotations()
-    this.getOriginalDomGraph()
+    // this.getOriginalDomGraph()
     this.$root.$on('highlight', (annotation) => {
       this.highlightChart(annotation)
       this.subjectHighlighted = false
@@ -341,7 +341,7 @@ export default {
     displayGraph() {
       this.json.height = '700'
       this.json.width =
-        document.getElementById('vis-container').offsetWidth - 65
+        document.getElementById('vis-container').offsetWidth - 120
       window
         .vegaEmbed('#vis', this.json, {
           renderer: 'svg',

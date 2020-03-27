@@ -1,6 +1,6 @@
+const Sequelize = require('sequelize')
 const db = require('../database/db')
 const Annotation = require('./Annotation')
-const Sequelize = require('sequelize')
 
 const Chart = db.sequelize.define(
   'charts',
