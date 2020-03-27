@@ -138,7 +138,7 @@
                     $t(
                       'url.' +
                         JSON.parse(annotHighlighted.data).rawAnnotation.reason
-                          .verb
+                          .verb.singular
                     )
                   }}</span>
                   <span v-if="hasComplement">

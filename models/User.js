@@ -1,11 +1,11 @@
+const bcrypt = require('bcrypt')
+const Sequelize = require('sequelize')
 const db = require('../database/db')
 const Profile = require('./Profile')
 const DataSet = require('./DataSet')
 const Chart = require('./Chart')
 const Annotation = require('./Annotation')
 const Workspace = require('./Workspace')
-const bcrypt = require('bcrypt')
-const Sequelize = require('sequelize')
 
 const User = db.sequelize.define(
   'users',

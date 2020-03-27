@@ -1,7 +1,7 @@
+const Sequelize = require('sequelize')
 const db = require('../database/db')
 const Chart = require('./Chart')
 const Workspace = require('./Workspace')
-const Sequelize = require('sequelize')
 
 const DataSet = db.sequelize.define(
   'datasets',

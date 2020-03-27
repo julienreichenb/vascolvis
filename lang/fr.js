@@ -190,8 +190,8 @@ export default {
     answers: 'réponses',
     subject: 'Sujet',
     complement: 'Complément',
-    'stand out': ' se démarque de ',
-    'is similar to': ' est similaire à ',
+    'stands out': ' se démarque de ',
+    'is similar': ' est similaire à ',
     comparedto: ' en comparaison de ',
     by: 'Par',
     info: {

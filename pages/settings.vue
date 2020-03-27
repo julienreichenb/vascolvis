@@ -93,7 +93,7 @@ export default {
         },
         {
           id: 'profile',
-          icon: 'mdi-account-badge-horizontal-outline'
+          icon: 'mdi-badge-account-horizontal-outline'
         },
         {
           id: 'password',

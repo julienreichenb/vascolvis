@@ -186,8 +186,8 @@ export default {
     answers: 'answers',
     subject: 'Subject',
     complement: 'Complement',
-    'stand out': ' stand out ',
-    'is similar to': ' is similar to ',
+    'stands out': ' stands out ',
+    'is similar': ' is similar to ',
     comparedto: ' compared to ',
     by: 'By',
     info: {
