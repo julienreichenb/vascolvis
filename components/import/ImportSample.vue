@@ -18,7 +18,7 @@
 export default {
   methods: {
     generate() {
-      this.$emit('generate')
+      this.$emit('generae')
     }
   }
 }
