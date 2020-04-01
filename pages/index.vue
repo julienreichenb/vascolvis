@@ -15,6 +15,47 @@
             slider-color="white"
             color="white"
           >
+            <v-tab> {{ $t('index.demo.header') }} </v-tab>
+            <v-tab-item>
+              <v-layout justify-center class="pt-6">
+                <v-btn
+                  @click="generate()"
+                  class="mr-8 ml-5"
+                  large
+                  outlined
+                  color="white"
+                  depressed
+                >
+                  <v-icon class="mr-2" color="green lighten-2"
+                    >mdi-scatter-plot-outline</v-icon
+                  >
+                  {{ $t('index.sample.button') }}
+                </v-btn>
+                <v-btn
+                  @click="goToAnnotSample()"
+                  class="mr-5 ml-8"
+                  large
+                  outlined
+                  color="white"
+                  depressed
+                >
+                  <v-icon class="mr-2" color="blue"
+                    >mdi-note-text-outline</v-icon
+                  >
+                  {{ $t('index.sample.buttonannot') }}
+                </v-btn>
+              </v-layout>
+              <v-layout justify-center class="pt-6 pb-3">
+                <iframe
+                  width="700"
+                  height="353"
+                  src="https://www.youtube.com/embed/zleGh2nN4qg"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </v-layout>
+            </v-tab-item>
             <v-tab> {{ $t('index.login.header') }} </v-tab>
             <v-tab-item>
               <Login
@@ -30,19 +71,6 @@
                 :password-rules="passwordRules"
                 :email-rules="emailRules"
               />
-            </v-tab-item>
-            <v-tab> {{ $t('index.demo.header') }} </v-tab>
-            <v-tab-item>
-              <v-layout justify-center class="pt-3 pb-3">
-                <iframe
-                  width="800"
-                  height="450"
-                  src="https://www.youtube.com/embed/zleGh2nN4qg"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                ></iframe>
-              </v-layout>
             </v-tab-item>
           </v-tabs>
         </v-toolbar>
@@ -89,6 +117,18 @@ export default {
   mounted() {
     if (localStorage.getItem('usertoken') !== null) {
       this.$router.push(this.localePath({ name: 'import' }))
+    }
+  },
+  methods: {
+    generate() {
+      this.$router.push({
+        name: `data-demo___${this.$i18n.locale}`
+      })
+    },
+    goToAnnotSample() {
+      this.$router.push({
+        name: `graph-demo___${this.$i18n.locale}`
+      })
     }
   }
 }

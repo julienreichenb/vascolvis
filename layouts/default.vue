@@ -34,15 +34,14 @@
             style="height: 50px; width: auto;"
           />
         </a>
-        <div>
+        <div class="pl-3 pr-3">
           <span class="rcso"
-            >{{ $t('layout.rcso') }}
-            <a
+            ><a
               href="https://www.hes-so.ch/fr/economie-services-10.html"
               target="_blank"
-              >{{ $t('layout.rcsolink') }}</a
-            >.</span
-          >
+              >{{ $t('layout.rcso') }}</a
+            >
+          </span>
         </div>
         <span>{{ title }} &copy; {{ new Date().getFullYear() }}</span>
       </v-layout>

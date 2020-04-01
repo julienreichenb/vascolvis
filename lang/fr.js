@@ -11,9 +11,7 @@ export default {
   },
   layout: {
     atelier: 'Mon Atelier',
-    rcso:
-      "Le projet VASCO est issu d'un projet interne, financé par le Réseau de compétences RCSO du domaine",
-    rcsolink: 'Économie et Service de la HES-SO'
+    rcso: 'Le projet VASCO est une initiative de la HES-SO.'
   },
   index: {
     welcome: 'Bienvenue sur VASCO',
@@ -34,6 +32,10 @@ export default {
     },
     demo: {
       header: "VASCO, c'est quoi ?"
+    },
+    sample: {
+      button: 'Créer des graphiques',
+      buttonannot: 'Voir des annotations'
     },
     error: {
       username_required: "Le nom d'utilisateur est requis.",
@@ -321,13 +323,13 @@ export default {
       "Vasco est un outil de visualisation de données visant les utilisateurs inexpérimentés. Vasco est pensé pour promouvoir l'exploration préliminaire de données pour des utilisateurs sans expérience en design et analyse de données. L'interface de Vasco est structurée pour sélectionner facilement des données et créer des visualisations, au travers de panels et de cartes.",
     title_2: 'Visualisation de données',
     p_2:
-      "Les graphiques générés par l'outil sont simplistes, car ils poursuivent un but exploratoire et non d'analyse en profondeur du jeu de données. Lors d'implémentations futures, il est envisageable que des graphiques plus élaborés puissent être générés. Vasco s'appuie sur la librairie de génération de graphiques <a href='https://vega.github.io/vega-lite-v1/' target='_blank'>Vega-Lite</a>.",
+      "Les graphiques générés par l'outil sont simples, car ils poursuivent un but exploratoire et non d'analyse en profondeur du jeu de données. Lors d'implémentations futures, il est envisageable que des graphiques plus élaborés puissent être générés. Vasco s'appuie sur la librairie de génération de graphiques <a href='https://vega.github.io/vega-lite-v1/' target='_blank'>Vega-Lite</a>.",
     title_3: 'Annotation de graphique',
     p_3:
-      "Le deuxième objectif de Vasco est de permettre de collaborer autour de l'exploration de données, via l'utilisation du plugin colVis, développé en parallèle dans le cadre d'un travail de Master. Le plugin permet de mettre en évidence une portion du graphique et de l'annoter ou de commenter les annotations existantes, encourageant ainsi les échanges autour des possibles trouvailles.",
+      "Le deuxième objectif de Vasco est de permettre de collaborer autour de l'exploration de données, via l'utilisation du plugin colVis, développé en parallèle dans le cadre d'une thèse de Doctorat de l'institut Human-IST (université de Fribourg). Le plugin permet de mettre en évidence une portion du graphique et de l'annoter ou de commenter les annotations existantes, encourageant ainsi les échanges autour des possibles trouvailles.",
     title_4: "L'équipe",
     p_4:
-      '<strong>PhD Florian Evéquoz</strong> - Chef & initiateur du projet<br />' +
+      '<strong>Prof. Florian Evéquoz</strong> - Chef & initiateur du projet<br />' +
       '<strong>Miriam Luque Chipana</strong> - Thèse de Master sur Vasco (UNIFR) & Développement de la première itération du site<br />' +
       '<strong>Pierre Vanhulst</strong> - Thèse de Master sur colVis (UNIFR) <br />' +
       '<strong>Julien Reichenbach</strong> - Assistant de recherche et présent développeur de Vasco',

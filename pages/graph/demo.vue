@@ -14,19 +14,6 @@
             <v-toolbar class="indigo darken-3">
               <v-layout justify-space-between align-center>
                 <v-layout row align-baseline>
-                  <div v-if="isMyChart">
-                    <div v-if="chart.public">
-                      <v-btn @click="updateChart(0)" icon color="green">
-                        <v-icon>mdi-lock-open-variant</v-icon>
-                      </v-btn>
-                    </div>
-                    <div v-else>
-                      <v-btn @click="updateChart(1)" icon color="red">
-                        <v-icon>mdi-lock</v-icon>
-                      </v-btn>
-                    </div>
-                    <div />
-                  </div>
                   <v-toolbar-title
                     v-text="chart.name"
                     class="white--text ml-3"
@@ -185,31 +172,11 @@
     <ColInputMain
       :annotating="annotating"
       @close="toggleAnnotation(0, false)"
-      @submittingAnnotation="submitAnnotation"
+      @submittingAnnotation="() => {}"
     />
-    <v-dialog v-model="deleteDialog" max-width="500">
-      <v-card>
-        <v-card-title class="headline"
-          >{{ $t('panel.table.delete') }} ?</v-card-title
-        >
-        <v-card-text>
-          {{ $t('panel.table.delete_disclaimer') }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="deleteDialog = false" color="grey lighten-3" outlined>
-            {{ $t('panel.table.delete_cancel') }}
-          </v-btn>
-          <v-btn @click="deleteAnnotation" color="red darken-2" outlined>
-            {{ $t('panel.table.delete_ok') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 <script>
-import jwtDecode from 'jwt-decode'
 import SocialSharing from '~/components/url/SocialSharing'
 import AnnotationTabs from '~/components/url/AnnotationTabs'
 import AnnotationHelpDialog from '~/components/url/AnnotationHelpDialog'
@@ -298,38 +265,20 @@ export default {
     }
   },
   asyncData({ params, error }) {
-    return axios
-      .get(`/charts/?url=${params.url}`)
-      .then((res) => {
-        return { chart: res.data, json: JSON.parse(res.data.data) }
-      })
-      .catch((e) => {
-        error({ statusCode: 402, title: 'no_data', message: 'not_found' })
-      })
+    return axios.get(`/charts/?url=SAMPLEANNOT`).then((res) => {
+      return { chart: res.data, json: JSON.parse(res.data.data) }
+    })
   },
   created() {
-    try {
-      this.user = jwtDecode(localStorage.getItem('usertoken'))
-      this.getUser()
-      this.isMyChart = this.chart.id_user === this.user.id
-      if (!this.isMyChart && !this.chart.public && !this.isAdmin(this.user)) {
-        this.$router.push(this.localePath({ name: 'import' }))
-      } else {
-        this.show = true
-      }
-    } catch {
-      this.$router.push(this.localePath({ name: 'index' }))
-    }
+    this.user = null
+    this.getUser()
+    this.show = true
     this.init = true
   },
   async mounted() {
     await this.displayGraph()
     await this.getAnnotations()
     this.getOriginalDomGraph()
-    this.$root.$on('attemptdeletion', (id) => {
-      this.deleteDialog = true
-      this.selectedId = id
-    })
     this.$root.$on('highlight', (annotation) => {
       this.highlightChart(annotation)
       this.subjectHighlighted = false
@@ -642,47 +591,6 @@ export default {
           })
       }
     },
-    async updateChart(bool) {
-      await axios
-        .put(`/charts?id=${this.chart.id}&public=${bool}`)
-        .then((res) => {
-          this.chart = res.data
-          let msg = ''
-          bool === 1
-            ? (msg = this.$t('url.msg_public'))
-            : (msg = this.$t('url.msg_private'))
-          this.$toast.success(msg)
-        })
-    },
-    submitAnnotation(annotation) {
-      annotation.parent_annotation = this.currentRoot
-      this.saveAnnotation(annotation)
-      this.toggleAnnotation(0, false)
-    },
-    async saveAnnotation(annotation) {
-      await axios
-        .post(`/annotations/`, {
-          data: annotation,
-          id_chart: this.chart.id,
-          id_user: this.user.id,
-          parent_annotation: annotation.parent_annotation
-        })
-        .then((res) => {
-          this.$toast.success(this.$t('url.toast_annot_success'))
-          this.refreshAnnotations()
-        })
-        .catch((error) => {
-          this.$toast.error(this.$t('url.toast_annot_error'))
-          // eslint-disable-next-line
-          console.log(error)
-        })
-    },
-    async refreshAnnotations() {
-      this.annotLoaded = false
-      await this.getAnnotations()
-      this.resetHighlights()
-      this.resetBooleans()
-    },
     computeLegend(type) {
       if (type === 'subject') {
         return (
@@ -709,29 +617,11 @@ export default {
         )
       }
     },
-    deleteAnnotation() {
-      axios
-        .delete(`/annotations?id=${this.selectedId}`)
-        .then(() => {
-          this.deleteDialog = false
-          this.resetHighlights()
-          this.$nextTick(() => {
-            this.refreshAnnotations()
-            this.$toast.success(this.$t('url.toast_annot_delete'))
-          })
-        })
-        .catch(() => {
-          this.$toast.error(this.$t('url.toast_annot_error'))
-        })
-    },
     goToProfile(id) {
       this.$router.push({
         name: `user-id___${this.$i18n.locale}`,
         params: { id }
       })
-    },
-    isAdmin(user) {
-      return user.isAdmin
     }
   }
 }

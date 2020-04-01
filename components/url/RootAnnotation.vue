@@ -9,7 +9,7 @@
       <AnnotationCard
         :annotation="rootAnnotation"
         :user="user"
-        :id-user="user.id"
+        :id-user="user ? user.id : null"
         :id-owner="graphOwner.id"
         :id-highlight="idHighlight"
       />

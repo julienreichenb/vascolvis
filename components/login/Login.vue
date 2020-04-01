@@ -1,7 +1,7 @@
 <template>
   <div @keydown.enter="attemptLogin">
     <v-card>
-      <v-card-title v-text="this.$t('index.login.label')"> </v-card-title>
+      <v-card-title v-text="this.$t('index.login.label') + '.'"> </v-card-title>
       <v-card-text class="pt-4">
         <div>
           <v-form ref="form" v-model="valid">

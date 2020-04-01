@@ -28,7 +28,10 @@
 export default {
   methods: {
     generate() {
-      this.$emit('generate')
+      this.$router.push({
+        name: `data-id___${this.$i18n.locale}`,
+        params: { id: 1 }
+      })
     },
     goToAnnotSample() {
       this.$router.push({
