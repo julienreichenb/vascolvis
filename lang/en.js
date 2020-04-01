@@ -10,7 +10,10 @@ export default {
     about: 'About'
   },
   layout: {
-    atelier: 'My Atelier'
+    atelier: 'My Atelier',
+    rcso:
+      'VASCO comes from an internal project, funded by network of skills RCSO of the HES-SO domain',
+    rcsolink: 'Business, Management AND Services'
   },
   index: {
     welcome: 'Welcome on VASCO',
@@ -28,6 +31,9 @@ export default {
       label: 'Please choose your username and password',
       repeat: 'Repeat your password',
       button: 'Create account'
+    },
+    demo: {
+      header: 'What is VASCO ?'
     },
     error: {
       username_required: 'Username is required.',
@@ -322,7 +328,8 @@ export default {
       '<strong>PhD Florian Evéquoz</strong> - Project manager & initiator <br />' +
       '<strong>Miriam Luque Chipana</strong> - Master Thesis on Vasco (UNIFR) & Development of the project prequel <br />' +
       '<strong>Pierre Vanhulst</strong> - Master Thesis on colVis (UNIFR) <br />' +
-      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developer'
+      '<strong>Julien Reichenbach</strong> - Research Assistant & current Vasco developer',
+    demo: 'Interested by a demo ? Click here'
   },
   error: {
     404: 'Page not found.',

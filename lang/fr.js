@@ -10,7 +10,10 @@ export default {
     about: 'À propos'
   },
   layout: {
-    atelier: 'Mon Atelier'
+    atelier: 'Mon Atelier',
+    rcso:
+      "Le projet VASCO est issu d'un projet interne, financé par le Réseau de compétences RCSO du domaine",
+    rcsolink: 'Économie et Service de la HES-SO'
   },
   index: {
     welcome: 'Bienvenue sur VASCO',
@@ -28,6 +31,9 @@ export default {
       label: "Choisissez un nom d'utilisateur et un mot de passe.",
       repeat: 'Répétez le mot de passe',
       button: 'Créer le compte'
+    },
+    demo: {
+      header: "VASCO, c'est quoi ?"
     },
     error: {
       username_required: "Le nom d'utilisateur est requis.",
@@ -323,7 +329,8 @@ export default {
       '<strong>PhD Florian Evéquoz</strong> - Chef & initiateur du projet<br />' +
       '<strong>Miriam Luque Chipana</strong> - Thèse de Master sur Vasco (UNIFR) & Développement de la première itération du site<br />' +
       '<strong>Pierre Vanhulst</strong> - Thèse de Master sur colVis (UNIFR) <br />' +
-      '<strong>Julien Reichenbach</strong> - Assistant de recherche et présent développeur de Vasco'
+      '<strong>Julien Reichenbach</strong> - Assistant de recherche et présent développeur de Vasco',
+    demo: "Intéressé par une démo ? C'est par ici"
   },
   error: {
     404: 'Page introuvable.',

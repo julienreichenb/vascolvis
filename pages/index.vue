@@ -31,6 +31,19 @@
                 :email-rules="emailRules"
               />
             </v-tab-item>
+            <v-tab> {{ $t('index.demo.header') }} </v-tab>
+            <v-tab-item>
+              <v-layout justify-center class="pt-3 pb-3">
+                <iframe
+                  width="800"
+                  height="450"
+                  src="https://www.youtube.com/embed/zleGh2nN4qg"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </v-layout>
+            </v-tab-item>
           </v-tabs>
         </v-toolbar>
       </v-flex>

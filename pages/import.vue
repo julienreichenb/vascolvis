@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height>
+  <v-container fluid>
     <v-layout flex align-center justify-center>
       <v-flex xs12 sm10 elevation-6>
         <v-toolbar class="indigo darken-3">
@@ -24,7 +24,7 @@
               <ImportInfo />
             </v-tab-item>
             <v-tab> {{ $t('import.sample.header') }} </v-tab>
-            <v-tab-item>
+            <v-tab-item v-scroll>
               <ImportSample @generate="generateSampleGraph" />
             </v-tab-item>
           </v-tabs>

@@ -27,7 +27,6 @@
     </v-content>
     <v-footer fixed app class="footer-margin">
       <v-layout justify-space-between align-center>
-        <div />
         <a href="https://hes-so.ch" target="_blank">
           <img
             src="~/static/hessologo.png"
@@ -35,6 +34,16 @@
             style="height: 50px; width: auto;"
           />
         </a>
+        <div>
+          <span class="rcso"
+            >{{ $t('layout.rcso') }}
+            <a
+              href="https://www.hes-so.ch/fr/economie-services-10.html"
+              target="_blank"
+              >{{ $t('layout.rcsolink') }}</a
+            >.</span
+          >
+        </div>
         <span>{{ title }} &copy; {{ new Date().getFullYear() }}</span>
       </v-layout>
     </v-footer>
@@ -90,5 +99,9 @@ export default {
 
 .footer-margin {
   padding: 1em 3em 0.5em 3em;
+}
+
+.rcso {
+  font-size: 0.8em;
 }
 </style>

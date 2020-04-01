@@ -10,6 +10,12 @@
           <p>
             {{ $t('about.p_1') }}
           </p>
+          <p>
+            {{ $t('about.demo') }} :
+            <a href="https://youtu.be/zleGh2nN4qg"
+              >https://youtu.be/zleGh2nN4qg</a
+            >
+          </p>
           <h4>{{ $t('about.title_2') }}</h4>
           <p v-html="$t('about.p_2')" />
           <h4>{{ $t('about.title_3') }}</h4>
