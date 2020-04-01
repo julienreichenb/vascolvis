@@ -72,7 +72,8 @@ export default {
       label: 'Essayez avec notre échantillon de données',
       text:
         "Un jeu de données de test est fourni par Vasco. Celui-ci porte sur des véhicules automobiles et leurs caractéristiques : modèle, provenance, puissance en chevaux, année de mise en service, ... Il permet de tester les différents scénarios couverts par Vasco et de générer des graphiques pertinents. Vous pouvez l'utiliser et faire des expérimentations sur les données en cliquant sur le bouton ci-dessous.",
-      button: "Générer les graphiques d'exemple"
+      button: "Générer les graphiques d'exemple",
+      buttonannot: "Voir un exemple d'annotations"
     },
     howitworks: {
       header: 'Informations',

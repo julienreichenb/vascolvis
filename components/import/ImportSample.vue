@@ -10,6 +10,16 @@
           <v-icon>mdi-scatter-plot-outline</v-icon>
           {{ $t('import.sample.button') }}
         </v-btn>
+        <v-btn
+          @click="goToAnnotSample()"
+          large
+          outlined
+          color="white"
+          depressed
+        >
+          <v-icon>mdi-note-text-outline</v-icon>
+          {{ $t('import.sample.buttonannot') }}
+        </v-btn>
       </v-layout>
     </v-card-text>
   </v-card>
@@ -19,6 +29,12 @@ export default {
   methods: {
     generate() {
       this.$emit('generate')
+    },
+    goToAnnotSample() {
+      this.$router.push({
+        name: `graph-url___${this.$i18n.locale}`,
+        params: { url: 'SAMPLEANNOT' }
+      })
     }
   }
 }

@@ -71,7 +71,8 @@ export default {
       label: 'Give it a try with our data sample',
       text:
         'A dataset for testing purpose is provided by Vasco. It is about cars and their features : model, origin, horsepower, start year, ... It gives the opportunity to try out the different use cases covered by Vasco and to generate relevant charts. You can use it and start doing your experiments on the data by clicking on the button below.',
-      button: 'Generate sample charts'
+      button: 'Generate sample charts',
+      buttonannot: 'See annotation examples'
     },
     howitworks: {
       header: 'Informations',
