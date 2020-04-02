@@ -103,4 +103,10 @@ export default {
 .rcso {
   font-size: 0.8em;
 }
+
+aside.v-navigation-drawer {
+  box-shadow: 0px 8px 10px -5px rgba(6, 83, 145, 0.2),
+    0px 16px 24px 2px rgba(6, 83, 145, 0.5),
+    0px 6px 30px 5px rgba(6, 83, 145, 0.12) !important;
+}
 </style>
