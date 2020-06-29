@@ -279,10 +279,16 @@ export default {
   },
   computed: {
     pluginIsLoaded() {
-      return !(
-        document.getElementsByClassName('col-input-selector')[0].style
-          .height === '0px'
-      )
+      if (
+        document.getElementsByClassName('col-input-selector')[0] !== undefined
+      ) {
+        return !(
+          document.getElementsByClassName('col-input-selector')[0].style
+            .height === '0px'
+        )
+      } else {
+        return true
+      }
     }
   },
   asyncData({ params, error }) {
@@ -292,7 +298,8 @@ export default {
         return { chart: res.data, json: JSON.parse(res.data.data) }
       })
       .catch((e) => {
-        error({ statusCode: 402, title: 'no_data', message: 'not_found' })
+        console.log(e)
+        // error({ statusCode: 402, title: 'no_data', message: 'not_found' })
       })
   },
   created() {
@@ -339,7 +346,7 @@ export default {
   },
   methods: {
     displayGraph() {
-      this.json.height = '700'
+      this.json.height = '400'
       this.json.width =
         document.getElementById('vis-container').offsetWidth - 120
       window

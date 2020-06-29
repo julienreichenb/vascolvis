@@ -11,7 +11,7 @@
       </v-btn>
       <v-spacer />
       <v-btn @click.stop="goToSettings()" icon>
-        <v-icon>mdi-settings-outline</v-icon>
+        <v-icon>mdi-cogs</v-icon>
       </v-btn>
       <v-btn @click.stop="goToAbout()" icon>
         <v-icon>mdi-information-outline</v-icon>
