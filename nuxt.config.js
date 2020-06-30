@@ -68,7 +68,7 @@ module.exports = {
       alwaysRedirect: true,
       fallbackLocale: 'en'
     },
-    defaultLocale: 'fr',
+    defaultLocale: 'en',
     lazy: true,
     langDir: 'lang/'
   },
