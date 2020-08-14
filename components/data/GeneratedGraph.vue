@@ -12,6 +12,27 @@
         <v-layout justify-space-between>
           <div>
             <v-btn
+              @click="hideEmpty(graph)"
+              class="mt-4"
+              color="grey lighten-1"
+              outlined
+              depressed
+              small
+              ><v-icon>mdi-null</v-icon>
+              {{ $t('graphs.hide_empty') }}
+            </v-btn>
+            <v-btn
+              v-if="onlyNominal"
+              @click="swapNominal(graph)"
+              class="mt-4"
+              color="red lighten-1"
+              outlined
+              depressed
+              small
+              ><v-icon>mdi-autorenew</v-icon>
+              {{ $t('graphs.nominal_button') }}
+            </v-btn>
+            <v-btn
               @click="swap(graph)"
               class="mt-4"
               color="red lighten-1"
@@ -63,15 +84,26 @@ export default {
       default: null
     }
   },
+  computed: {
+    onlyNominal() {
+      return this.graph.data.encoding.x.type === 'nominal'
+    }
+  },
   methods: {
     swap() {
       this.$emit('swap', this.graph.id)
+    },
+    swapNominal() {
+      this.$emit('swapnominal', this.graph.id)
     },
     swapColorShape() {
       this.$emit('colorshape', this.graph.id)
     },
     save() {
       this.$emit('save', this.graph.id)
+    },
+    hideEmpty() {
+      this.$emit('hide', this.graph.id)
     }
   }
 }

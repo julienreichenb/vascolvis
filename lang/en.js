@@ -101,6 +101,8 @@ export default {
     save: 'Save',
     switch_button: 'Switch axis',
     switch_colorshape: 'Switch color/shape',
+    nominal_button: 'Switch variables',
+    hide_empty: 'Ignore empty values',
     hide: 'Hide',
     ws: 'My Workspaces',
     no_ws: 'No Workspace yet.',

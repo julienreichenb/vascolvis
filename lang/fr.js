@@ -102,6 +102,8 @@ export default {
     save: 'Enregistrer',
     switch_button: 'Échanger les axes',
     switch_colorshape: 'Échanger couleur/forme',
+    nominal_button: 'Inverser les variables',
+    hide_empty: 'Ignorer les valeurs vides',
     hide: 'Masquer',
     ws: 'Mes Workspaces',
     no_ws: 'Aucun Workspace pour le moment.',

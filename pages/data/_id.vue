@@ -136,8 +136,10 @@
                   <v-col v-for="graph in graphs" :key="graph.id" :cols="12">
                     <GeneratedGraph
                       :graph="graph"
+                      @hide="hideEmptyValues"
                       @save="saveGraph"
                       @swap="swapAxis"
+                      @swapnominal="swapNominal"
                       @colorshape="swapColorAndShape"
                     />
                   </v-col>
@@ -496,7 +498,12 @@ export default {
       if (firstGraph.data.encoding) {
         this.graphs.push(firstGraph)
       }
-      const combinationVariables = this.getCombinations()
+      const type =
+        variables.some((v) => v.type === 'quantitative') ||
+        variables.some((v) => v.type === 'temporal')
+          ? 'quantitative'
+          : 'nominal'
+      const combinationVariables = this.getCombinations(type)
       let id = this.graphs.length > 0 ? 1 : 0
       for (let i = 0; i < combinationVariables.length; i++) {
         const tempGraph = {}
@@ -517,17 +524,37 @@ export default {
         this.getGraphs(variables)
       }
     },
-    getCombinations() {
+    getCombinations(type) {
       const unusedVariables = []
       for (let i = 0; i < this.variables.length; i++) {
-        if (
-          !this.variables[i].isUsed &&
-          this.variables[i].type === 'quantitative'
-        ) {
+        if (!this.variables[i].isUsed && this.variables[i].type === type) {
           unusedVariables.push(this.variables[i])
         }
       }
       return unusedVariables
+    },
+    hideEmptyValues(id) {
+      const keys = Object.keys(this.graphs[id].data.data.values[0])
+      this.graphs[id].data.transform = []
+      keys.forEach((key) => {
+        this.graphs[id].data.transform.push({ filter: 'datum.' + key })
+      })
+      this.renderSingleGraph(id)
+    },
+    swapNominal(id) {
+      const data = this.graphs[id].data
+      if (data.layer) {
+        const colorToX = data.layer[0].encoding.color.field
+        const xToColor = data.layer[0].encoding.x.field
+        data.layer[0].encoding.x.field = colorToX
+        data.layer[0].encoding.color.field = xToColor
+      } else {
+        const colorToX = data.encoding.color.field
+        const xToColor = data.encoding.x.field
+        data.encoding.x.field = colorToX
+        data.encoding.color.field = xToColor
+      }
+      this.renderSingleGraph(id)
     },
     swapAxis(id) {
       const data = this.graphs[id].data
@@ -759,6 +786,20 @@ export default {
               type: selectedNom[1].type
             }
           }
+        } else if (selectedNom.length === 2) {
+          encoding.x = {
+            field: selectedNom[0].name,
+            type: selectedNom[0].type
+          }
+          encoding.y = {
+            aggregate: 'count',
+            type: 'quantitative'
+          }
+          encoding.color = {
+            field: selectedNom[1].name,
+            type: selectedNom[1].type,
+            scale: { range: this.colors }
+          }
         } else {
           return null
         }
@@ -853,6 +894,41 @@ export default {
               this.computeBigGraphs()
             }
           }
+        }
+      } else if (selectedNom.length > 0) {
+        switch (selectedNom.length) {
+          case 1:
+            encoding.x = {
+              field: combinationVar.name,
+              type: combinationVar.type
+            }
+            encoding.y = {
+              aggregate: 'count',
+              type: 'quantitative'
+            }
+            encoding.color = {
+              field: selectedNom[0].name,
+              type: selectedNom[0].type,
+              scale: { range: this.colors }
+            }
+            break
+          case 2:
+            encoding.x = {
+              field: selectedNom[0].name,
+              type: selectedNom[0].type
+            }
+            encoding.y = {
+              field: combinationVar.name,
+              type: combinationVar.type
+            }
+            encoding.color = {
+              field: selectedNom[1].name,
+              type: selectedNom[1].type,
+              scale: { range: this.colors }
+            }
+            break
+          default:
+            break
         }
       } else {
         return null
@@ -984,6 +1060,9 @@ export default {
         return 'bar'
       }
       if (nbQuant === 1 && nbNom >= 1 && nbTemp === 0) {
+        return 'bar'
+      }
+      if (nbQuant === 0 && nbNom >= 2 && nbTemp === 0) {
         return 'bar'
       }
       if (nbQuant === 0 && nbNom >= 1 && nbTemp === 1) {
