@@ -46,7 +46,5 @@ export default {
 <style scoped>
 #btn-drawer {
   position: sticky;
-  top: 15%;
-  margin-top: -1em;
 }
 </style>
