@@ -329,7 +329,14 @@ export default {
     },
     attributeSingleVariableType(id, selected) {
       if (selected === null) {
-        const variableToCheck = this.json[0][this.variables[id].name]
+        // const variableToCheck = this.json[0][this.variables[id].name]
+        let variableToCheck
+        for (let i = 0; i < this.json.length; i++) {
+          if (this.json[0][this.variables[id].name]) {
+            variableToCheck = this.json[0][this.variables[id].name]
+            break
+          }
+        }
         if (!isNaN(variableToCheck)) {
           // The value is a number
           this.setDimension(id, 'quantitative')
@@ -1018,6 +1025,7 @@ export default {
         )
       } catch (e) {
         // eslint-disable-next-line
+        console.log(e)
         console.log(e)
         return false
       }
